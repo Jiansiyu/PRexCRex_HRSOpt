@@ -32,7 +32,7 @@ UInt_t MaxDataPerGroup = 100;
 //TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/Opt/Result/Sieve/Sieve._20826_p4.f51";
 //"/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRex_Optics/PRexOptics/RHRS/asciReform/DpReform/temp.dat";
 //"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/Opt/Result/Sieve/Sieve._20826_p4.f51";
-TString DataSource = "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/temp.dat";
+TString DataSource = "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.test";
 
 typedef void (*PTRFCN)(Int_t &, Double_t *, Double_t &, Double_t*, Int_t);
 PTRFCN myfcn = NULL;
@@ -132,17 +132,15 @@ void DoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     
 #endif                   
                  
-//    opt->Print();
-//    opt->CheckSieve(0);
-    //    opt->SaveDataBase(SourceDataBase);
+    opt->Print();
     opt->SaveDataBase(DestDataBase); 
     
     opt->SumSquareDTh();
     opt->SumSquareDPhi();
     
-////    TCanvas * c1 = opt->CheckSieve(-1);
-//    c1->Print(DestDataBase+".Sieve.Opt.png", "png");
-//    c1->Print(DestDataBase+".Sieve.Opt.eps", "eps");
+    TCanvas * c1 = opt->CheckSieve(-1);
+    c1->Print(DestDataBase+".Sieve.Opt.png", "png");
+    c1->Print(DestDataBase+".Sieve.Opt.eps", "eps");
     
 //        TCanvas * c2 = opt->CheckSieveAccu(-1);
     //    c2->Print(DestDataBase + ".TpAccu.Opt.png", "png");
@@ -313,7 +311,7 @@ void PlotDataBase(TString DatabaseFileName, UInt_t MaxDataPerGroup = 1000)
     delete opt;
 }
 
-void ROpticsOptScript(TString select, TString SourceDataBase, TString DestDataBase)
+void ROpticsOptScript(TString select, TString SourceDataBase, TString DestDataBase="")
 {
     opt = new ROpticsOpt();
 
@@ -322,6 +320,13 @@ void ROpticsOptScript(TString select, TString SourceDataBase, TString DestDataBa
     if (select == "phi") s = 2;
     if (select == "y") s = 3;
     if (select == "delta") s = 4;
+
+    TString autoDestDatabase;
+    if(DestDataBase==""){
+    	DestDataBase= SourceDataBase + "." + select;
+    }
+
+    // debug infor, debug infor
 
     gStyle->SetOptStat(0);
 

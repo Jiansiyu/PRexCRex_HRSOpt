@@ -1252,6 +1252,8 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
     TH2D * HSievePlane[NFoils] = {0};
     TH2F * HSieveRealThetaPhi[NFoils] = {0};
     TH2F * HSieveCalcThetaPhi[NFoils] = {0};
+    TH2F * HSieveCorrectedThetaPhi[NFoils] = {0};
+
 
     Double_t x_lim[NFoils] = {0};
     Double_t y_lim[NFoils] = {0};
@@ -1274,6 +1276,10 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
         HSieveCalcThetaPhi[idx]->SetXTitle("Sieve Theta");
         HSieveCalcThetaPhi[idx]->SetYTitle("Sieve Phi");
 
+        HSieveCorrectedThetaPhi[idx] = new TH2F(Form("Sieve_Foil_Corrected_ThetaPhi%d", idx), Form("Sieve Plane Corrected (tg_Theta vs tg_Phi) for Data set #%d", idx), 500, -0.06, 0.06, 500, -0.06, 0.06);
+        HSieveCorrectedThetaPhi[idx]->SetXTitle("Sieve Theta");
+        HSieveCorrectedThetaPhi[idx]->SetYTitle("Sieve Phi");
+
 		assert(HSievePlane[idx]); // assure memory allocation
     }
 
@@ -1290,6 +1296,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
             }
         }
     };
+
 
 
     for (UInt_t idx = 0; idx < fNRawData; idx++) {
@@ -1324,25 +1331,28 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
         //Double_t ProjectionY = eventdata.Data[kCalcPh];
 	    HSievePlane[FoilID]->Fill(ProjectionY, ProjectionX);
 
-	    std::cout<<"ID:"<<eventdata.Data[kCutID]<<"  Col Row:("<<Col<<","<<Row<<")  Real Pos=> ("<<RealTheta<<", "<<RealPhi<<")   Calculated::("<<CalcTheta<<","<<CalcPhi<<")"<<std::endl;
-	//	if(FoilID==4&&Col==13&&Row==5)
-//	{
-//		  cout<<"*********"<<endl;
-//		  cout<<"Row:"<<Row<<endl;
-//		  cout<<"XRow:"<<GetSieveHoleTCS(Col,Row).X()<<endl;
-//		  cout<<"ProjectionX:"<<ProjectionX<<endl;
-//		  cout<<"dx:"<<ProjectionX - SieveHoleCorrectionTCS.X()<<endl;
-//		  HSievePlane[FoilID]->Fill(ProjectionY, ProjectionX);
-//		}
+	    //calculate the Measured value on Target
+	    double_t x_fp=eventdata.Data[kX];
+	    const double_t (*powers)[5]=eventdata.powers;
+	    CalcMatrix(x_fp,fTMatrixElems);
+	    Double_t theta = CalcTargetVar(fTMatrixElems, powers);
 
-        dX += ProjectionX - SieveHoleCorrectionTCS.X();
-        dY += ProjectionY - SieveHoleCorrectionTCS.Y();
+        CalcMatrix(x_fp, fPMatrixElems);
+        CalcMatrix(x_fp, fPTAMatrixElems);
+        // calculate the coordinates at the target
+        Double_t phi = CalcTargetVar(fPMatrixElems, powers) + CalcTargetVar(fPTAMatrixElems, powers);
 
-        SieveEventID[FoilID][Col][Row][kEventID] = idx;
-        SieveEventID[FoilID][Col][Row][kRealSieveX] = SieveHoleCorrectionTCS.X();
-        SieveEventID[FoilID][Col][Row][kRealSieveY] = SieveHoleCorrectionTCS.Y();
-        SieveEventID[FoilID][Col][Row][kCalcSieveX] = ProjectionX;
-        SieveEventID[FoilID][Col][Row][kCalcSieveY] = ProjectionY;
+        HSieveCorrectedThetaPhi[FoilID]->Fill(phi,theta);
+
+//
+//        dX += ProjectionX - SieveHoleCorrectionTCS.X();
+//        dY += ProjectionY - SieveHoleCorrectionTCS.Y();
+//
+//        SieveEventID[FoilID][Col][Row][kEventID] = idx;
+//        SieveEventID[FoilID][Col][Row][kRealSieveX] = SieveHoleCorrectionTCS.X();
+//        SieveEventID[FoilID][Col][Row][kRealSieveY] = SieveHoleCorrectionTCS.Y();
+//        SieveEventID[FoilID][Col][Row][kCalcSieveX] = ProjectionX;
+//        SieveEventID[FoilID][Col][Row][kCalcSieveY] = ProjectionY;
     }
 
     DEBUG_INFO("CheckSieve", "Average : D_X = %f,\t D_Y = %f", dX / fNRawData, dY / fNRawData);
@@ -1355,6 +1365,21 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 
     c1->cd(2);
     HSieveCalcThetaPhi[0]->Draw("zcol");
+
+    c1->cd(3);
+    HSieveCorrectedThetaPhi[0]->Draw("zcol");
+
+    for (UInt_t idx = 0; idx < fNRawData; idx++) {
+        const EventData &eventdata = fRawData[idx];
+        TLine *line=new TLine(eventdata.Data[kRealPhi]-0.001,eventdata.Data[kRealTh],eventdata.Data[kRealPhi]+0.001,eventdata.Data[kRealTh]);
+        line->SetLineWidth(2);
+        line->Draw("same");
+
+        TLine *line1=new TLine(eventdata.Data[kRealPhi],eventdata.Data[kRealTh]-0.001,eventdata.Data[kRealPhi],eventdata.Data[kRealTh]+0.001);
+        line1->SetLineWidth(2);
+        line1->Draw("same");
+    }
+
 
     return c1;
 }
