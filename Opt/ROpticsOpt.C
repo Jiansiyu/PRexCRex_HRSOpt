@@ -1265,11 +1265,12 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
         HSievePlane[idx]->SetXTitle("Sieve H [m]");
         HSievePlane[idx]->SetYTitle("Sieve V [m]");
 
-        HSieveRealThetaPhi[idx] = new TH2F(Form("Sieve_Foil_realThetaPhi%d", idx), Form("Sieve Plane Real. (tg_Theta vs tg_Phi) for Data set #%d", idx), 500, -0.1, 0.1, 500, -0.1, 0.1);
+        HSieveRealThetaPhi[idx] = new TH2F(Form("Sieve_Foil_realThetaPhi%d", idx), Form("Sieve Plane Real. (tg_Theta vs tg_Phi) for Data set #%d", idx), 500, -0.06, 0.06, 500, -0.06, 0.06);
         HSieveRealThetaPhi[idx]->SetXTitle("Sieve Theta");
         HSieveRealThetaPhi[idx]->SetYTitle("Sieve Phi");
+//        HSieveRealThetaPhi[idx]->SetMarkerSize(20);
 
-        HSieveCalcThetaPhi[idx] = new TH2F(Form("Sieve_Foil_CalcThetaPhi%d", idx), Form("Sieve Plane Calc. (tg_Theta vs tg_Phi) for Data set #%d", idx), 500, -0.1, 0.1, 500, -0.1, 0.1);
+        HSieveCalcThetaPhi[idx] = new TH2F(Form("Sieve_Foil_Measured_ThetaPhi%d", idx), Form("Sieve Plane Measured (tg_Theta vs tg_Phi) for Data set #%d", idx), 500, -0.06, 0.06, 500, -0.06, 0.06);
         HSieveCalcThetaPhi[idx]->SetXTitle("Sieve Theta");
         HSieveCalcThetaPhi[idx]->SetYTitle("Sieve Phi");
 
@@ -1311,11 +1312,11 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
         const Double_t RealTheta=eventdata.Data[kRealTh];
         const Double_t RealPhi  =eventdata.Data[kRealPhi];
 //        HSieveRealThetaPhi[FoilID]->Fill(eventdata.Data[kRealTh],eventdata.Data[kRealPhi]);
-        HSieveRealThetaPhi[FoilID]->Fill(RealTheta,RealPhi);
+        HSieveRealThetaPhi[FoilID]->Fill(RealPhi,RealTheta);
 
         const double_t CalcTheta=eventdata.Data[kCalcTh];
         const double_t CalcPhi  = eventdata.Data[kCalcPh];
-        HSieveCalcThetaPhi[FoilID]->Fill(CalcTheta,CalcPhi);
+        HSieveCalcThetaPhi[FoilID]->Fill(CalcPhi,CalcTheta);
 
 	    Double_t ProjectionX = eventdata.Data[kRealTgX] + (eventdata.Data[kCalcTh] + eventdata.Data[kRealTgX] * ExtTarCor_ThetaCorr) * (SieveHoleCorrectionTCS.Z());
 	    //Double_t ProjectionX = eventdata.Data[kCalcTh];
@@ -1956,6 +1957,8 @@ Double_t ROpticsOpt::SumSquareDTh()
 
         // save the results
         eventdata.Data[kCalcTh] = theta;
+        //for(auto i : fTMatrixElems) i.print();
+        //std::cout<<__FUNCTION__<<"Database Theta"<<fTMatrixElems.size()<<"   kCalcTh:"<<theta<<std::endl;
     }
 
     // DEBUG_INFO("SumSquareDTh", "#%d : dth = %f,\t rmsth = %f", NCall, dth / fNRawData, TMath::Sqrt(rmsth / fNRawData));

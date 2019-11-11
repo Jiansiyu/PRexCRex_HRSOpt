@@ -281,5 +281,24 @@ public:
     void SkimPoly(); //reduce order to highest non-zero poly
 
     UInt_t OptOrder; //order optimize to
+
+	void print() const{
+		std::cout<<">>>>>>>>>>>>>>>>>>>>>>>>>>>"<<std::endl;
+		std::cout<<"IsZero : "<< iszero<<std::endl;
+		std::cout<<"pw::"<<std::endl;
+		int counter=1;
+		for (auto item : pw){
+			std::cout<<"	"<<(counter++)<<"/"<<pw.size()<<" :: "<<item<<std::endl;
+		}
+		std::cout<<"Order : "<<order<<std::endl;
+		std::cout<<"v     : "<<v<<std::endl;
+		std::cout<<"poly::"<<std::endl;
+		counter=1;
+		for (auto item : poly){
+			std::cout<<"	"<<(counter++)<<"/"<<poly.size()<<" :: "<<item<<std::endl;
+		}
+		std::cout<<"OptOrders : "<<OptOrder<<std::endl;
+		std::cout<<std::endl;
+	}
 };
 #endif

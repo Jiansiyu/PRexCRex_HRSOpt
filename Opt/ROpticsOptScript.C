@@ -132,7 +132,7 @@ void DoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     
 #endif                   
                  
-    opt->Print();
+//    opt->Print();
 //    opt->CheckSieve(0);
     //    opt->SaveDataBase(SourceDataBase);
     opt->SaveDataBase(DestDataBase); 
@@ -140,9 +140,9 @@ void DoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     opt->SumSquareDTh();
     opt->SumSquareDPhi();
     
-    TCanvas * c1 = opt->CheckSieve(-1);
-    c1->Print(DestDataBase+".Sieve.Opt.png", "png");
-    c1->Print(DestDataBase+".Sieve.Opt.eps", "eps");
+////    TCanvas * c1 = opt->CheckSieve(-1);
+//    c1->Print(DestDataBase+".Sieve.Opt.png", "png");
+//    c1->Print(DestDataBase+".Sieve.Opt.eps", "eps");
     
 //        TCanvas * c2 = opt->CheckSieveAccu(-1);
     //    c2->Print(DestDataBase + ".TpAccu.Opt.png", "png");
