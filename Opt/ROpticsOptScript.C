@@ -269,7 +269,7 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
 
     opt->Print();
     opt->SaveDataBase(DestDataBase);
-//    opt->SaveNewDataBase(Form("%s.new",DestDataBase.Data()));
+    opt->SaveNewDataBase(Form("%s",DestDataBase.Data()));
     opt->SumSquareDp();
 //    opt->CheckDp();
 //    opt->CheckDpGlobal();

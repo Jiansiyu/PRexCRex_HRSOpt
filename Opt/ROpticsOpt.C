@@ -2451,6 +2451,7 @@ void ROpticsOpt::PrepareDp(void)
         printf("%f  ", HRSCentralMom[KineID]);
     printf("}\n");
     sleep(3);
+
     // parameter LossEachUnitB is the Radiation loss in 1m LH2 before scattering
     // parameter LossEachUnitA is the Radiation loss in 1m LH2 after scattering
     Double_t scatang = 0;
@@ -2469,16 +2470,16 @@ void ROpticsOpt::PrepareDp(void)
         EventData &eventdata = fRawData[idx];
 	//eventdata.Data[kCutID] is the kine number
         //const UInt_t ExtraDataFlag =(UInt_t) eventdata.Data[kCutID];
-	    UInt_t KineID = (UInt_t) eventdata.Data[kCutID];
+	    //UInt_t KineID = (UInt_t) eventdata.Data[kCutID];
         //assert(ExtraDataFlag < 5); //Check flag range. beyond 5 is not used
-        assert(KineID < 5); //check array index size
+        //assert(KineID < 5); //check array index size
 
         UInt_t dataID = (UInt_t) eventdata.Data[kCutID];
         // for  PRex,we use several different  dp runs,
         //  UInt_t DpCount = dataID % (NSieveRow * (NSieveCol+1));
         UInt_t DpID = dataID / (NSieveRow * (NSieveCol+1));//starting 0!
 
-        KineID=DpID;
+        UInt_t KineID=DpID;
 
 
         fNCalibData++;
@@ -2492,7 +2493,7 @@ void ROpticsOpt::PrepareDp(void)
 	    const Double_t(*powers)[5] = eventdata.powers;
 
         CalcMatrix(x_fp, fTMatrixElems);
-        theta = CalcTargetVar(fTMatrixElems, powers);
+        theta = CalcTargetVar(fTMatrixElems, powers); // calculate the rarget variables
 
         CalcMatrix(x_fp, fPMatrixElems);
         CalcMatrix(x_fp, fPTAMatrixElems);
@@ -2510,7 +2511,7 @@ void ROpticsOpt::PrepareDp(void)
 	    TVector3 BeamSpotHCS(eventdata.Data[kBeamX], eventdata.Data[kBeamY], eventdata.Data[kBeamVZ]);
 	    //TVector3 BeamSpotHCS(BeamX_average, BeamY_average, eventdata.Data[kBeamVZ]);
         TVector3 BeamSpotTCS = fTCSInHCS.Inverse()*(BeamSpotHCS - fPointingOffset);
-	    TVector3 MomDirectionTCS(theta,phi,1);
+	    TVector3 MomDirectionTCS(theta,phi,1); // target variables
 
         eventdata.Data[kRealTh] = theta;
         eventdata.Data[kRealPhi] = phi;
@@ -2555,13 +2556,12 @@ void ROpticsOpt::PrepareDp(void)
 	ElossTg = ElossBeforeTg+ElossAfterTg;
 	ElossTg_sum +=ElossTg;
 
-/*
-    eventdata.Data[kTravelLengthBefore] = D1;
-    eventdata.Data[kTravelLengthAfter] = D2;
-	eventdata.Data[kElossTgBefore] = ElossTargetBefore(ReactionVertex, MomDirectionHCS);
-	eventdata.Data[kElossTgAfter] = ElossTargetAfter(ReactionVertex, MomDirectionHCS);
-	eventdata.Data[kElossDp] = ElossAfterTg / eventdata.Data[kCentralp];
-*/
+
+//    eventdata.Data[kTravelLengthBefore] = D1;
+//    eventdata.Data[kTravelLengthAfter] = D2;
+//	eventdata.Data[kElossTgBefore] = ElossTargetBefore(ReactionVertex, MomDirectionHCS);
+//	eventdata.Data[kElossTgAfter] = ElossTargetAfter(ReactionVertex, MomDirectionHCS);
+//	eventdata.Data[kElossDp] = ElossAfterTg / eventdata.Data[kCentralp];
 
     eventdata.Data[kTravelLengthBefore] = 0.0;
     eventdata.Data[kTravelLengthAfter] = 0.0;
