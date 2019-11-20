@@ -25,12 +25,12 @@ using namespace std;
 // Work Directory
 //////////////////////////////////////////////////////////////////////////////
 //TString WorkDir = "/Users/tong/Tritium_analysis/optics/Sieve/";
-TString WorkDir = "./Result/SieveCodeTest/";
+TString WorkDir = "./Result/SieveTest/";
 
 //////////////////////////////////////////////////////////////////////////////
 // Define Files
 //////////////////////////////////////////////////////////////////////////////
-TString RootDir = "/home/newdriver/Storage/Research/PRex_Experiment/prex_analyzer/optReplay/Result/OptFolder/";
+TString RootDir = "/home/newdriver/Storage/Research/PRex_Experiment/prex_analyzer/optReplay/Result/Nov18_OptData/";
 
 // Dp & Sieve
 TString RootFile_Dp_m4;
@@ -45,7 +45,7 @@ TString RootFile_Dp_p4;
 
 TString RootFile_Sieve = "prexRHRS_20798.root";
 
-TString RootFile_Dp = RootFile_Dp_0;
+TString RootFile_Dp = RootFile_Dp_m1;
 
 //TString RootFile_Vertex = RootFile_Sieve;
 
@@ -71,10 +71,10 @@ Bool_t UseDp_SieveCut=kTRUE;
 
 UInt_t PlotCut = 0;
 
-//TCut GeneralSieveCut = "abs(R.gold.p-0.94737)<=0.0025"; //20826
-//TCut GeneralSieveCut = "abs(R.gold.p-0.94743)<=0.0025"; //20825
-//TCut GeneralSieveCut = "abs(R.gold.p-0.947295)<=0.0025"; //20827
-TCut GeneralSieveCut = "abs(R.gold.p-0.95)<=0.011439";
+TCut GeneralSieveCut = "abs(R.gold.p-9.50256e-01)<=2.33217e-04*2"; //20826
+//TCut GeneralSieveCut = "abs(R.gold.p-9.50326e-01)<=2.38522e-04*2"; //20825
+//TCut GeneralSieveCut = "abs(R.gold.p-9.50321e-01)<=2.03692e-04*2"; //20827
+
 TCut GeneralCut =GeneralSieveCut+ "R.tr.n==1 && R.vdc.u1.nclust==1&& R.vdc.v1.nclust==1 && R.vdc.u2.nclust==1 && R.vdc.v2.nclust==1 && R.gold.dp<1 && R.gold.dp > -0.1 && fEvtHdr.fEvtType==1";
 
 //////////////////////////////////////////////////////////////////////////////

@@ -2546,6 +2546,9 @@ void ROpticsOpt::PrepareDp(void)
 	TVector3 ReactionVertex(eventdata.Data[kBeamX], eventdata.Data[kBeamY], CalcReacZ);
 	Double_t D1=0;
 	Double_t D2=0;
+
+	//disabled for PRex Test
+	/*
 	D1 = LH2_TargetLength/2.+CalcReacZ;
 	D2 = TravelLength(ReactionVertex, MomDirectionHCS);
 	D1_sum+=D1;
@@ -2555,6 +2558,7 @@ void ROpticsOpt::PrepareDp(void)
 	ElossAfter_sum += ElossAfterTg;
 	ElossTg = ElossBeforeTg+ElossAfterTg;
 	ElossTg_sum +=ElossTg;
+*/
 
 
 //    eventdata.Data[kTravelLengthBefore] = D1;
@@ -2573,7 +2577,7 @@ void ROpticsOpt::PrepareDp(void)
         // calculate difference between dp_kin and dp
         // dp_kin + kDpKinOffsets = dp
         const Double_t DM = ExcitationEnergy[KineID];
-        const Double_t Ma = GroundNuclearMass;
+        const Double_t Ma = GroundNuclearMass;  //mass of th target
 
         const Double_t DpKinOffsets = (ScatMom(DM, Ma, Ebeam[KineID] - ElossBeforeTg, ScatteringAngle) - ScatMom(DM, Ma, Ebeam[KineID] - ElossBeforeTg, TMath::Abs(HRSAngle))) / eventdata.Data[kCentralp];
         eventdata.Data[kDpKinOffsets] = DpKinOffsets;
@@ -2653,7 +2657,7 @@ TCanvas * ROpticsOpt::CheckDp()
     Double_t AveRealDpKinMatrix[NKine]={0};
 
     for (UInt_t KineID = 0; KineID < NKine; KineID++) {
-      hDpKinCalib[KineID] = new TH1D(Form("hDpKinCalib%d", KineID), Form("Dp_Kin for Delta Scan Kine. %d%%", 2*(KineID-2)), NDpRange, -2*DpRange, 2*DpRange);
+      hDpKinCalib[KineID] = new TH1D(Form("hDpKinCalib%d", KineID), Form("Dp_Kin for Delta Scan Kine. %d%%", (KineID-1)), NDpRange, -2*DpRange, 2*DpRange);
       hDpKinAll[KineID] = new TH1D(Form("hDpKinAll%d", KineID), Form("Dp_Kin for Delta Scan Kine. #%d", KineID), NDpRange, -DpRange, DpRange);
 
       hRealReactZ[KineID] = new TH1D(Form("hRealReactZ%d", KineID), Form("ReacZ for Delta Scan Kine. %d%%", 2*(KineID-2)), 400, -0.15, 0.15);

@@ -20,7 +20,7 @@ const TString InputID = "prexRHRS";
 // HRS Position Inputs
 const Double_t D2R = TMath::Pi() / 180.;
 //set as central sieve hole angle
-const Double_t HRSAngle = 4.74 * D2R;
+const Double_t HRSAngle = -4.74 * D2R;
 
 
 //------------------------------------------------------------------------
@@ -54,13 +54,13 @@ const Double_t BeamY_average =  0.000;
 
 /////////////////////////////////////////////////////////////////////////
 // Sieve Position Inputs
-//const Double_t YbyCol = .492 * 25.4e-3;
-//const Double_t SieveYbyCol[]= {6.5*YbyCol, 6*YbyCol,5.5*YbyCol, 5*YbyCol, 4.5*YbyCol, 4*YbyCol, 3.5*YbyCol, 3*YbyCol, 2.5*YbyCol, 2*YbyCol, 1.5*YbyCol, 1*YbyCol, 0.5*YbyCol, 0, -0.5*YbyCol, -1*YbyCol, -1.5*YbyCol, -2*YbyCol, -2.5*YbyCol, -3*YbyCol, -3.5*YbyCol, -4*YbyCol, -4.5*YbyCol, -5*YbyCol, -5.5*YbyCol, -6*YbyCol, -6.5*YbyCol, 1e36};
+const Double_t YbyCol = .492 * 25.4e-3;
+const Double_t SieveYbyCol[]= {6.5*YbyCol, 6*YbyCol,5.5*YbyCol, 5*YbyCol, 4.5*YbyCol, 4*YbyCol, 3.5*YbyCol, 3*YbyCol, 2.5*YbyCol, 2*YbyCol, 1.5*YbyCol, 1*YbyCol, 0.5*YbyCol, 0, -0.5*YbyCol, -1*YbyCol, -1.5*YbyCol, -2*YbyCol, -2.5*YbyCol, -3*YbyCol, -3.5*YbyCol, -4*YbyCol, -4.5*YbyCol, -5*YbyCol, -5.5*YbyCol, -6*YbyCol, -6.5*YbyCol, 1e36};
 const UInt_t NSieveCol = 13;
 
-//const Double_t XbyRow = .984 * 25.4e-3;
-//const Double_t SieveXbyRowOdd[] = { -3 * XbyRow, -2 * XbyRow, -1 * XbyRow, 0.0, 1 * XbyRow, 2 * XbyRow, 1e36}; // vertical positions of the sieve holes when the column number is odd, column number starts with 0
-//const Double_t SieveXbyRowEven[] = {-2.5 * XbyRow, -1.5 * XbyRow, -0.5 * XbyRow, 0.5 * XbyRow, 1.5 * XbyRow, 2.5 * XbyRow, 1e36};
+const Double_t XbyRow = .984 * 25.4e-3;
+const Double_t SieveXbyRowOdd[] = { -3 * XbyRow, -2 * XbyRow, -1 * XbyRow, 0.0, 1 * XbyRow, 2 * XbyRow, 1e36}; // vertical positions of the sieve holes when the column number is odd, column number starts with 0
+const Double_t SieveXbyRowEven[] = {-2.5 * XbyRow, -1.5 * XbyRow, -0.5 * XbyRow, 0.5 * XbyRow, 1.5 * XbyRow, 2.5 * XbyRow, 1e36};
 const UInt_t NSieveRow = 7;
 
 // SieveOff* are in TCS
@@ -85,23 +85,20 @@ const UInt_t NKine = 3; //N Delta Scans */
 #define DIPOLE_MAG2MOM(Mag) (2.702*(Mag)-1.6e-03*(Mag)*(Mag)*(Mag)) 
 
 const Double_t Ebeam[] = { 
-	0.950406, // -1% run 22772
-  0.950406, //  0% run 22775
-  0.950406, //  1% run 22776
-  0.950406, //  1% run 22776
-  0.950406, //  1% run 22776
+  0.95063, // -1% run 22772
+  0.950461, //  0% run 22775
+  0.950528, //  1% run 20825
   0 
   }; 
 const Double_t HRSCentralMom[] = { 
-  //1.27701, // -4% run 22771
   0.9436215485,   // -1%
   0.9531710278,   //  0% run 22775
   0.9626988536,   //  1% run 22776
   0.0
   }; 
 
-const Double_t GroundNuclearMass = 12*0.938272046 -.511e-3*6; //GeV/c^2  //c Target
-const Double_t ExcitationEnergy[] = {0.,0.00443891,0.00443891,0.00443891,0.00443891};//selected excitation states for each kinematics
+const Double_t GroundNuclearMass = 12*0.938272046;// -.511e-3*6; //GeV/c^2  //c Target
+const Double_t ExcitationEnergy[] = {0.,0.0,0.0,0.0,0.0};//selected excitation states for each kinematics
 //{0.,0.00443891,0.00443891,0.00443891,0.00443891};
 
 const UInt_t NExcitationStates = 1; // C Excitation States
