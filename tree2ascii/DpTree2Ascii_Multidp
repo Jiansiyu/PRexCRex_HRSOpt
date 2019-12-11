@@ -1,0 +1,81 @@
+#!/bin/bash
+
+## changed for PRex Dp Optimization
+if [ "$#" -ne 1 ]; then
+    echo "Illegal number of parameters"
+    echo "Usage for Dp ASCII data generater bash"
+    echo "./myTree2AscII [path contains the cut files]  "
+    echo "example: ./myTree2AscII ../Result \n"
+    echo "The optfolder which is point to the path contains the root file is hardcoded. you may need to change that"
+    exit
+fi
+
+ARCH=$(arch)
+PROG=./tree2ascii
+ROOTFILEDIR="/home/newdriver/Storage/Research/PRex_Experiment/prex_analyzer/optReplay/Result/" 
+
+prefix="prexRHRS"
+# Path that contains the cut 
+DIR=$1
+nfoil=1
+
+des="Dp.Full.test"
+
+#IdOffSet=49
+if [ -f $DIR/${des} ]
+then
+  mv -f $DIR/${des}  $DIR/${des}.old
+fi
+
+
+Id=0
+# run 20826, -1% dp scan
+keyrun=20826
+$PROG -pv -d DpVars.def -O $Id\
+        -s $DIR/prexRHRS_${keyrun}.SieveCut.ncut \
+        -c $DIR/prexRHRS_${keyrun}.SieveCut.cut \
+        -g $DIR/prexRHRS_${keyrun}_-1.root.FullCut.root \
+        -o $DIR/Dp._20826_p4.f51 \
+        $ROOTFILEDIR/prexRHRS_20826_-1.root \
+        $ROOTFILEDIR/prexRHRS_20826_-1_1.root \
+        $ROOTFILEDIR/prexRHRS_20826_-1_2.root 
+
+#cat  $DIR/Sieve._20826_p4.f51 > $DIR/${des}
+
+
+Id=98
+#20827 0% dp scan
+keyrun=20827    
+$PROG -pv -d DpVars.def -O $Id\
+        -s $DIR/prexRHRS_${keyrun}.SieveCut.ncut \
+        -c $DIR/prexRHRS_${keyrun}.SieveCut.cut \
+        -g $DIR/prexRHRS_${keyrun}_-1.root.FullCut.root \
+        -o $DIR/Dp._20827_p4.f51 \
+        $ROOTFILEDIR/prexRHRS_20827_-1.root \
+        $ROOTFILEDIR/prexRHRS_20827_-1_1.root \
+        $ROOTFILEDIR/prexRHRS_20827_-1_2.root 
+        #\
+        #$ROOTFILEDIR/prexRHRS_20827_-1_3.root 
+        
+#cat  $DIR/Sieve._20827_p4.f51 > $DIR/${des}
+
+
+Id=196
+#20825 +1% dp scan
+keyrun=20825    
+$PROG -pv -d DpVars.def -O $Id\
+        -s $DIR/prexRHRS_${keyrun}.SieveCut.ncut \
+        -c $DIR/prexRHRS_${keyrun}.SieveCut.cut \
+        -g $DIR/prexRHRS_${keyrun}_-1.root.FullCut.root \
+        -o $DIR/Dp._20825_p4.f51 \
+        $ROOTFILEDIR/prexRHRS_20825_-1.root \
+        $ROOTFILEDIR/prexRHRS_20825_-1_1.root \
+        $ROOTFILEDIR/prexRHRS_20825_-1_2.root 
+        #\
+        #$ROOTFILEDIR/prexRHRS_20825_-1_3.root \
+        #$ROOTFILEDIR/prexRHRS_20825_-1_4.root \
+        #$ROOTFILEDIR/prexRHRS_20825_-1_5.root 
+
+cat $DIR/Dp._20826_p4.f51 $DIR/Dp._20827_p4.f51 $DIR/Dp._20825_p4.f51 > $DIR/${des}
+
+echo "Done!"
