@@ -4,14 +4,15 @@
 if [ "$#" -ne 2 ]; then
     echo "Illegal number of parameters"
     echo "./myTree2AscII [path contains the cut files] \"runIDs\" "
-    echo "example: ./myTree2AscII ../Result  20826 1"
+    echo "example: ./myTree2AscII ../Result  20826 "
+    echo "used for read the root file and get the data according to previouse gen.sh rule file"
     exit
 fi
 
 ARCH=$(arch)
 PROG=./tree2ascii
-ROOTFILEDIR="/home/newdriver/Storage/Research/PRex_Experiment/prex_analyzer/optReplay/Result/OptFolder/" #little
-
+#ROOTFILEDIR="/home/newdriver/Storage/Research/PRex_Experiment/prex_analyzer/optReplay/Result/OptFolder/" #little
+ROOTFILEDIR="/home/newdriver/Storage/Research/CRex_Experiment/optReplay/Result"
 prefix="prexRHRS"
 # Path that contains the cut 
 DIR=$1

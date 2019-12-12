@@ -24,13 +24,23 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////
 // Work Directory
 //////////////////////////////////////////////////////////////////////////////
-//TString WorkDir = "/Users/tong/Tritium_analysis/optics/Sieve/";
-TString WorkDir = "./Result/SieveTest/";
+TString WorkDir = "../Result/CRex/OptThetaPhiDec11/";
 
 //////////////////////////////////////////////////////////////////////////////
 // Define Files
 //////////////////////////////////////////////////////////////////////////////
-TString RootDir = "/home/newdriver/Storage/Research/PRex_Experiment/prex_analyzer/optReplay/Result/Nov18_OptData/";
+TString RootDir = "/home/newdriver/Storage/Research/CRex_Experiment/optReplay/Result/";
+
+
+// CRex Experiment
+TString RootFile_Dp_N2_r1 = "prexRHRS_21646_-1.root";
+TString RootFile_Dp_N2_r2 = "prexRHRS_21645_-1.root";
+TString RootFile_Dp_N2_r3 = "prexRHRS_21644_-1.root";
+TString RootFile_Dp_N2_r4 = "prexRHRS_21643_-1.root";
+TString RootFile_Dp_N2_r5 = "prexRHRS_21642_-1.root prexRHRS_21642_-1_1.root prexRHRS_21642_-1_2.root";
+
+
+
 
 // Dp & Sieve
 TString RootFile_Dp_m4;
@@ -47,9 +57,10 @@ TString RootFile_Sieve = "prexRHRS_20798.root";
 
 TString RootFile_Dp = RootFile_Dp_m1;
 
+
 //TString RootFile_Vertex = RootFile_Sieve;
 
-TString SourceRootFile = RootFile_Dp;
+TString SourceRootFile = RootFile_Dp_N2_r1;
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -71,11 +82,12 @@ Bool_t UseDp_SieveCut=kTRUE;
 
 UInt_t PlotCut = 0;
 
-TCut GeneralSieveCut = "abs(R.gold.p-9.50256e-01)<=2.33217e-04*2"; //20826
+TCut GeneralSieveCut ="1";
+//TCut GeneralSieveCut = "abs(R.gold.p-9.50256e-01)<=2.33217e-04*2"; //20826
 //TCut GeneralSieveCut = "abs(R.gold.p-9.50326e-01)<=2.38522e-04*2"; //20825
 //TCut GeneralSieveCut = "abs(R.gold.p-9.50321e-01)<=2.03692e-04*2"; //20827
 
-TCut GeneralCut =GeneralSieveCut+ "R.tr.n==1 && R.vdc.u1.nclust==1&& R.vdc.v1.nclust==1 && R.vdc.u2.nclust==1 && R.vdc.v2.nclust==1 && R.gold.dp<1 && R.gold.dp > -0.1 && fEvtHdr.fEvtType==1";
+TCut GeneralCut =GeneralSieveCut+ "R.tr.n==1 && R.vdc.u1.nclust==1&& R.vdc.v1.nclust==1 && R.vdc.u2.nclust==1 && R.vdc.v2.nclust==1 && fEvtHdr.fEvtType==1";
 
 //////////////////////////////////////////////////////////////////////////////
 // Settings
@@ -86,7 +98,7 @@ Float_t fthlowlimit = -0.03, fthuplimit = 0.03;
 Float_t fphlowlimit = -0.04, fphuplimit = 0.06;
 
 Float_t dplowlimit = -0.1, dpuplimit = 0.1;
-Float_t thlowlimit = -0.06, thuplimit = 0.05;
+Float_t thlowlimit = -0.06, thuplimit = 0.07;
 Float_t phlowlimit = -0.03, phuplimit = 0.02;
 Float_t vzlowlimit = -0.12, vzuplimit = 0.12;
 

@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
         
         index=(Col<<16)|(Row);
         std::cout <<"Col:: "<<Col<<"    Shift::"<<(Col<<16)<<"  Combined : "<<((Col<<16)|(Row))<<"   Row:"<<Row<< "  Combined Index:"<<index<<std::endl;*/
-        fprintf(fp2,"%d\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\n",index,d[0],d[1],d[2],d[3],0.950528,d[5]/1000.0,d[6]/1000.0,0.0);
+        fprintf(fp2,"%d\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\n",index,d[0],d[1],d[2],d[3],2.17615,d[5]/1000.0,d[6]/1000.0,0.0);
     }
     fclose(fp2);
 
