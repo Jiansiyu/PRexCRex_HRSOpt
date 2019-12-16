@@ -12,8 +12,9 @@ fi
 ARCH=$(arch)
 PROG=./tree2ascii
 #ROOTFILEDIR="/home/newdriver/Storage/Research/PRex_Experiment/prex_analyzer/optReplay/Result/OptFolder/" #little
-ROOTFILEDIR="/home/newdriver/Storage/Research/CRex_Experiment/optReplay/Result"
-prefix="prexRHRS"
+ROOTFILEDIR="/home/newdriver/Storage/Research/CRex_Experiment/optReplay/Result/ThetaPhiOpt"
+
+prefix="prexLHRS"
 # Path that contains the cut 
 DIR=$1
 nfoil=1
@@ -56,9 +57,9 @@ fi
 
 Id=0
 $PROG -pv -d SieveVars.def -O $Id\
-        -s $DIR/prexRHRS_${keyrun}.SieveCut.ncut \
-        -c $DIR/prexRHRS_${keyrun}.SieveCut.cut \
-        -g $DIR/prexRHRS_${keyrun}_-1.root.FullCut.root \
+        -s $DIR/prexLHRS_${keyrun}.SieveCut.ncut \
+        -c $DIR/prexLHRS_${keyrun}.SieveCut.cut \
+        -g $DIR/prexLHRS_${keyrun}_-1.root.FullCut.root \        # this include the cut informations 
         -o $DIR/Sieve.p4.f51 \
         ${rootfilelist}
 
