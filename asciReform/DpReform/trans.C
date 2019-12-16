@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
         std::stringstream linestream(line.c_str());
                               //kx     kth     ky     kphi     kurb_e  kbeamx   kbeamy
         linestream >> index >> d[0] >> d[1] >> d[2] >> d[3] >> d[4] >> d[5] >> d[6] >>d[7];
-        fprintf(fp2,"%d\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\n",index,d[0],d[1],d[2],d[3],0.950528,d[5]/1000.0,d[6]/1000.0, 0.0);
+        fprintf(fp2,"%d\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\n",index,d[0],d[1],d[2],d[3],2.175996,d[5]/1000.0,d[6]/1000.0, 0.0);
     }
     fclose(fp2);
 

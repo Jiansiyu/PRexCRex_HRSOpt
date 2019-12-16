@@ -28,11 +28,10 @@ Double_t OldMatrixArray[1000] = {-99}; //NPara
 Bool_t freepara[10000] = {kFALSE}; //NPara
 
 UInt_t MaxDataPerGroup = 100;
-//TString DataSource = "/Users/tong/Tritium_analysis/optics/Sieve/Sieve.full.f22828";
-//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/Opt/Result/Sieve/Sieve._20826_p4.f51";
-//"/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRex_Optics/PRexOptics/RHRS/asciReform/DpReform/temp.dat";
-//"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/Opt/Result/Sieve/Sieve._20826_p4.f51";
-TString DataSource = "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.test";
+
+//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.test";
+TString DataSource = "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/DpReform/temp.dat";
+
 
 typedef void (*PTRFCN)(Int_t &, Double_t *, Double_t &, Double_t*, Int_t);
 PTRFCN myfcn = NULL;
@@ -134,7 +133,8 @@ void DoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
                  
     opt->Print();
     opt->SaveDataBase(DestDataBase); 
-    
+    opt->SaveNewDataBase(Form("%s",DestDataBase.Data()));
+
     opt->SumSquareDTh();
     opt->SumSquareDPhi();
     
@@ -196,6 +196,7 @@ void DoMinY(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGroup
                                
     opt->Print();
     opt->SaveDataBase(DestDataBase);
+    opt->SaveNewDataBase(Form("%s",DestDataBase.Data()));
 
     opt->SumSquareDTgY();
 

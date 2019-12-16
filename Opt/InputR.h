@@ -20,7 +20,7 @@ const TString InputID = "prexRHRS";
 // HRS Position Inputs
 const Double_t D2R = TMath::Pi() / 180.;
 //set as central sieve hole angle
-const Double_t HRSAngle = -4.74 * D2R;
+const Double_t HRSAngle = -4.7572 * D2R;
 
 
 //------------------------------------------------------------------------
@@ -49,9 +49,6 @@ const Double_t BeamShiftX = -.00;
 const Double_t BeamX_average =  0.000;
 const Double_t BeamY_average =  0.000;
 
-//const Double_t BeamX_average =  0.000603669;
-//const Double_t BeamY_average =  0.000379974;
-
 /////////////////////////////////////////////////////////////////////////
 // Sieve Position Inputs
 const Double_t YbyCol = .492 * 25.4e-3;
@@ -66,35 +63,36 @@ const UInt_t NSieveRow = 7;
 // SieveOff* are in TCS
 const Double_t SieveOffY = 0.0;
 const Double_t SieveOffX = 0.0;
-const Double_t ZPos      = (99.5) * 1e-2;
+const Double_t ZPos      = (99.669) * 1e-2;
 //const Double_t SieveOffY = 0.8e-3;// -(3.314-0.8)*1.e-3;
 //const Double_t SieveOffX = -1.07*1.e-3;//-(1.07+1.42)*1.e-3;
 //const Double_t ZPos =1059.61e-3+3.314e-3/TMath::Tan(-HRSAngle);//1059.61 * 1e-3;
 
 /////////////////////////////////////////////////////////////////////////
 // Vertex Position Inputs
-
 static const UInt_t NFoils = 1;
 const Double_t targetoffset = 0;
 const Double_t targetfoils[] = {0.0};
 
  ///////////////////////////////////////////////////////////////////////// 
  // Excitation State Inputs 
-const UInt_t NKine = 3; //N Delta Scans */
+const UInt_t NKine = 4; //N Delta Scans */
 
 #define DIPOLE_MAG2MOM(Mag) (2.702*(Mag)-1.6e-03*(Mag)*(Mag)*(Mag)) 
 
 const Double_t Ebeam[] = { 
-  0.95063, // -1% run 22772
-  0.950461, //  0% run 22775
-  0.950528, //  1% run 20825
-  0 
+  2.17595, //21642   -2%
+  2.17591, //21641   -1%
+  2.17568, //21627    0%
+  2.17605  //21636   +1%
   }; 
+
+// this need to read from the database and convert with the equation
 const Double_t HRSCentralMom[] = { 
-  0.9436215485,   // -1%
-  0.9531710278,   //  0% run 22775
-  0.9626988536,   //  1% run 22776
-  0.0
+		  2.145027027, //21642   -2%
+		  2.166696832, //21641   -1%
+		  2.188560457, //21627    0%
+		  2.210331814  //21636   +1%
   }; 
 
 const Double_t GroundNuclearMass = 12*0.938272046;// -.511e-3*6; //GeV/c^2  //c Target

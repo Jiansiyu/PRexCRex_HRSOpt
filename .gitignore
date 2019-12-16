@@ -4,3 +4,4 @@
 *.d
 *.o
 Opt/Result/*
+/Debug/

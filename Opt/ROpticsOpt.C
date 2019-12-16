@@ -1076,7 +1076,7 @@ const TVector3 ROpticsOpt::GetSieveHoleTCS(UInt_t Col, UInt_t Row){
    // printf("Col: %d, Row: %d  ==>(%f,	%f)\n\n\n",Col,Row,PRex_x,PRex_y);
     //std::cout<<"===> Col"<<Col<<"  Row"<<Row<<"  Pos("<<PRex_x<<", "<<PRex_y<<")"<<std::endl;
 
-    return TVector3(PRex_x,PRex_y,ZPos);
+    return TVector3(PRex_x,PRex_y,ZPos);  // this should be the sieve position in TCS, which  is z dimension calculated from the survey
 }
 
 
@@ -1170,8 +1170,6 @@ void ROpticsOpt::PrepareSieve(void)
 //    // check the Sieve
 //    TH2F * HSieveRealThetaPhi = new TH2F("Realk Theta vs Phi","Realk Theta vs Phi", 500,-0.1,0.1, 500,-0.1, 0.1);
 //    TH2F * HSieveCalcThetaPhi = new TH2F("Calck Theta vs Phi","Calck Theta vs Phi", 500,-0.1,0.1, 500,-0.1, 0.1);
-//
-
     // Calculate kRealTh, kRealPhi
 
     // DEBUG_INFO("PrepareSieve","Entry Point")
@@ -1188,11 +1186,11 @@ void ROpticsOpt::PrepareSieve(void)
 //		const TVector3 SieveHoleTCS =GetSieveHoleCorrectionTCS(FoilID, Col, Row); ;//GetSieveHoleTCS_PRex("R",Col,Row);
 		const TVector3 SieveHoleTCS =GetSieveHoleTCS_PRex("R",Col,Row);
 
-        eventdata.Data[kSieveX] = SieveHoleTCS.X();
+        eventdata.Data[kSieveX] = SieveHoleTCS.X(); // position in target coordination system
         eventdata.Data[kSieveY] = SieveHoleTCS.Y();
         eventdata.Data[kSieveZ] = SieveHoleTCS.Z();
 
-        // Located the Beam Position from data file
+        // Located the Beam Position from data file,
 	    const TVector3 BeamSpotHCS(eventdata.Data[kBeamX], eventdata.Data[kBeamY], targetfoils[FoilID]);
 	    //        const TVector3 BeamSpotHCS(BeamX_average, BeamY_average, targetfoils[FoilID]);
         eventdata.Data[kBeamZ] = targetfoils[FoilID];

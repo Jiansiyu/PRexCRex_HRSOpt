@@ -24,7 +24,7 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////////////
 // Work Directory
 //////////////////////////////////////////////////////////////////////////////
-TString WorkDir = "../Result/CRex/OptThetaPhiDec11/";
+TString WorkDir = "../Result/CRex/DpDec12/";
 
 //////////////////////////////////////////////////////////////////////////////
 // Define Files
@@ -32,15 +32,28 @@ TString WorkDir = "../Result/CRex/OptThetaPhiDec11/";
 TString RootDir = "/home/newdriver/Storage/Research/CRex_Experiment/optReplay/Result/";
 
 
-// CRex Experiment
+// CRex Experiment  -2% dp scan
 TString RootFile_Dp_N2_r1 = "prexRHRS_21646_-1.root";
 TString RootFile_Dp_N2_r2 = "prexRHRS_21645_-1.root";
 TString RootFile_Dp_N2_r3 = "prexRHRS_21644_-1.root";
 TString RootFile_Dp_N2_r4 = "prexRHRS_21643_-1.root";
 TString RootFile_Dp_N2_r5 = "prexRHRS_21642_-1.root prexRHRS_21642_-1_1.root prexRHRS_21642_-1_2.root";
 
+// CRex Experiment -1% dp scan
+TString RootFile_Dp_N1_r1 = "prexRHRS_21641_-1.root prexRHRS_21641_-1_1.root";
+TString RootFile_Dp_N1_r2 = "prexRHRS_21640_-1.root";
+TString RootFile_Dp_N1_r3 = "prexRHRS_21639_-1.root";
+TString RootFile_Dp_N1_r4 = "prexRHRS_21638_-1.root";
+TString RootFile_Dp_N1_r5 = "prexRHRS_21637_-1.root";
 
 
+// CRex Experiment +1% scan
+TString RootFile_Dp_P1_r1 = "prexRHRS_21636_-1.root prexRHRS_21636_-1_1.root";
+
+
+// CRex Experiment 0% scan
+TString RootFile_Dp_PN0_r1 = "prexRHRS_21630_-1.root";
+TString RootFile_Dp_PN0_r3 = "prexRHRS_21627_-1.root prexRHRS_21627_-1_1.root";
 
 // Dp & Sieve
 TString RootFile_Dp_m4;
@@ -60,7 +73,7 @@ TString RootFile_Dp = RootFile_Dp_m1;
 
 //TString RootFile_Vertex = RootFile_Sieve;
 
-TString SourceRootFile = RootFile_Dp_N2_r1;
+TString SourceRootFile = RootFile_Dp_PN0_r3;
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -82,10 +95,12 @@ Bool_t UseDp_SieveCut=kTRUE;
 
 UInt_t PlotCut = 0;
 
-TCut GeneralSieveCut ="1";
-//TCut GeneralSieveCut = "abs(R.gold.p-9.50256e-01)<=2.33217e-04*2"; //20826
-//TCut GeneralSieveCut = "abs(R.gold.p-9.50326e-01)<=2.38522e-04*2"; //20825
-//TCut GeneralSieveCut = "abs(R.gold.p-9.50321e-01)<=2.03692e-04*2"; //20827
+//TCut GeneralSieveCut ="abs(R.gold.p-2.17762)<=4.25371e-04*2";  //21646
+//TCut GeneralSieveCut ="abs(R.gold.p-2.17711)<=4.17117e-04*2";  //21642
+//TCut GeneralSieveCut ="abs(R.gold.p-2.17879)<=3.74902e-04*2";  //21641
+//TCut GeneralSieveCut ="abs(R.gold.p-2.18061)<=3.07178e-04*2";  //21636
+TCut GeneralSieveCut ="abs(R.gold.p-2.17967)<=2.88673e-04*2";  //21627
+
 
 TCut GeneralCut =GeneralSieveCut+ "R.tr.n==1 && R.vdc.u1.nclust==1&& R.vdc.v1.nclust==1 && R.vdc.u2.nclust==1 && R.vdc.v2.nclust==1 && fEvtHdr.fEvtType==1";
 
