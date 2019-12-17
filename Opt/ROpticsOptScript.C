@@ -230,7 +230,7 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     // 	opt->fArbitaryDpKinShift[3] = 3.175602e-05;
     // 	opt->fArbitaryDpKinShift[4] = 9.519830e-05;
 
-    opt->fArbitaryDpKinShift[0] = -0.5*1.86177e-05;//;/5.86177e-05;
+    opt->fArbitaryDpKinShift[0] = 0.;//;/5.86177e-05;
     opt->fArbitaryDpKinShift[1] = 0.;
     opt->fArbitaryDpKinShift[2] = 0.;
     opt->fArbitaryDpKinShift[3] = 0.;
