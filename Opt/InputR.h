@@ -9,7 +9,7 @@
 
 using namespace std;
 
-const TString InputID = "prexRHRS";
+const TString InputID = "prexLHRS";
 
 /////////////////////////////////////////////////////////////////////////
 // Input Sections
@@ -20,7 +20,7 @@ const TString InputID = "prexRHRS";
 // HRS Position Inputs
 const Double_t D2R = TMath::Pi() / 180.;
 //set as central sieve hole angle
-const Double_t HRSAngle = -4.7572 * D2R;
+const Double_t HRSAngle = 4.7469 * D2R;
 
 
 //------------------------------------------------------------------------
@@ -63,7 +63,7 @@ const UInt_t NSieveRow = 7;
 // SieveOff* are in TCS
 const Double_t SieveOffY = 0.0;
 const Double_t SieveOffX = 0.0;
-const Double_t ZPos      = (99.669) * 1e-2;
+const Double_t ZPos      = (99.4478) * 1e-2;
 //const Double_t SieveOffY = 0.8e-3;// -(3.314-0.8)*1.e-3;
 //const Double_t SieveOffX = -1.07*1.e-3;//-(1.07+1.42)*1.e-3;
 //const Double_t ZPos =1059.61e-3+3.314e-3/TMath::Tan(-HRSAngle);//1059.61 * 1e-3;
@@ -89,10 +89,10 @@ const Double_t Ebeam[] = {
 
 // this need to read from the database and convert with the equation
 const Double_t HRSCentralMom[] = { 
-		  2.145027027, //21642   -2%
-		  2.166696832, //21641   -1%
-		  2.188560457, //21627    0%
-		  2.210331814  //21636   +1%
+		2.141245782, //21642   -2%
+		2.162610451, //21641   -1%
+		2.185099576, //21626    0%
+		2.19718748  //21632   +1%
   }; 
 
 const Double_t GroundNuclearMass = 12*0.938272046;// -.511e-3*6; //GeV/c^2  //c Target
@@ -127,10 +127,10 @@ const Double_t ExtTarCor_DeltaCorr = 5.18;//1e36;//
 /////////////////////////////////////////////////////////////////////////
 // Database header
 
-const char * Prefix = "R.vdc.";
+const char * Prefix = "L.vdc.";
 
 const char * DatabaseHeader = "\
-[ R.global ]   \n\
+[ L.global ]   \n\
 0.3327 1 0.0 270.2 0.0 -1.6e-03        VDC Angle, Plane Spacing, Gamma Coefficents  \n\
 matrix elements   \n\
 t 0 0 0  -1.001135e+00 -3.313373e-01 -4.290819e-02  4.470852e-03  0.000000e+00  0.000000e+00  0.000000e+00  0\n\

@@ -10,7 +10,7 @@ fi
 
 ARCH=$(arch)
 PROG=./tree2ascii
-ROOTFILEDIR="/home/newdriver/Storage/Research/CRex_Experiment/optReplay/Result/ThetaPhiOpt"
+ROOTFILEDIR="/home/newdriver/Storage/Research/CRex_Experiment/optReplay/Result/LHRS_AfterThetaPhi"
 
 prefix="prexLHRS"
 # Path that contains the cut 
@@ -35,7 +35,7 @@ $PROG -pv -d SieveVars.def -O $Id\
         -c $DIR/prexLHRS_${keyrun}.SieveCut.cut \
         -g $DIR/prexLHRS_${keyrun}_-1.root.FullCut.root \
         -o $DIR/Sieve._${keyrun}_p4.f51 \
-        $ROOTFILEDIR/prexLHRS_${keyrun}_-1.root 
+        $ROOTFILEDIR/prexLHRS_${keyrun}_-1.root  
         #\
         #$ROOTFILEDIR/prexLHRS_20826_-1_2.root 
 
