@@ -30,8 +30,8 @@ Bool_t freepara[10000] = {kFALSE}; //NPara
 UInt_t MaxDataPerGroup = 100;
 
 //TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.test";
-TString DataSource = "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/DpReform/temp.dat";
-
+//TString DataSource = "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/DpReform/temp.dat";
+TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/temp.dat";
 
 typedef void (*PTRFCN)(Int_t &, Double_t *, Double_t &, Double_t*, Int_t);
 PTRFCN myfcn = NULL;
@@ -230,7 +230,7 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     // 	opt->fArbitaryDpKinShift[3] = 3.175602e-05;
     // 	opt->fArbitaryDpKinShift[4] = 9.519830e-05;
 
-    opt->fArbitaryDpKinShift[0] = -0.5*1.86177e-05;//;/5.86177e-05;
+    opt->fArbitaryDpKinShift[0] = 0.;//-0.5*1.86177e-05;//;/5.86177e-05;
     opt->fArbitaryDpKinShift[1] = 0.;
     opt->fArbitaryDpKinShift[2] = 0.;
     opt->fArbitaryDpKinShift[3] = 0.;
