@@ -10,7 +10,7 @@ fi
 
 ARCH=$(arch)
 PROG=./tree2ascii
-ROOTFILEDIR="/home/newdriver/Storage/Research/CRex_Experiment/optReplay/Result/LHRS_AfterThetaPhi"
+ROOTFILEDIR="/home/newdriver/Storage/Research/CRex_Experiment/optReplay/Result"
 
 prefix="prexLHRS"
 # Path that contains the cut 
