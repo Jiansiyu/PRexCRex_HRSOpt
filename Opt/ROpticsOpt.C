@@ -2460,7 +2460,7 @@ void ROpticsOpt::PrepareDp(void)
     Double_t D1_sum=0, D2_sum=0; //D1, travel length in target before scattering, D2 travel length in target after scattering 
     //    Double_t ElossAfterTg_sum=0, ElossAfterTotal_sum=0;
     Double_t ElossTg_sum=0, ElossTg =0;
-    Double_t ElossAfterTg=0, ElossBeforeTg=0, ElossAfter_sum =0;
+    Double_t ElossAfterTg=0.000222, ElossBeforeTg=0, ElossAfter_sum =0;
 
     for (UInt_t idx = 0; idx < fNRawData; idx++) {
         DEBUG_MASSINFO("PrepareDp", "=========== Event %d ===========", idx);
@@ -2563,13 +2563,13 @@ void ROpticsOpt::PrepareDp(void)
 //    eventdata.Data[kTravelLengthAfter] = D2;
 //	eventdata.Data[kElossTgBefore] = ElossTargetBefore(ReactionVertex, MomDirectionHCS);
 //	eventdata.Data[kElossTgAfter] = ElossTargetAfter(ReactionVertex, MomDirectionHCS);
-//	eventdata.Data[kElossDp] = ElossAfterTg / eventdata.Data[kCentralp];
+	eventdata.Data[kElossDp] = ElossAfterTg / eventdata.Data[kCentralp];
 
     eventdata.Data[kTravelLengthBefore] = 0.0;
     eventdata.Data[kTravelLengthAfter] = 0.0;
 	eventdata.Data[kElossTgBefore] =0.0;
 	eventdata.Data[kElossTgAfter] =0.0;
-	eventdata.Data[kElossDp] = 0.0;
+//	eventdata.Data[kElossDp] = 0.0;
 
 
         // calculate difference between dp_kin and dp
