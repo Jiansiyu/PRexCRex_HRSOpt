@@ -91,8 +91,8 @@ const Double_t Ebeam[] = {
 const Double_t HRSCentralMom[] = { 
 		2.141245782, //21642   -2%
 		2.162610451, //21641   -1%
-		2.185099576, //21626    0%
-		2.19718748  //21632   +1%
+		2.19718748,  //21632   +1%
+		2.185099576 //21626    0%
   }; 
 
 const Double_t GroundNuclearMass = 12*0.938272046;// -.511e-3*6; //GeV/c^2  //c Target
