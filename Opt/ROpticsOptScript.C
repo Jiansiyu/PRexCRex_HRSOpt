@@ -151,7 +151,7 @@ void DoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
 #endif    
 }
 
-void DoMinY(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGroup = 200)
+void DoMinY(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGroup = 100)
 {
     // minimize with root
 
