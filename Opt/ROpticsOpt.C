@@ -2488,7 +2488,39 @@ void ROpticsOpt::PrepareDp(void)
 	    TVector3 BeamSpotHCS(eventdata.Data[kBeamX], eventdata.Data[kBeamY], eventdata.Data[kBeamVZ]);
 	    //TVector3 BeamSpotHCS(BeamX_average, BeamY_average, eventdata.Data[kBeamVZ]);
         TVector3 BeamSpotTCS = fTCSInHCS.Inverse()*(BeamSpotHCS - fPointingOffset);
-	    TVector3 MomDirectionTCS(theta,phi,1); // target variables
+
+
+        ///-------------------------------------------------------------------
+        // for test perpose
+        // for test
+        const UInt_t FoilID=0;  //TODO attention
+		const UInt_t Col = HRSOpt::GetColID((UInt_t)eventdata.Data[kCutID]);
+		const UInt_t Row = HRSOpt::GetRowID((UInt_t)eventdata.Data[kCutID]);
+
+//		const TVector3 SieveHoleTCS =GetSieveHoleCorrectionTCS(FoilID, Col, Row); ;//GetSieveHoleTCS_PRex("R",Col,Row);
+		const TVector3 SieveHoleTCS =GetSieveHoleTCS_PRex("R",Col,Row);
+
+        eventdata.Data[kSieveX] = SieveHoleTCS.X(); // position in target coordination system
+        eventdata.Data[kSieveY] = SieveHoleTCS.Y();
+        eventdata.Data[kSieveZ] = SieveHoleTCS.Z();
+
+        // Located the Beam Position from data file,
+	    const TVector3 BeamSpotHCS_temp(eventdata.Data[kBeamX], eventdata.Data[kBeamY], targetfoils[FoilID]);
+        eventdata.Data[kBeamZ] = targetfoils[FoilID];
+        const TVector3 BeamSpotTCS_temp = fTCSInHCS.Inverse()*(BeamSpotHCS_temp - fPointingOffset);
+        const TVector3 MomDirectionTCS_temp = SieveHoleTCS - BeamSpotTCS_temp;   //
+        eventdata.Data[kRealTh] = MomDirectionTCS_temp.X() / MomDirectionTCS_temp.Z();
+        eventdata.Data[kRealPhi] = MomDirectionTCS_temp.Y() / MomDirectionTCS_temp.Z();
+
+        theta=eventdata.Data[kRealTh];
+        phi=eventdata.Data[kRealPhi];
+
+        ///-------------------------------------------------------------------
+
+
+
+
+	    TVector3 MomDirectionTCS(theta,phi,1); // target variables, how about change to the calculated angle, instead of th using the angle from the reconstruction
 
         eventdata.Data[kRealTh] = theta;
         eventdata.Data[kRealPhi] = phi;
@@ -2542,13 +2574,13 @@ void ROpticsOpt::PrepareDp(void)
 //    eventdata.Data[kTravelLengthAfter] = D2;
 //	eventdata.Data[kElossTgBefore] = ElossTargetBefore(ReactionVertex, MomDirectionHCS);
 //	eventdata.Data[kElossTgAfter] = ElossTargetAfter(ReactionVertex, MomDirectionHCS);
-	eventdata.Data[kElossDp] = ElossAfterTg / eventdata.Data[kCentralp];
+//	eventdata.Data[kElossDp] = ElossAfterTg / eventdata.Data[kCentralp];
 
     eventdata.Data[kTravelLengthBefore] = 0.0;
     eventdata.Data[kTravelLengthAfter] = 0.0;
 	eventdata.Data[kElossTgBefore] =0.0;
 	eventdata.Data[kElossTgAfter] =0.0;
-//	eventdata.Data[kElossDp] = 0.0;
+	eventdata.Data[kElossDp] = 0.0;
 
 
         // calculate difference between dp_kin and dp
@@ -2693,39 +2725,43 @@ TCanvas * ROpticsOpt::CheckDp()
         AverCalcDpKin[KineID] /= NEvntDpKin[KineID];
         DEBUG_MASSINFO("CheckDp", "AverCalcDpKin[%d] = %f", KineID, AverCalcDpKin[KineID]);
 
-        // Histograms
-	hDpKinCalib[KineID]->SetXTitle("Dp_Kin");
-	hDpKinCalib[KineID]->GetXaxis()->SetLabelSize(0.028);
-	hDpKinCalib[KineID]->GetXaxis()->SetRangeUser(AverCalcDpKin[KineID]-0.01
-,  AverCalcDpKin[KineID] +0.01 );
-	hDpKinCalib[KineID]->Draw();
-	
-        // expectation lines
-        Double_t MaxPlot = 20000;
-	c1->cd(KineID+1)->Update();
-	MaxPlot = c1->cd(KineID+1)->GetUymax();
+		// Histograms
+		hDpKinCalib[KineID]->SetXTitle("Dp_Kin");
+		hDpKinCalib[KineID]->GetXaxis()->SetLabelSize(0.028);
+		hDpKinCalib[KineID]->GetXaxis()->SetRangeUser(
+				AverCalcDpKin[KineID] - 0.01, AverCalcDpKin[KineID] + 0.01);
+		hDpKinCalib[KineID]->Draw();
 
-	TLine *l = new TLine(AveRealDpKinMatrix[KineID], 0,AveRealDpKinMatrix[KineID] , MaxPlot);
-	//	TLine *l = new TLine(RealDpKin[KineID], 0, RealDpKin[KineID], MaxPlot);
-	cout<<"KineID:"<<KineID<<endl;
-	cout<<"AveRealDpKinMatrix[KineID]"<<AveRealDpKinMatrix[KineID]<<endl;
-        l->SetLineColor(6);
-        l->SetLineWidth(2);
-        l->Draw("");
+		// expectation lines
+		Double_t MaxPlot = 20000;
+		c1->cd(KineID + 1)->Update();
+		MaxPlot = c1->cd(KineID + 1)->GetUymax();
 
-        // Fits
-        const Double_t DefResolution = 1e-4;
-        const Double_t FitRangeMultiply = 20;
-			
-        TString FitFunc = Form("DpPeak%d", KineID);
-        TF1 *f = new TF1(FitFunc, "gaus", AverCalcDpKin[KineID] - DefResolution*FitRangeMultiply, AverCalcDpKin[KineID] + DefResolution * FitRangeMultiply);
-        f->SetParameter(1, AverCalcDpKin[KineID]);
-	//        f->SetParameter(2, DefResolution);
-	//        hDpKinAll[KineID] -> Fit(FitFunc, "RN0");
-        hDpKinCalib[KineID] -> Fit(FitFunc, "R");
-        f->SetLineColor(2);
-	f->Draw("SAME");
-	l->Draw();
+		TLine *l = new TLine(AveRealDpKinMatrix[KineID], 0,
+				AveRealDpKinMatrix[KineID], MaxPlot);
+		//	TLine *l = new TLine(RealDpKin[KineID], 0, RealDpKin[KineID], MaxPlot);
+		cout << "KineID:" << KineID << endl;
+		cout << "AveRealDpKinMatrix[KineID]" << AveRealDpKinMatrix[KineID]
+				<< endl;
+		l->SetLineColor(6);
+		l->SetLineWidth(2);
+		l->Draw("");
+
+		// Fits
+		const Double_t DefResolution = 1e-4;
+		const Double_t FitRangeMultiply = 20;
+
+		TString FitFunc = Form("DpPeak%d", KineID);
+		TF1 *f = new TF1(FitFunc, "gaus",
+				AverCalcDpKin[KineID] - DefResolution * FitRangeMultiply,
+				AverCalcDpKin[KineID] + DefResolution * FitRangeMultiply);
+		f->SetParameter(1, AverCalcDpKin[KineID]);
+		//        f->SetParameter(2, DefResolution);
+		//        hDpKinAll[KineID] -> Fit(FitFunc, "RN0");
+		hDpKinCalib[KineID]->Fit(FitFunc, "R");
+		f->SetLineColor(2);
+		f->Draw("SAME");
+		//	l->Draw();
 
         TLatex *t1 = new TLatex(f->GetParameter(1) + 2*f->GetParameter(2), f->GetParameter(0), Form("\\Delta = %2.1f \\times 10^{-4}", 10000 * (f->GetParameter(1) - AveRealDpKinMatrix[KineID]) ));
         TLatex *t2 = new TLatex(f->GetParameter(1) + 2*f->GetParameter(2), 0.9*f->GetParameter(0), Form("\\sigma =  %2.1f  \\times 10^{-4}", 10000 * f->GetParameter(2)));
@@ -2805,6 +2841,281 @@ TCanvas * ROpticsOpt::CheckDp()
         
     return c1;
 }
+
+
+TCanvas * ROpticsOpt::CheckDp_test2()
+{
+    // Visualize 1D hitogram of dp_kin
+
+    DEBUG_INFO("CheckDp_test2", "Entry Point");
+
+    // calculate Data[kCalcDpKin] for all events
+    SumSquareDp(kTRUE);
+
+    const Double_t DpRange = .04;
+    const UInt_t NDpRange = 2000;
+
+    TH1D * hDpKinCalib[NKine];
+    TH1D * hDpKinReal[NKine];
+
+    TH1D * hDpKinAll[NKine];
+    TH1D * hRealReactZ[NKine];
+    TH1D * hElossTgBefore[NKine];
+    TH2D * hElossTg_ReactZ_Before[NKine];
+    TH2D * hElossTg_ReactZ_After[NKine];
+    TH2D * hTravelLength_ReactZ_Before[NKine];
+    TH2D * hTravelLength_ReactZ_After[NKine];
+    Double_t RealDpKin[NKine] = {0};
+    Double_t AverCalcDpKin[NKine] = {0};
+    UInt_t NEvntDpKin[NKine] = {0};
+    Double_t RealDpKinAllExcit[NExcitationStates][NKine] = {
+        {0}
+    };
+    Double_t NewArbitaryDpKinShift[NKine];
+    Double_t AveRealDpKinMatrix[NKine]={0};
+
+    for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+      hDpKinCalib[KineID] = new TH1D(Form("hDpKinCalib%d", KineID), Form("Dp_Kin for Delta Scan Kine. %d%%", (KineID-2)), NDpRange, -2*DpRange, 2*DpRange);
+      hDpKinReal[KineID] = new TH1D(Form("hDpKinReal%d", KineID), Form("Dp_Kin Real for Delta Scan Kine. %d%%", (KineID-2)), NDpRange, -2*DpRange, 2*DpRange);
+
+
+      hDpKinAll[KineID] = new TH1D(Form("hDpKinAll%d", KineID), Form("Dp_Kin for Delta Scan Kine. #%d", KineID), NDpRange, -DpRange, DpRange);
+
+      hRealReactZ[KineID] = new TH1D(Form("hRealReactZ%d", KineID), Form("ReacZ for Delta Scan Kine. %d%%", 2*(KineID-2)), 400, -0.15, 0.15);
+      hElossTgBefore[KineID] = new TH1D(Form("hElossTg%d", KineID), Form("ElossTg for Delta Scan Kine. %d%%", 2*(KineID-2)), 400, 0, 0.0055);
+      hElossTg_ReactZ_Before[KineID] = new TH2D(Form("hElossTg_ReacZ%d", KineID), Form("ElossTg for Delta Scan Kine. %d%%", 2*(KineID-2)), 400,-0.15,0.15,400, 0, 7);
+      hElossTg_ReactZ_After[KineID] = new TH2D(Form("hElossTg_ReacZ%d", KineID), Form("ElossTg for Delta Scan Kine. %d%%", 2*(KineID-2)), 400,-0.15,0.15,400, 0, 3.5);
+      hTravelLength_ReactZ_Before[KineID] = new TH2D(Form("hTravelLength_ReacZ%d", KineID), Form("TravelLength vs ReacZ Before for Delta Scan Kine. %d%%", 2*(KineID-2)), 400,-0.15,0.15,800, 0, 0.15);
+      hTravelLength_ReactZ_After[KineID] = new TH2D(Form("hElossTg_ReacZ%d", KineID), Form("TravelLength vs ReacZ After for Delta Scan Kine. %d%%", 2*(KineID-2)), 400,-0.15,0.15,800, 0, 0.07);
+
+        assert(hDpKinCalib[KineID]); //pointer check
+        assert(hDpKinAll[KineID]); //pointer check
+    }
+
+    for (UInt_t idx = 0; idx < fNRawData; idx++) {
+        const EventData &eventdata = fRawData[idx];
+
+        UInt_t res = (UInt_t) eventdata.Data[kCutID];
+        // const UInt_t KineID = res / (NSieveRow * NSieveCol * NFoils); //starting 0!
+        res = res % (NSieveRow * NSieveCol * NFoils);
+        const UInt_t FoilID = res / (NSieveRow * NSieveCol); //starting 0!
+
+        res = res % (NSieveRow * NSieveCol);
+        const UInt_t Col = res / (NSieveRow); //starting 0!
+        const UInt_t Row = res % (NSieveRow); //starting 0!
+
+//        if((Col!=6)||(Row!=3)) continue;
+
+        const UInt_t ExtraDataFlag = (UInt_t) (eventdata.Data[kExtraDataFlag]);
+        assert(ExtraDataFlag == 0 || ExtraDataFlag == 1); //flag definition consistency check
+        const UInt_t KineID = (UInt_t) (eventdata.Data[kKineID]);
+
+        assert(KineID < NKine);
+        if (!ExtraDataFlag) {
+	  AveRealDpKinMatrix[KineID] += eventdata.Data[kRealDpKinMatrix];
+	  hDpKinCalib[KineID]->Fill((eventdata.Data[kCalcDpKinMatrix]));
+	  hDpKinReal[KineID]->Fill(eventdata.Data[kRealDpKinMatrix]);
+
+	  hRealReactZ[KineID] ->Fill( eventdata.Data[kRealReactZ]);
+	  hElossTgBefore[KineID]->Fill( eventdata.Data[kElossTgBefore]);
+	  hElossTg_ReactZ_Before[KineID]->Fill( eventdata.Data[kRealReactZ], eventdata.Data[kElossTgBefore]*1.e3);
+	  hElossTg_ReactZ_After[KineID]->Fill( eventdata.Data[kRealReactZ], eventdata.Data[kElossTgAfter]*1.e3);
+	  hTravelLength_ReactZ_Before[KineID]->Fill( eventdata.Data[kRealReactZ], eventdata.Data[kTravelLengthBefore]);
+	  hTravelLength_ReactZ_After[KineID]->Fill( eventdata.Data[kRealReactZ], eventdata.Data[kTravelLengthAfter]);
+
+	  AverCalcDpKin[KineID] += eventdata.Data[kCalcDpKinMatrix];
+	  NEvntDpKin[KineID]++;
+        }
+	//        hDpKinAll[KineID]->Fill(eventdata.Data[kCalcDpKin] + eventdata.Data[kElossDp]);
+	//        hDpKinAll[KineID]->Fill(eventdata.Data[kCalcDpKin]);
+
+	//        RealDpKin[KineID] = eventdata.Data[kRealDpKin] + eventdata.Data[kElossDp];
+        RealDpKin[KineID] = eventdata.Data[kRealDpKinMatrix];
+        for (UInt_t ExcitID = 0; ExcitID < NExcitationStates; ExcitID++) {
+            assert(kRealDpKinExcitations + ExcitID < kRealTh); //index check
+            RealDpKinAllExcit[ExcitID][KineID] = eventdata.Data[kRealDpKinExcitations + ExcitID];
+       }
+    }
+    for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+      AveRealDpKinMatrix[KineID] =  AveRealDpKinMatrix[KineID]/ NEvntDpKin[KineID];
+    }
+
+
+    TCanvas * c1 = new TCanvas("CheckDp", "Check Dp Kin Reconstruction", 1800, 900);
+    c1->Divide(3, 2);
+
+    for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+        c1->cd(KineID+1);
+
+        AverCalcDpKin[KineID] /= NEvntDpKin[KineID];
+        DEBUG_MASSINFO("CheckDp", "AverCalcDpKin[%d] = %f", KineID, AverCalcDpKin[KineID]);
+
+		// Histograms
+		hDpKinCalib[KineID]->SetXTitle("Dp_Kin");
+		hDpKinCalib[KineID]->GetXaxis()->SetLabelSize(0.028);
+		hDpKinCalib[KineID]->GetXaxis()->SetRangeUser(
+				AverCalcDpKin[KineID] - 0.01, AverCalcDpKin[KineID] + 0.005);
+		hDpKinCalib[KineID]->Draw();
+
+		hDpKinReal[KineID]->SetLineColor(42);
+		hDpKinReal[KineID]->Draw("same");
+
+		// expectation lines
+		Double_t MaxPlot = 20000;
+		c1->cd(KineID + 1)->Update();
+		MaxPlot = c1->cd(KineID + 1)->GetUymax();
+
+		TLine *l = new TLine(AveRealDpKinMatrix[KineID]-fArbitaryDpKinShift[KineID], 0,
+				AveRealDpKinMatrix[KineID]-fArbitaryDpKinShift[KineID], MaxPlot);
+		//	TLine *l = new TLine(RealDpKin[KineID], 0, RealDpKin[KineID], MaxPlot);
+		cout << "KineID:" << KineID << endl;
+		cout << "AveRealDpKinMatrix[KineID]" << AveRealDpKinMatrix[KineID]
+				<< endl;
+		l->SetLineColor(6);
+		l->SetLineWidth(2);
+		l->Draw("");
+
+		// Fits
+		const Double_t DefResolution = 1e-4;
+		const Double_t FitRangeMultiply = 20;
+
+		TString FitFunc = Form("DpPeak%d", KineID);
+		TF1 *f = new TF1(FitFunc, "gaus",
+				AverCalcDpKin[KineID] - DefResolution * FitRangeMultiply,
+				AverCalcDpKin[KineID] + DefResolution * FitRangeMultiply);
+		f->SetParameter(1, AverCalcDpKin[KineID]);
+		//        f->SetParameter(2, DefResolution);
+		//        hDpKinAll[KineID] -> Fit(FitFunc, "RN0");
+		hDpKinCalib[KineID]->Fit(FitFunc, "R");
+		f->SetLineColor(2);
+//		f->Draw("SAME");
+		//	l->Draw();
+
+        TLatex *t1 = new TLatex(f->GetParameter(1) + 2*f->GetParameter(2), f->GetParameter(0), Form("\\Delta = %2.1f \\times 10^{-4}  \\delta P=%2.1f  ", 10000 * (f->GetParameter(1) - AveRealDpKinMatrix[KineID]+ fArbitaryDpKinShift[KineID]),10000 * (f->GetParameter(1) - AveRealDpKinMatrix[KineID])*HRSCentralMom[KineID] ));
+        TLatex *t2 = new TLatex(f->GetParameter(1) + 2*f->GetParameter(2), 0.9*f->GetParameter(0), Form("\\sigma =  %2.1f  \\times 10^{-4}", 10000 * f->GetParameter(2)));
+        t1->SetTextSize(0.055);
+        t1->SetTextAlign(12);
+        t1->SetTextColor(2);
+        t1->Draw("same");
+        t2->SetTextSize(0.055);
+        t2->SetTextAlign(12);
+        t2->SetTextColor(2);
+        t2->Draw("same");
+
+        NewArbitaryDpKinShift[KineID] = f->GetParameter(1) - AveRealDpKinMatrix[KineID] + fArbitaryDpKinShift[KineID];
+
+    }
+
+    c1->cd(6);
+    TPaveText *t0 = new TPaveText(0.03,0.05,0.97,0.95,"NDC");
+    t0->SetShadowColor(0);
+    t0->AddText("DpKin_{Real} = #frac{P_{#theta_{HRS}} - P_{Central}}{P_{Central}}");
+    t0->AddText("DpKin = dp - #frac{(P_{#theta} - P_{Loss}) - P_{#theta_{HRS}} }{ P_{Central} }");
+    t0->AddText("DpKin - DpKin_{Real} = dp - #frac{(P_{#theta} - P_{Loss}) - P_{Central}}{P_{Central}}");
+    t0->Draw();
+
+    Info("CheckDp", "New set of arbitary dp shifts:");
+    for (UInt_t KineID = 0; KineID < NKine; KineID++)
+        printf("opt->fArbitaryDpKinShift[%d] = %e;\n", KineID, NewArbitaryDpKinShift[KineID]);
+
+    return c1;
+}
+
+
+// used for check the Dp Optimize result --siyu
+TCanvas * ROpticsOpt::CheckDp_test(void) {
+
+	DEBUG_INFO("CheckDp_test", "Entry Point");
+	// calculate Data[kCalcDpKin] for all events
+	SumSquareDp(kTRUE);
+
+	const Double_t DpRange = .04;
+	const UInt_t NDpRange = 1500;
+
+    TH1D * hDpKinCalib[NKine];
+    TH1D * hDpKinOffset[NKine];
+    TH1D * hMomentumKin[NKine];
+
+    TH1D *hScatteredAngle[NKine];
+
+    TH1D * hDpKinAll[NKine];
+    TH1D * hRealReactZ[NKine];
+    TH1D * hElossTgBefore[NKine];
+    TH2D * hElossTg_ReactZ_Before[NKine];
+    TH2D * hElossTg_ReactZ_After[NKine];
+    TH2D * hTravelLength_ReactZ_Before[NKine];
+    TH2D * hTravelLength_ReactZ_After[NKine];
+    Double_t RealDpKin[NKine] = {0};
+    Double_t AverCalcDpKin[NKine] = {0};
+    UInt_t NEvntDpKin[NKine] = {0};
+    Double_t RealDpKinAllExcit[NExcitationStates][NKine] = {
+        {0}
+    };
+    Double_t NewArbitaryDpKinShift[NKine];
+    Double_t AveRealDpKinMatrix[NKine]={0};
+
+    // loop on each KineID, for different Dp scan
+    for(UInt_t KineID = 0; KineID < NKine; KineID++){
+    	hDpKinCalib[KineID] = new TH1D(Form("hDpKinCalib%d", KineID), Form("Dp_Kin for Delta Scan Kine. %d%%", (KineID-1)), NDpRange, -2*DpRange, 2*DpRange);
+    	hDpKinOffset[KineID] = new TH1D(Form("hDpKinOffset%d", KineID), Form("Dp_Kin offset for Delta Scan Kine. %d%%", (KineID-1)), NDpRange, -2*DpRange, 2*DpRange);
+    	hMomentumKin[KineID] = new TH1D(Form("hMomentumKin%d", KineID), Form("MOmentum_Kin for Delta Scan Kine.", (KineID-1)),200,2.1725,2.175);
+    	hScatteredAngle[KineID] = new TH1D(Form("Scatteredangle%d", KineID), Form("Scattered angle for Delta Scan Kine.", (KineID-1)),300,0.06,0.12);
+    	assert(hDpKinCalib[KineID]); //pointer check
+    }
+
+    // start fill the histgram with the data
+    for(UInt_t idx = 0; idx < fNRawData; idx++){
+        const EventData &eventdata = fRawData[idx];
+        const UInt_t ExtraDataFlag = (UInt_t) (eventdata.Data[kExtraDataFlag]);
+        assert(ExtraDataFlag == 0 || ExtraDataFlag == 1); //flag definition consistency check
+        const UInt_t KineID = (UInt_t) (eventdata.Data[kKineID]);
+
+        assert(KineID < NKine);  // whis is the central momentum ID
+
+        hDpKinCalib[KineID]->Fill((eventdata.Data[kCalcDpKinMatrix]));
+        hDpKinOffset[KineID]->Fill((eventdata.Data[kDpKinOffsets]));
+        hMomentumKin[KineID]->Fill((eventdata.Data[kDpKinOffsets] + eventdata.Data[kRealDpKin])*eventdata.Data[kCentralp]+eventdata.Data[kCentralp]);
+        hMomentumKin[KineID]->SetLineColor(41+KineID*5);
+
+        hScatteredAngle[KineID]->Fill(eventdata.Data[kScatterAngle]);
+        hScatteredAngle[KineID]->SetLineColor(41+KineID*5);
+    }
+
+
+    // start plot
+    TCanvas * c1 = new TCanvas("CheckDp", "Check Dp Kin Reconstruction", 1800, 900);
+    c1->Divide(3, 2);
+
+    for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+    	c1->cd(KineID+1);
+        // Histograms
+	hDpKinCalib[KineID]->SetXTitle("Dp_Kin");
+	hDpKinCalib[KineID]->GetXaxis()->SetLabelSize(0.028);
+//	hDpKinCalib[KineID]->GetXaxis()->SetRangeUser(AverCalcDpKin[KineID]-0.01,  AverCalcDpKin[KineID] +0.01 );
+	hDpKinCalib[KineID]->Draw();
+	hDpKinOffset[KineID]->SetLineColor(42);
+	hDpKinOffset[KineID]->Draw("same");
+    }
+
+    // start plot
+	TCanvas *c2 = new TCanvas("CheckP", "Check momentum Kin Reconstruction", 1800,900);
+	c2->Divide(3, 2);
+	c2->cd(1);
+	hMomentumKin[0]->Draw();
+	for (UInt_t KineID = 1; KineID < NKine; KineID++) {
+		hMomentumKin[KineID]->Draw("same");
+	}
+
+	c2->cd(2);
+	hScatteredAngle[0]->Draw();
+	for (UInt_t KineID = 1; KineID < NKine; KineID++) {
+		hScatteredAngle[KineID]->Draw("same");
+	}
+	// plot the sacttered angle vs the momentum
+
+
+}
+
 
 TCanvas * ROpticsOpt::CheckDpGlobal()
 {
@@ -2947,9 +3258,10 @@ Double_t ROpticsOpt::SumSquareDp(Bool_t IncludeExtraData)
         assert(KineID < NKine); //check array index size
         const Double_t ArbitaryDpKinShift = fArbitaryDpKinShift[KineID];
 
+        if(eventdata.Data[kKineID]!=10){
         d_dp += dp_kin - eventdata.Data[kRealDpKinMatrix] + ArbitaryDpKinShift;
-	rms_dp += (dp_kin - eventdata.Data[kRealDpKinMatrix] + ArbitaryDpKinShift)*(dp_kin - eventdata.Data[kRealDpKinMatrix] + ArbitaryDpKinShift);
-
+	    rms_dp += (dp_kin - eventdata.Data[kRealDpKinMatrix] + ArbitaryDpKinShift)*(dp_kin - eventdata.Data[kRealDpKinMatrix] + ArbitaryDpKinShift);
+        }
         DEBUG_MASSINFO("SumSquareDp", "d_dp = %f = \t%f - \t%f", dp_kin - eventdata.Data[kRealDpKinMatrix], dp_kin, eventdata.Data[kRealDpKinMatrix]);
 
         // save the results

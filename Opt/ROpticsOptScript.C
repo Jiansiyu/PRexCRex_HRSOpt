@@ -31,7 +31,7 @@ UInt_t MaxDataPerGroup = 100;
 
 //TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.test";
 //TString DataSource = "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/DpReform/temp.dat";
-TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve._2565_2550_2565_p4.f51_reform";
+TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.test_reform";
 
 typedef void (*PTRFCN)(Int_t &, Double_t *, Double_t &, Double_t*, Int_t);
 PTRFCN myfcn = NULL;
@@ -230,11 +230,15 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     // 	opt->fArbitaryDpKinShift[3] = 3.175602e-05;
     // 	opt->fArbitaryDpKinShift[4] = 9.519830e-05;
 
-    opt->fArbitaryDpKinShift[0] = 0.;//;/5.86177e-05;
-    opt->fArbitaryDpKinShift[1] = 0.;
-    opt->fArbitaryDpKinShift[2] = 0.;
-    opt->fArbitaryDpKinShift[3] = 0.;
-    opt->fArbitaryDpKinShift[4] = 0.;
+//    opt->fArbitaryDpKinShift[0] = 0.;
+//    opt->fArbitaryDpKinShift[1] = 0.;
+//    opt->fArbitaryDpKinShift[2] = 0.;
+//    opt->fArbitaryDpKinShift[3] = 0.;
+
+    opt->fArbitaryDpKinShift[0] = 2.649891e-05;
+    opt->fArbitaryDpKinShift[1] = -1.457213e-04;
+    opt->fArbitaryDpKinShift[2] = 2.037271e-04;
+    opt->fArbitaryDpKinShift[3] = -1.493965e-04;
 
     opt->Print();
 
@@ -274,8 +278,10 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     opt->SumSquareDp();
 //    opt->CheckDp();
 //    opt->CheckDpGlobal();
-    TCanvas * c1 = opt->CheckDp();
-    c1->Print(DestDataBase + ".Dp.Opt.png", "png");
+//    TCanvas * c1 = opt->CheckDp();
+//    TCanvas * c1 = opt->CheckDp_test();
+    TCanvas * c1 = opt->CheckDp_test2();
+//    c1->Print(DestDataBase + ".Dp.Opt.png", "png");
 #if dp_optimze
     delete fitter;
 #endif

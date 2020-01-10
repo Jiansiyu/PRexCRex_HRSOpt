@@ -83,16 +83,16 @@ const UInt_t NKine = 4; //N Delta Scans */
 const Double_t Ebeam[] = { 
   2.17595, //21642   -2%
   2.17591, //21641   -1%
-  2.17568, //21627    0%
-  2.17605  //21636   +1%
+  2.17605,  //21636   +1%
+  2.17568 //21627    0%
   }; 
 
 // this need to read from the database and convert with the equation
 const Double_t HRSCentralMom[] = { 
 		2.141245782, //21642   -2%
 		2.162610451, //21641   -1%
-		2.19718748,  //21632   +1%
-		2.185099576 //21626    0%
+		2.185099576, //21626    0%
+		2.19718748  //21632   +1%
   }; 
 
 const Double_t GroundNuclearMass = 12*0.938272046;// -.511e-3*6; //GeV/c^2  //c Target
