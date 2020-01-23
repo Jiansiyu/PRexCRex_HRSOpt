@@ -27,19 +27,19 @@ const Double_t HRSAngle = 4.7469 * D2R;
 // not used
 //------------------------------------------------------------------------
 //LH2 target information
-const Double_t LH2_TargetLength = 15*1.e-2; //unit m
-const Double_t LH2_Target_Tip_Radius = 1.5*2.54*1.e-2; //target width and tip radius
-const Double_t LH2_Thickness_Entance = 0.175*1.e-3;//Al 7075, aluminum thickness for the entrance window
-const Double_t LH2_Thickness_Side = 0.18*1.e-3;  //Al 7075, aluminum thickness for the side wall
-const Double_t LH2_Thickness_Tip = 0.11*1.e-3;  //Al 7075, aluminum thickness for tip
+const Double_t LH2_TargetLength = 0.*1.e-2; //unit m
+const Double_t LH2_Target_Tip_Radius = 0.*2.54*1.e-2; //target width and tip radius
+const Double_t LH2_Thickness_Entance = 0.*1.e-3;//Al 7075, aluminum thickness for the entrance window
+const Double_t LH2_Thickness_Side = 0.*1.e-3;  //Al 7075, aluminum thickness for the side wall
+const Double_t LH2_Thickness_Tip = 0.*1.e-3;  //Al 7075, aluminum thickness for tip
 
 // MissPoint* are in HCS
 const Double_t MissPointZ =0.0;//
 const Double_t MissPointY = 0.0;//
 
 
-const Double_t SieveRadius = 0.157*25.4/2.0*1e-3;
-const Double_t SieveRadius_c = 0.236*25.4/2.0*1e-3;
+const Double_t SieveRadius = 0.157*25.4/2.0*1e-3*0.0;
+const Double_t SieveRadius_c = 0.236*25.4/2.0*1e-3*0.0;
 
 // average beam positions
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -72,7 +72,7 @@ const Double_t ZPos      = (99.4478) * 1e-2;
 // Vertex Position Inputs
 static const UInt_t NFoils = 1;
 const Double_t targetoffset = 0;
-const Double_t targetfoils[] = {0.0};
+const Double_t targetfoils[] = {0.0,0.0,0.0,0.0};
 
  ///////////////////////////////////////////////////////////////////////// 
  // Excitation State Inputs 
@@ -81,21 +81,21 @@ const UInt_t NKine = 4; //N Delta Scans */
 #define DIPOLE_MAG2MOM(Mag) (2.702*(Mag)-1.6e-03*(Mag)*(Mag)*(Mag)) 
 
 const Double_t Ebeam[] = { 
-  2.17595, //21642   -2%
+  2.17596, //21642   -2%
   2.17591, //21641   -1%
-  2.17605,  //21636   +1%
-  2.17568 //21627    0%
-  }; 
+  2.17575, //21627    0%
+  2.17605  //21636   +1%
+};
 
 // this need to read from the database and convert with the equation
 const Double_t HRSCentralMom[] = { 
-		2.141245782, //21642   -2%
-		2.162610451, //21641   -1%
-		2.185099576, //21626    0%
-		2.19718748  //21632   +1%
+		2.141358228, //21642   -2%
+		2.162722897, //21641   -1%
+		2.185155798, //21626    0%
+		2.197131257  //21632   +1%
   }; 
 
-const Double_t GroundNuclearMass = 12*0.938272046;// -.511e-3*6; //GeV/c^2  //c Target
+const Double_t GroundNuclearMass = 12*.931494028-.511e-3*6;// -.511e-3*6; //GeV/c^2  //c Target
 const Double_t ExcitationEnergy[] = {0.,0.0,0.0,0.0,0.0};//selected excitation states for each kinematics
 //{0.,0.00443891,0.00443891,0.00443891,0.00443891};
 
@@ -110,18 +110,18 @@ const Double_t AllLossExceptFoil
 	  +1.42*2.138*12*1.e-3*2.54 //kapton window on spectrometer entrance
         ); //AllLossExceptFoil==1e-3*0.444;
 
-const Double_t LossEntranceWindow = 1e-3*2.81*2.0795*LH2_Thickness_Entance*100;//eloss at entrance window
-const Double_t LossEachUnitB = 0.0723*4.7516*100*1e-3; // Radiation loss in 1m LH2 before scattering, 2.3004GeV
-const Double_t LossEachUnitA = 0.0723*4.66154*100*1e-3; // Radiation loss in 1m LH2 after scattering, 1.25397
-const Double_t LossEachUnitA_Al7075 = 2.81*2.036*100*1e-3; // Al Eloss in 1m Al 7075
-const Double_t LossEachUnitA_Al2024 = 2.78*2.036*100*1e-3; // Al Eloss in 1m Al 2024
+const Double_t LossEntranceWindow = 1e-3*2.81*2.0795*LH2_Thickness_Entance*100*0.0;//eloss at entrance window
+const Double_t LossEachUnitB = 0.0723*4.7516*100*1e-3*0.0; // Radiation loss in 1m LH2 before scattering, 2.3004GeV
+const Double_t LossEachUnitA = 0.0723*4.66154*100*1e-3*0.0; // Radiation loss in 1m LH2 after scattering, 1.25397
+const Double_t LossEachUnitA_Al7075 = 2.81*2.036*100*1e-3*0.0; // Al Eloss in 1m Al 7075
+const Double_t LossEachUnitA_Al2024 = 2.78*2.036*100*1e-3*0.0; // Al Eloss in 1m Al 2024
 
 
 /////////////////////////////////////////////////////////////////////////
 // Disable Extended Target Correction
 
-const Double_t ExtTarCor_ThetaCorr = 0.61;//0.00;//
-const Double_t ExtTarCor_DeltaCorr = 5.18;//1e36;//
+const Double_t ExtTarCor_ThetaCorr = 0.;//0.61;//0.00;//
+const Double_t ExtTarCor_DeltaCorr = 1e36;//5.18;//1e36;//
 
 
 /////////////////////////////////////////////////////////////////////////

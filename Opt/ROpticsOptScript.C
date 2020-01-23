@@ -11,8 +11,8 @@
 #include "TVirtualFitter.h"
 #include <TSystem.h>
 
-#define th_ph_optimize true
-#define y_optimize true
+#define th_ph_optimize false
+#define y_optimize false
 #define dp_optimize true
 
 #include "ROpticsOpt.h"
@@ -221,6 +221,7 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     opt->LoadDataBase(SourceDataBase);
     NPara = opt->Matrix2Array(OldMatrixArray, freepara);
     opt->LoadRawData(DataSource, (UInt_t) - 1, MaxDataPerGroup);
+    opt->PrepareSieve(); // used for calculate the Realth and Realph. Those two will be used for calculated the Real Dp in the Dp Optimization
     opt->PrepareDp();
 
     //compensate bias due to dp event selections
@@ -230,15 +231,15 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     // 	opt->fArbitaryDpKinShift[3] = 3.175602e-05;
     // 	opt->fArbitaryDpKinShift[4] = 9.519830e-05;
 
-//    opt->fArbitaryDpKinShift[0] = 0.;
-//    opt->fArbitaryDpKinShift[1] = 0.;
-//    opt->fArbitaryDpKinShift[2] = 0.;
-//    opt->fArbitaryDpKinShift[3] = 0.;
+    opt->fArbitaryDpKinShift[0] = 0.;
+    opt->fArbitaryDpKinShift[1] = 0.;
+    opt->fArbitaryDpKinShift[2] = 0.;
+    opt->fArbitaryDpKinShift[3] = 0.;
 
-    opt->fArbitaryDpKinShift[0] = 2.649891e-05;
-    opt->fArbitaryDpKinShift[1] = -1.457213e-04;
-    opt->fArbitaryDpKinShift[2] = 2.037271e-04;
-    opt->fArbitaryDpKinShift[3] = -1.493965e-04;
+//    opt->fArbitaryDpKinShift[0] = 2.649891e-05;
+//    opt->fArbitaryDpKinShift[1] = -1.457213e-04;
+//    opt->fArbitaryDpKinShift[2] = 2.037271e-04;
+//    opt->fArbitaryDpKinShift[3] = -1.493965e-04;
 
     opt->Print();
 
@@ -280,7 +281,7 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
 //    opt->CheckDpGlobal();
 //    TCanvas * c1 = opt->CheckDp();
 //    TCanvas * c1 = opt->CheckDp_test();
-    TCanvas * c1 = opt->CheckDp_test2();
+    TCanvas * c2 = opt->CheckDp_test2();
 //    c1->Print(DestDataBase + ".Dp.Opt.png", "png");
 #if dp_optimze
     delete fitter;
