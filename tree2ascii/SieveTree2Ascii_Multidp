@@ -36,8 +36,8 @@ $PROG -pv -d SieveVars.def -O $Id\
         -s $DIR/prexRHRS_${keyrun}.SieveCut.ncut \
         -c $DIR/prexRHRS_${keyrun}.SieveCut.cut \
         -g $DIR/prexRHRS_${keyrun}_-1.root.FullCut.root \
-        -o $DIR/Sieve._21642_p4.f51 \
-        $ROOTFILEDIR/prexRHRS_21642_-1.root 
+        -o $DIR/Sieve._${keyrun}_p4.f51 \
+        $ROOTFILEDIR/prexRHRS_${keyrun}_-1.root 
         
 Id=98
 #21641 -1% dp scan
@@ -46,23 +46,23 @@ $PROG -pv -d SieveVars.def -O $Id\
         -s $DIR/prexRHRS_${keyrun}.SieveCut.ncut \
         -c $DIR/prexRHRS_${keyrun}.SieveCut.cut \
         -g $DIR/prexRHRS_${keyrun}_-1.root.FullCut.root \
-        -o $DIR/Sieve._21641_p4.f51 \
-        $ROOTFILEDIR/prexRHRS_21641_-1.root \
-        $ROOTFILEDIR/prexRHRS_21641_-1_1.root 
+        -o $DIR/Sieve._${keyrun}_p4.f51 \
+        $ROOTFILEDIR/prexRHRS_${keyrun}_-1.root \
+        $ROOTFILEDIR/prexRHRS_${keyrun}_-1_1.root 
         #\
         #$ROOTFILEDIR/prexRHRS_20827_-1_2.root \
         #$ROOTFILEDIR/prexRHRS_20827_-1_3.root 
 
 Id=196
-#21636 +1% dp scan
-keyrun=21636    
+#21636 0% dp scan
+keyrun=21626    
 $PROG -pv -d SieveVars.def -O $Id\
         -s $DIR/prexRHRS_${keyrun}.SieveCut.ncut \
         -c $DIR/prexRHRS_${keyrun}.SieveCut.cut \
         -g $DIR/prexRHRS_${keyrun}_-1.root.FullCut.root \
-        -o $DIR/Sieve._21636_p4.f51 \
-        $ROOTFILEDIR/prexRHRS_21636_-1.root \
-        $ROOTFILEDIR/prexRHRS_21636_-1_1.root 
+        -o $DIR/Sieve._${keyrun}_p4.f51 \
+        $ROOTFILEDIR/prexRHRS_${keyrun}_-1.root \
+        $ROOTFILEDIR/prexRHRS_${keyrun}_-1_1.root 
      
      
         #\
@@ -72,19 +72,19 @@ $PROG -pv -d SieveVars.def -O $Id\
         #$ROOTFILEDIR/prexRHRS_20825_-1_5.root 
 
 Id=294
-#21636 +0% dp scan
-keyrun=21630    
+#21636 +1% dp scan
+keyrun=21632    
 $PROG -pv -d SieveVars.def -O $Id\
         -s $DIR/prexRHRS_${keyrun}.SieveCut.ncut \
         -c $DIR/prexRHRS_${keyrun}.SieveCut.cut \
         -g $DIR/prexRHRS_${keyrun}_-1.root.FullCut.root \
-        -o $DIR/Sieve._21630_p4.f51 \
-        $ROOTFILEDIR/prexRHRS_21630_-1.root
+        -o $DIR/Sieve._${keyrun}_p4.f51 \
+        $ROOTFILEDIR/prexRHRS_${keyrun}_-1.root
          
 
 
 
 
-cat $DIR/Sieve._21642_p4.f51  $DIR/Sieve._21641_p4.f51 $DIR/Sieve._21636_p4.f51  $DIR/Sieve._21630_p4.f51 > $DIR/${des}
+cat $DIR/Sieve._21642_p4.f51  $DIR/Sieve._21641_p4.f51 $DIR/Sieve._21632_p4.f51  $DIR/Sieve._21626_p4.f51 > $DIR/${des}
 
 echo "Done!"
