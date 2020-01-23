@@ -91,11 +91,11 @@ const Double_t Ebeam[] = {
 const Double_t HRSCentralMom[] = { 
 		  2.145027027, //21642   -2%
 		  2.166696832, //21641   -1%
-		  2.210331814,  //21636   +1%
-		  2.188560457 //21627    0%
+		  2.188560457, //21627    0%
+		  2.210331814  //21636   +1%
   }; 
 
-const Double_t GroundNuclearMass = 12*0.938272046;// -.511e-3*6; //GeV/c^2  //c Target
+const Double_t GroundNuclearMass = 12*.931494028;// -.511e-3*6; //GeV/c^2  //c Target
 const Double_t ExcitationEnergy[] = {0.,0.0,0.0,0.0,0.0};//selected excitation states for each kinematics
 //{0.,0.00443891,0.00443891,0.00443891,0.00443891};
 
