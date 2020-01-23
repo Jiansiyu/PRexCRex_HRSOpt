@@ -11,7 +11,7 @@ fi
 ARCH=$(arch)
 PROG=./tree2ascii
 #ROOTFILEDIR="/home/newdriver/Storage/Research/PRex_Experiment/prex_analyzer/optReplay/Result/Nov18_OptData/"
-ROOTFILEDIR="/home/newdriver/Storage/Research/CRex_Experiment/optReplay/Result/AfterCorrection"
+ROOTFILEDIR="/home/newdriver/Storage/Research/CRex_Experiment/optReplay/Result/"
 
 prefix="prexRHRS"
 # Path that contains the cut 
