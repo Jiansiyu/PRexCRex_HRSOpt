@@ -11,8 +11,8 @@
 #include "TVirtualFitter.h"
 #include <TSystem.h>
 
-#define th_ph_optimize false
-#define y_optimize false
+#define th_ph_optimize true
+#define y_optimize true
 #define dp_optimize true
 
 #include "ROpticsOpt.h"
@@ -274,7 +274,8 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     opt->SumSquareDp();
 //    opt->CheckDp();
 //    opt->CheckDpGlobal();
-    TCanvas * c1 = opt->CheckDp();
+//    TCanvas * c1 = opt->CheckDp();
+    TCanvas * c1 = opt->CheckDp_test2();
     c1->Print(DestDataBase + ".Dp.Opt.png", "png");
 #if dp_optimze
     delete fitter;

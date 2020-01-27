@@ -27,19 +27,19 @@ const Double_t HRSAngle = -4.7572 * D2R;
 // not used
 //------------------------------------------------------------------------
 //LH2 target information
-const Double_t LH2_TargetLength = 15*1.e-2; //unit m
-const Double_t LH2_Target_Tip_Radius = 1.5*2.54*1.e-2; //target width and tip radius
-const Double_t LH2_Thickness_Entance = 0.175*1.e-3;//Al 7075, aluminum thickness for the entrance window
-const Double_t LH2_Thickness_Side = 0.18*1.e-3;  //Al 7075, aluminum thickness for the side wall
-const Double_t LH2_Thickness_Tip = 0.11*1.e-3;  //Al 7075, aluminum thickness for tip
+const Double_t LH2_TargetLength = 15*1.e-2*0.0; //unit m
+const Double_t LH2_Target_Tip_Radius = 1.5*2.54*1.e-2*0.0; //target width and tip radius
+const Double_t LH2_Thickness_Entance = 0.175*1.e-3*0.0;//Al 7075, aluminum thickness for the entrance window
+const Double_t LH2_Thickness_Side = 0.18*1.e-3*0.0;  //Al 7075, aluminum thickness for the side wall
+const Double_t LH2_Thickness_Tip = 0.11*1.e-3*0.0;  //Al 7075, aluminum thickness for tip
 
 // MissPoint* are in HCS
 const Double_t MissPointZ =0.0;//
 const Double_t MissPointY = 0.0;//
 
 
-const Double_t SieveRadius = 0.157*25.4/2.0*1e-3;
-const Double_t SieveRadius_c = 0.236*25.4/2.0*1e-3;
+const Double_t SieveRadius = 0.157*25.4/2.0*1e-3*0.0;
+const Double_t SieveRadius_c = 0.236*25.4/2.0*1e-3*0.0;
 
 // average beam positions
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -85,6 +85,7 @@ const Double_t Ebeam[] = {
   2.17591, //21641   -1%
   2.17568, //21627    0%
   2.17605  //21636   +1%
+
   }; 
 
 // this need to read from the database and convert with the equation
@@ -108,13 +109,13 @@ const Double_t AllLossExceptFoil
 	  2.78*2.035*16*1.e-3*2.54 //Al 2024, rho 2.78, scattering exit window Al
 	  +1.205E-03*2.6922*14.79*2.54//air, Target Enclosure to HRS
 	  +1.42*2.138*12*1.e-3*2.54 //kapton window on spectrometer entrance
-        ); //AllLossExceptFoil==1e-3*0.444;
+        )*0.0; //AllLossExceptFoil==1e-3*0.444;
 
-const Double_t LossEntranceWindow = 1e-3*2.81*2.0795*LH2_Thickness_Entance*100;//eloss at entrance window
-const Double_t LossEachUnitB = 0.0723*4.7516*100*1e-3; // Radiation loss in 1m LH2 before scattering, 2.3004GeV
-const Double_t LossEachUnitA = 0.0723*4.66154*100*1e-3; // Radiation loss in 1m LH2 after scattering, 1.25397
-const Double_t LossEachUnitA_Al7075 = 2.81*2.036*100*1e-3; // Al Eloss in 1m Al 7075
-const Double_t LossEachUnitA_Al2024 = 2.78*2.036*100*1e-3; // Al Eloss in 1m Al 2024
+const Double_t LossEntranceWindow = 1e-3*2.81*2.0795*LH2_Thickness_Entance*100*0.0;//eloss at entrance window
+const Double_t LossEachUnitB = 0.0723*4.7516*100*1e-3*0.0; // Radiation loss in 1m LH2 before scattering, 2.3004GeV
+const Double_t LossEachUnitA = 0.0723*4.66154*100*1e-3*0.0; // Radiation loss in 1m LH2 after scattering, 1.25397
+const Double_t LossEachUnitA_Al7075 = 2.81*2.036*100*1e-3*0.0; // Al Eloss in 1m Al 7075
+const Double_t LossEachUnitA_Al2024 = 2.78*2.036*100*1e-3*0.0; // Al Eloss in 1m Al 2024
 
 
 /////////////////////////////////////////////////////////////////////////
