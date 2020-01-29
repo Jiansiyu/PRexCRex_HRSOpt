@@ -79,6 +79,14 @@ using THaString::Split;
 // Constructors
 ///////////////////////////////////////////////////////////////////////////////
 
+Bool_t CutcutCut(UInt_t Col, UInt_t Row, UInt_t KineID = -1) {
+	if(KineID!=0){
+		return true;
+	}else{
+		return false;
+	}
+}
+
 ROpticsOpt::ROpticsOpt(const char* name, const char* description, THaApparatus* apparatus) :
 THaTrackingDetector(name, description, apparatus)
 {
@@ -1315,11 +1323,14 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 	for (UInt_t idx = 0; idx < fNRawData; idx++) {
 		const EventData &eventdata = fRawData[idx];
 
+
 		//TODO need to change to more efficent way to do that
 		const UInt_t FoilID = 0;
 		const UInt_t DpkineID=HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
 		const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
 		const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
+		UInt_t KineID = HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
+		if(!CutcutCut(Col,Row,KineID))continue;
 
 		assert(FoilID < NFoils); //array index check
 
@@ -2017,6 +2028,12 @@ Double_t ROpticsOpt::SumSquareDTh()
     for (UInt_t idx = 0; idx < fNRawData; idx++) {
         EventData &eventdata = fRawData[idx];
 
+        const UInt_t KineID = HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
+		const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
+		const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
+
+		if(!CutcutCut(Col,Row,KineID))continue;
+
         Double_t x_fp = eventdata.Data[kX];
         const Double_t(*powers)[5] = eventdata.powers;
 
@@ -2062,6 +2079,12 @@ Double_t ROpticsOpt::SumSquareDPhi()
 
     for (UInt_t idx = 0; idx < fNRawData; idx++) {
         EventData &eventdata = fRawData[idx];
+
+		const UInt_t KineID = HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
+		const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
+		const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
+
+		if(!CutcutCut(Col,Row,KineID))continue;
 
         Double_t x_fp = eventdata.Data[kX];
         const Double_t(*powers)[5] = eventdata.powers;
@@ -2461,6 +2484,13 @@ Double_t ROpticsOpt::SumSquareDTgY(void)
     for (UInt_t idx = 0; idx < fNRawData; idx++) {
         EventData &eventdata = fRawData[idx];
 
+        UInt_t KineID = HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
+		const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
+		const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
+
+		if (!CutcutCut(Col, Row, KineID))
+			continue;
+
         Double_t x_fp = eventdata.Data[kX];
         const Double_t(*powers)[5] = eventdata.powers;
 
@@ -2568,6 +2598,8 @@ void ROpticsOpt::PrepareDp(void)
 	    //TVector3 BeamSpotHCS(BeamX_average, BeamY_average, eventdata.Data[kBeamVZ]);
         TVector3 BeamSpotTCS = fTCSInHCS.Inverse()*(BeamSpotHCS - fPointingOffset);
 	    TVector3 MomDirectionTCS(theta,phi,1); // target variables
+
+
 
         eventdata.Data[kRealTh] = theta;
         eventdata.Data[kRealPhi] = phi;
@@ -2683,13 +2715,7 @@ void ROpticsOpt::PrepareDp(void)
     DEBUG_INFO("PrepareDp", "Done!");
 }
 
-Bool_t CutcutCut(UInt_t Col, UInt_t Row, UInt_t KineID = -1) {
-	if((Col >4)&&(Col<9)){
-		return true;
-	}else{
-		return false;
-	}
-}
+
 
 TCanvas * ROpticsOpt::CheckDp()
 {
@@ -3084,7 +3110,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 
 	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
 		c1->cd(KineID + 1);
-
+		if(hDpKinCalib[KineID]->GetEntries()==0) continue;
 		AverCalcDpKin[KineID] /= NEvntDpKin[KineID];
 		DEBUG_MASSINFO("CheckDp", "AverCalcDpKin[%d] = %f", KineID,
 				AverCalcDpKin[KineID]);
@@ -3125,7 +3151,9 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		f->SetParameter(1, AverCalcDpKin[KineID]);
 		//        f->SetParameter(2, DefResolution);
 		//        hDpKinAll[KineID] -> Fit(FitFunc, "RN0");
+
 		hDpKinCalib[KineID]->Fit(FitFunc, "R");
+
 		f->SetLineColor(2);
 //		f->Draw("SAME");
 		//	l->Draw();
@@ -3190,6 +3218,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 	ccanvasrms->Divide(3,2);
 	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
 		ccanvasrms->cd(KineID + 1);
+		if(hDpKinCalibRMS[KineID]->GetEntries()==0) continue;
 	hDpKinCalibRMS[KineID]->SetLineColor(41 + KineID * 5);
 	hDpKinCalibRMS[KineID]->Fit("gaus");
 	auto f=hDpKinCalibRMS[KineID]->GetFunction("gaus");
@@ -3202,6 +3231,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 	}
 	ccanvasrms->cd(NKine + 1);
 	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+		if(hDpKinCalibRMS[KineID]->GetEntries()==0) continue;
 		hDpKinCalibRMS[KineID]->Draw("same");
 	}
 
@@ -3211,6 +3241,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 					900);
 	sieveThetaphiCanvas->Divide(2,2);
 	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+		if(SieveThetaPhihh[KineID]->GetEntries()==0) continue;
 		sieveThetaphiCanvas->cd(KineID+1);   // plot the  sieve canvas
 		SieveThetaPhihh[KineID]->Draw("zcol");
 		sieveThetaphiCanvas->Update();
@@ -3231,6 +3262,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 						900);
 	sieveThetaphiCanvas_cal->Divide(2,2);
 	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+		if(SieveThetaPhihh[KineID]->GetEntries()==0) continue;
 		sieveThetaphiCanvas_cal->cd(KineID+1);   // plot the  sieve canvas
 		SieveThetaPhihh[KineID]->Draw("zcol");
 		sieveThetaphiCanvas_cal->Update();
