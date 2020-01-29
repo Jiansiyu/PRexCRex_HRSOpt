@@ -2684,7 +2684,11 @@ void ROpticsOpt::PrepareDp(void)
 }
 
 Bool_t CutcutCut(UInt_t Col, UInt_t Row, UInt_t KineID = -1) {
-	return true;
+	if((Col >4)&&(Col<9)){
+		return true;
+	}else{
+		return false;
+	}
 }
 
 TCanvas * ROpticsOpt::CheckDp()
@@ -3232,10 +3236,15 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		sieveThetaphiCanvas_cal->Update();
 		for (auto itter=hhRealSieve[KineID].begin();itter!=hhRealSieve[KineID].end();itter++){
 			for(auto ittter=(itter->second).begin();ittter!=(itter->second).end();ittter++){
-				TLatex *t1=new TLatex((ittter->second)->GetMean(1)-0.001,(ittter->second)->GetMean(2)+0.0015, Form("%2.4fGeV",hCalcMomRealSieve[KineID][itter->first][ittter->first]->GetMean()));
+				TLatex *t1=new TLatex((ittter->second)->GetMean(1)-0.001,(ittter->second)->GetMean(2)+0.0015, Form("%2.5fGeV",hCalcMomRealSieve[KineID][itter->first][ittter->first]->GetMean()));
 //				TLatex *t1=new TLatex((ittter->second)->GetMean(1)-0.001,(ittter->second)->GetMean(2)+0.0015, Form("%2.4fGeV",hhRealSieveScatteredAngle[KineID][itter->first][ittter->first]->GetMean()));
 				t1->SetTextSize(0.03);
 				t1->Draw("same");
+
+				TLatex *t2=new TLatex((ittter->second)->GetMean(1)-0.001,(ittter->second)->GetMean(2)+0.004, Form("%2.5fGeV",hMomRealSieve[KineID][itter->first][ittter->first]->GetMean()));
+				t2->SetTextColor(3);
+				t2->SetTextSize(0.03);
+				t2->Draw("same");
 			}
 		}
 	}
@@ -3494,6 +3503,13 @@ Double_t ROpticsOpt::SumSquareDp(Bool_t IncludeExtraData)
 
         EventData &eventdata = fRawData[idx];
 
+		UInt_t KineID = HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
+		const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
+		const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
+
+		if (!CutcutCut(Col, Row, KineID))
+			continue;
+
         //jump through data beyond selected excitation states
         if (eventdata.Data[kExtraDataFlag] > 0 && !IncludeExtraData) continue;
         NCalibData++;
@@ -3513,7 +3529,7 @@ Double_t ROpticsOpt::SumSquareDp(Bool_t IncludeExtraData)
         dp = CalcTargetVar(fDMatrixElems, powers);
 	dp_kin = dp - eventdata.Data[kDpKinOffsets];
 
-        const UInt_t KineID = (UInt_t) (eventdata.Data[kKineID]);
+        //const UInt_t KineID = (UInt_t) (eventdata.Data[kKineID]);
         assert(KineID < NKine); //check array index size
         const Double_t ArbitaryDpKinShift = fArbitaryDpKinShift[KineID];
 

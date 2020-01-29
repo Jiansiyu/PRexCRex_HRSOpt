@@ -81,6 +81,14 @@ const UInt_t NKine = 4; //N Delta Scans */
 #define DIPOLE_MAG2MOM(Mag) (2.702*(Mag)-1.6e-03*(Mag)*(Mag)*(Mag)) 
 
 const Double_t Ebeam[] = { 
+	/*	2.176042,
+		2.175998,
+		2.175742,
+		2.176202
+				2.175996,
+		2.175996,
+		2.175996,
+		2.175996*/
   2.17595, //21642   -2%
   2.17591, //21641   -1%
   2.17568, //21627    0%
@@ -90,10 +98,10 @@ const Double_t Ebeam[] = {
 
 // this need to read from the database and convert with the equation
 const Double_t HRSCentralMom[] = { 
-		  2.145027027, //21642   -2%
-		  2.166696832, //21641   -1%
-		  2.188560457, //21627    0%
-		  2.210331814  //21636   +1%
+		  2.144818666, //21642   -2%
+		  2.166744333, //21641   -1%
+		  2.188559918, //21627    0%
+		  2.210268122  //21636   +1%
   }; 
 
 const Double_t GroundNuclearMass = 12*.931494028;// -.511e-3*6; //GeV/c^2  //c Target
