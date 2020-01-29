@@ -1,0 +1,108 @@
+# -------------------------------------------------------------
+# Optimized by Shujie Li @ Tue Jan 28 18:35:53 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/temp1.theta.phi.new
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 18:35:22 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/temp1.theta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 18:34:29 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/temp1
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 18:03:58 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/test1.result.theta.phi.y.delta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 18:02:39 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/test1.result.theta.phi.y.delta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 18:01:33 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/test1.result.theta.phi.y.delta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 18:00:54 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/test1.result.theta.phi.y.delta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 17:59:22 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/test1.result.theta.phi.y.delta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 17:58:18 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/test1.result.theta.phi.y.delta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 17:56:03 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/test1.result.theta.phi.y.delta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 17:55:29 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/test1.result.theta.phi.y.delta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 17:52:09 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/test1.result.theta.phi.y.delta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 17:39:28 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/test1.result.theta.phi.y
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 17:38:35 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/test1.result.theta.phi
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 17:37:51 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/test1.result.theta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 12:12:56 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/test.theta.phi.y.delta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 11:51:23 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/test.theta.phi.y
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 11:50:57 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/test.theta.phi
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Jan 28 11:49:59 2020
+# Saved to ../CRex_DB/RHRS_scan/RHRS_shujie_Modify/test.theta
+############ LEFT VDC #########################
+D 0 0 0  -3.455238E-03 7.757637E-02 -9.458609E-03 6.394453E-03
+D 0 0 1  -1.817985E-02 -1.019793E-03
+D 0 0 2  3.118552E-01 2.263890E-01
+D 0 1 0  -1.771283E-02 -3.491111E-02
+D 0 2 0  7.623684E-03
+D 1 0 0  4.480634E-02 3.581715E-01 -3.959080E-02 2.943353E+00
+D 1 0 1  2.207770E+00
+D 1 0 2  -4.365981E+01
+D 1 1 0  7.224391E+00 -8.136112E-01
+D 1 1 1  7.407491E+01 -1.082220E+02
+D 2 0 0  -1.187141E-01 7.936525E+00 -2.605328E-01
+D 3 0 0  -6.851576E+01 1.683244E+02
+D 0 4 0  5.941924E+02 2.320601E+03 5.827455E+03
+D 2 0 2  -8.958707E+02 -4.980185E+03
+D 2 1 1  6.665566E+03 -8.886819E+03 3.417668E+04
+D 2 2 0  5.553981E+03
+D 0 1 3  1.306288E+03
+T 0 0 0  -3.179618E-03 1.505402E-02 1.620896E-02 -5.128692E-02
+T 0 0 1  1.696855E-01 -4.024880E-01
+T 0 0 2  -1.354818E+01
+T 0 1 0  1.057116E-01 -4.086069E-01
+T 0 1 1  -2.051863E+01
+T 0 2 0  -6.500248E+00
+T 1 0 0  -1.938447E+00 5.033259E-01 -4.329037E-01 2.027062E+00
+T 1 0 1  -9.569520E-01
+T 1 1 0  3.007017E+01
+T 1 1 1  5.176577E+02 2.713400E+02
+T 2 0 0  -4.015889E+00
+P 0 0 0  -2.397377E-04 -1.913035E-03 1.906842E-03 -2.563116E-02
+P 0 0 1  3.441003E-01 9.638513E-02 -3.676866E-02 -3.028890E-01
+P 0 0 2  5.613915E+00 -3.999591E+00 -6.763074E+00
+P 0 1 0  -5.541272E-01 4.179356E-02
+P 0 1 1  3.658223E+00 -2.910111E+00 -1.811080E+00
+P 0 2 0  -2.372321E+00
+P 1 0 0  -2.856034E-02 -2.056833E-02
+P 1 0 1  7.494754E+00
+P 1 1 1  -1.096964E+02
+P 2 0 0  4.202818E+00
+Y 0 0 0  7.220931E-05 -1.609197E-05 -6.424645E-05 1.785727E-03
+Y 0 0 1  3.964584E-03 9.032304E-03 -2.096354E-02
+Y 0 0 2  1.209932E-01
+Y 0 1 0  3.812481E-03 4.697967E-04
+Y 0 1 1  9.972082E-02 3.518989E-02
+Y 0 2 0  2.914874E-02 5.339404E-02
+Y 1 1 0  -3.072266E-02
+Y 1 1 1  -6.698018E+00
+Y 2 0 0  -1.222067E-01
+Y 2 0 1  -2.658377E+00
+Y 2 1 0  5.669804E+00
+Y 1 0 1  8.214901E-02
