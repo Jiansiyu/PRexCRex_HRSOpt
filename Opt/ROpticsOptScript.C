@@ -31,7 +31,7 @@ UInt_t MaxDataPerGroup = 100;
 
 //TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.test";
 //TString DataSource = "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/DpReform/temp.dat";
-TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.test_reform";
+TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full_p0_p1.test_reform";
 
 typedef void (*PTRFCN)(Int_t &, Double_t *, Double_t &, Double_t*, Int_t);
 PTRFCN myfcn = NULL;
@@ -221,6 +221,7 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     opt->LoadDataBase(SourceDataBase);
     NPara = opt->Matrix2Array(OldMatrixArray, freepara);
     opt->LoadRawData(DataSource, (UInt_t) - 1, MaxDataPerGroup);
+    opt->PrepareSieve(); // used for calculate the Realth and Realph. Those two will be used for calculated the Real Dp in the Dp Optimization
     opt->PrepareDp();
 
     //compensate bias due to dp event selections
@@ -276,7 +277,8 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
 //    opt->CheckDpGlobal();
 //    TCanvas * c1 = opt->CheckDp();
     TCanvas * c1 = opt->CheckDp_test2();
-    c1->Print(DestDataBase + ".Dp.Opt.png", "png");
+//    c1->Print(DestDataBase + ".Dp.Opt.png", "png");
+    c1->Draw();
 #if dp_optimze
     delete fitter;
 #endif

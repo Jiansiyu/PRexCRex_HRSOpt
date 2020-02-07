@@ -80,11 +80,12 @@ using THaString::Split;
 ///////////////////////////////////////////////////////////////////////////////
 
 Bool_t CutcutCut(UInt_t Col, UInt_t Row, UInt_t KineID = -1) {
-	if(KineID!=0){
+/*	if((Row<4)&&(Row>2)){
 		return true;
 	}else{
 		return false;
-	}
+	}*/
+	return true;
 }
 
 ROpticsOpt::ROpticsOpt(const char* name, const char* description, THaApparatus* apparatus) :
@@ -1265,7 +1266,13 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 	Double_t y_lim[NFoils] = { 0 };
 
 	for (uint i = 0 ; i < NKine; i ++){
-		HSieveMomRealThetaPhi[i]=new TH2F(Form("dpID_%d\%_Target_th.vs.ph",-2+i),Form("dpID_%d\%_Target_th.vs.ph",-2+i),500, -0.03, 0.03, 500, -0.045, 0.04);
+		auto id=i;
+		if(i>3){
+			id=i-4;
+			HSieveMomRealThetaPhi[i]=new TH2F(Form("dpID_%d\%_Target_th.vs.ph",-2+id),Form("dpID_%d\%_1st_state_Target_th.vs.ph",-2+id),500, -0.03, 0.03, 500, -0.045, 0.04);
+		}else{
+			HSieveMomRealThetaPhi[i]=new TH2F(Form("dpID_%d\%_Target_th.vs.ph",-2+id),Form("dpID_%d\%_Ground_state_Target_th.vs.ph",-2+id),500, -0.03, 0.03, 500, -0.045, 0.04);
+		}
 		HSieveMomRealThetaPhi[i]->GetXaxis()->SetTitle("Phi");
 		HSieveMomRealThetaPhi[i]->GetYaxis()->SetTitle("theta");
 	}
@@ -1421,7 +1428,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 	}
 
 	TCanvas *c2 = new TCanvas("SieveCheck2", "SieveCheck2", 1800, 1100);
-	c2->Divide(2, 2);
+	c2->Divide(3, 3);
 	for (uint i = 0; i < NKine; i++) {
 		c2->cd(i + 1);
 		HSieveMomRealThetaPhi[i]->Draw("zcol");
@@ -1522,12 +1529,15 @@ TCanvas * ROpticsOpt::CheckSieveAccu(Int_t PlotFoilID)
     for (UInt_t idx = 0; idx < fNRawData; idx++) {
         const EventData &eventdata = fRawData[idx];
 
-        UInt_t res = (UInt_t) eventdata.Data[kCutID];
+ /*       UInt_t res = (UInt_t) eventdata.Data[kCutID];
         res = res % (NSieveRow * NSieveCol * NFoils);
         const UInt_t FoilID = res / (NSieveRow * NSieveCol); //starting 0!
         res = res % (NSieveRow * NSieveCol);
         const UInt_t Col = res / (NSieveRow); //starting 0!
-        const UInt_t Row = res % (NSieveRow); //starting 0!
+        const UInt_t Row = res % (NSieveRow); //starting 0!*/
+        const UInt_t FoilID=0;
+        const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
+        		const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
 
 
         assert(FoilID < NFoils); //array index check
@@ -2122,12 +2132,18 @@ void ROpticsOpt::PrepareVertex(void)
     for (UInt_t idx = 0; idx < fNRawData; idx++) {
         EventData &eventdata = fRawData[idx];
 
-        UInt_t res = (UInt_t) eventdata.Data[kCutID];
-        res = res % (NSieveRow * NSieveCol * NFoils);
-        const UInt_t FoilID = res / (NSieveRow * NSieveCol); //starting 0!
-        res = res % (NSieveRow * NSieveCol);
-        const UInt_t Col = res / (NSieveRow); //starting 0!
-        const UInt_t Row = res % (NSieveRow); //starting 0!
+//        UInt_t res = (UInt_t) eventdata.Data[kCutID];
+//        res = res % (NSieveRow * NSieveCol * NFoils);
+        const UInt_t FoilID =0;// res / (NSieveRow * NSieveCol); //starting 0!
+//        res = res % (NSieveRow * NSieveCol);
+//        const UInt_t Col = res / (NSieveRow); //starting 0!
+//        const UInt_t Row = res % (NSieveRow); //starting 0!
+
+    	const UInt_t KineID = HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
+    	const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
+    	const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
+
+
 
         assert(FoilID < NFoils); //check array index size
 
@@ -2198,14 +2214,18 @@ TCanvas * ROpticsOpt::CheckVertex()
     for (UInt_t idx = 0; idx < fNRawData; idx++) {
         EventData &eventdata = fRawData[idx];
 
-        UInt_t res = (UInt_t) eventdata.Data[kCutID];
-        // const UInt_t KineID = res / (NSieveRow * NSieveCol * NFoils); //starting 0!
-        res = res % (NSieveRow * NSieveCol * NFoils);
-        const UInt_t FoilID = res / (NSieveRow * NSieveCol); //starting 0!
+//        UInt_t res = (UInt_t) eventdata.Data[kCutID];
+//        // const UInt_t KineID = res / (NSieveRow * NSieveCol * NFoils); //starting 0!
+//        res = res % (NSieveRow * NSieveCol * NFoils);
+//        const UInt_t FoilID = res / (NSieveRow * NSieveCol); //starting 0!
+//
+//        res = res % (NSieveRow * NSieveCol);
+//        const UInt_t Col = res / (NSieveRow); //starting 0!
+//        const UInt_t Row = res % (NSieveRow); //starting 0!
+        const UInt_t FoilID =0;
+        const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
+        		const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
 
-        res = res % (NSieveRow * NSieveCol);
-        const UInt_t Col = res / (NSieveRow); //starting 0!
-        const UInt_t Row = res % (NSieveRow); //starting 0!
 
 	HTgY[FoilID]->Fill(eventdata.Data[kCalcTgY]);
 	HTgYReal[FoilID]->Fill(eventdata.Data[kRealTgY]);
@@ -2311,6 +2331,7 @@ TCanvas * ROpticsOpt::CheckVertex()
     for (UInt_t idx = 0; idx < fNRawData; idx++) {
         EventData &eventdata = fRawData[idx];
 
+/*
         UInt_t res = (UInt_t) eventdata.Data[kCutID];
         // const UInt_t KineID = res / (NSieveRow * NSieveCol * NFoils); //starting 0!
         res = res % (NSieveRow * NSieveCol * NFoils);
@@ -2319,6 +2340,12 @@ TCanvas * ROpticsOpt::CheckVertex()
         res = res % (NSieveRow * NSieveCol);
         const UInt_t Col = res / (NSieveRow); //starting 0!
         const UInt_t Row = res % (NSieveRow); //starting 0!
+*/
+        const UInt_t FoilID =0;
+
+		const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
+		const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
+
 
 	//calculate ReactZ with CalcTgY
 	eventdata.Data[kRealReactZ] = targetfoils[FoilID];
@@ -2563,9 +2590,9 @@ void ROpticsOpt::PrepareDp(void)
         UInt_t dataID = (UInt_t) eventdata.Data[kCutID];
         // for  PRex,we use several different  dp runs,
         //  UInt_t DpCount = dataID % (NSieveRow * (NSieveCol+1));
-        UInt_t DpID = dataID / (NSieveRow * (NSieveCol+1));//starting 0!
-
-        UInt_t KineID=DpID;
+        //UInt_t DpID = dataID / (NSieveRow * (NSieveCol+1));//starting 0!
+        UInt_t KineID = HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
+//        UInt_t KineID=DpID;
 
 
         fNCalibData++;
@@ -2599,7 +2626,8 @@ void ROpticsOpt::PrepareDp(void)
         TVector3 BeamSpotTCS = fTCSInHCS.Inverse()*(BeamSpotHCS - fPointingOffset);
 	    TVector3 MomDirectionTCS(theta,phi,1); // target variables
 
-
+//		theta = eventdata.Data[kRealTh];
+//		phi = eventdata.Data[kRealPhi];
 
         eventdata.Data[kRealTh] = theta;
         eventdata.Data[kRealPhi] = phi;
@@ -3003,7 +3031,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 
 	for (UInt_t idx = 0; idx < fNRawData; idx++) {
 		const EventData &eventdata = fRawData[idx];
-		UInt_t KineID = HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
+		const UInt_t KineID = HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
 		const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
 		const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
 
@@ -3106,7 +3134,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 
 	TCanvas *c1 = new TCanvas("CheckDp", "Check Dp Kin Reconstruction", 1800,
 			900);
-	c1->Divide(3, 2);
+	c1->Divide(3, 3);
 
 	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
 		c1->cd(KineID + 1);
@@ -3197,7 +3225,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 
 	}
 
-	c1->cd(6);
+	c1->cd(NKine+1);
 	TPaveText *t0 = new TPaveText(0.03, 0.05, 0.97, 0.95, "NDC");
 	t0->SetShadowColor(0);
 	t0->AddText(
@@ -3215,9 +3243,11 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 
 	TCanvas *ccanvasrms = new TCanvas("CheckDp_RMS", "Check Dp Kin Reconstruction RMS", 1800,
 				900);
-	ccanvasrms->Divide(3,2);
+	ccanvasrms->Divide(3,3);
 	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
 		ccanvasrms->cd(KineID + 1);
+		ccanvasrms->cd(KineID + 1)->SetGridx(10);
+		ccanvasrms->cd(KineID + 1)->SetGridy(10);
 		if(hDpKinCalibRMS[KineID]->GetEntries()==0) continue;
 	hDpKinCalibRMS[KineID]->SetLineColor(41 + KineID * 5);
 	hDpKinCalibRMS[KineID]->Fit("gaus");
@@ -3236,34 +3266,15 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 	}
 
 
-	// get the theoretical momentum for each angle
-	TCanvas *sieveThetaphiCanvas = new TCanvas("sieveThetaphiCanvas", "sieveThetaphiCanvas", 1800,
-					900);
-	sieveThetaphiCanvas->Divide(2,2);
-	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
-		if(SieveThetaPhihh[KineID]->GetEntries()==0) continue;
-		sieveThetaphiCanvas->cd(KineID+1);   // plot the  sieve canvas
-		SieveThetaPhihh[KineID]->Draw("zcol");
-		sieveThetaphiCanvas->Update();
-		//plot the calculated Momentum and Dp
-		for (auto itter=hhRealSieve[KineID].begin();itter!=hhRealSieve[KineID].end();itter++){
-			for(auto ittter=(itter->second).begin();ittter!=(itter->second).end();ittter++){
-				TLatex *t1=new TLatex((ittter->second)->GetMean(1)-0.001,(ittter->second)->GetMean(2)+0.0015, Form("%2.4fGeV",hMomRealSieve[KineID][itter->first][ittter->first]->GetMean()));
-//				TLatex *t1=new TLatex((ittter->second)->GetMean(1)-0.001,(ittter->second)->GetMean(2)+0.0015, Form("%2.4fGeV",hhRealSieveScatteredAngle[KineID][itter->first][ittter->first]->GetMean()));
-				t1->SetTextSize(0.03);
-				t1->Draw("same");
-			}
-		}
-
-	}
-	sieveThetaphiCanvas->Update();
-
 	TCanvas *sieveThetaphiCanvas_cal= new TCanvas("sieveThetaphiCanvasMatrixProjected", "sieveThetaphiCanvasMatrixProjected", 1800,
 						900);
-	sieveThetaphiCanvas_cal->Divide(2,2);
+	sieveThetaphiCanvas_cal->Divide(3,3);
 	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
 		if(SieveThetaPhihh[KineID]->GetEntries()==0) continue;
 		sieveThetaphiCanvas_cal->cd(KineID+1);   // plot the  sieve canvas
+		sieveThetaphiCanvas_cal->cd(KineID+1)->SetGridx(10);
+		sieveThetaphiCanvas_cal->cd(KineID+1)->SetGridy(10);
+
 		SieveThetaPhihh[KineID]->Draw("zcol");
 		sieveThetaphiCanvas_cal->Update();
 		for (auto itter=hhRealSieve[KineID].begin();itter!=hhRealSieve[KineID].end();itter++){
@@ -3277,9 +3288,43 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 				t2->SetTextColor(3);
 				t2->SetTextSize(0.03);
 				t2->Draw("same");
+
+
 			}
 		}
 	}
+
+	//for temp usage,compare the cenrtral sieve hole
+	sieveThetaphiCanvas_cal->cd(NKine+1);
+	{
+		TPaveText *t0 = new TPaveText(0.03,0.05,0.97,0.95,"NDC");
+		    t0->SetShadowColor(0);
+		    for(auto KineID=0; KineID<4; KineID++){
+//		    	 t0->AddText(Form("Dp %d vs %d : #delta %2.4f (%2.5f - %2.5f GeV)"));
+			if (hCalcMomRealSieve.find(KineID) != hCalcMomRealSieve.end()) {
+				t0->AddText(
+						Form("Dp %d vs %d : #delta %2.4f (%2.5f - %2.5f GeV)",
+								KineID, KineID + 4,
+								(hCalcMomRealSieve[KineID][6][3]->GetMean()
+										- hCalcMomRealSieve[KineID + 4][6][3]->GetMean())
+										* 1000,
+								hCalcMomRealSieve[KineID][6][3]->GetMean(),
+								hCalcMomRealSieve[KineID + 4][6][3]->GetMean()));
+				t0->AddText(
+						Form("        ==> : #delta %2.4f (%2.5f - %2.5f GeV)",
+								KineID, KineID + 4,
+								(hMomRealSieve[KineID][6][3]->GetMean()
+										- hMomRealSieve[KineID + 4][6][3]->GetMean())
+										* 1000,
+								hMomRealSieve[KineID][6][3]->GetMean(),
+								hMomRealSieve[KineID + 4][6][3]->GetMean()));
+			}
+		    }
+		    t0->Draw();
+
+	}
+
+
 	return c1;
 
 }
