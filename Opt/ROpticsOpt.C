@@ -1243,6 +1243,41 @@ void ROpticsOpt::PrepareSieve(void)
 
 }
 
+inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>content) {
+	std::cout<<"====> Generating latex"<<std::endl;
+  std::string latexStr;
+  latexStr+="\\begin{table}[]\n";
+  latexStr+="\\begin{tabular}{";
+  for(int i =0; i < content.size();i++){
+	  latexStr+="|l|";
+  }
+  latexStr+="} \n \\hline\n";
+
+  latexStr+=" Col \t";
+
+  for (auto colIter=content.begin();colIter!=content.end();colIter++){
+  	  int Col = colIter->first;
+  	latexStr+=Form(" & %d \t",Col);
+  }
+  latexStr+=" \\\\ \\hline \n";
+
+  //for single row loop on Cal
+  double error=0.0;
+  for(int row=0; row<NSieveRow; row++){
+	  latexStr+=Form("Row %d \t", row);
+	  for(int col=0; col<NSieveCol; col++){
+		  if(content.find(col)!=content.end()&& content[col].find(row)!=content[col].end()){
+			  error=content[col][row];
+		  }
+		  latexStr+=Form(" & %1.2f \t",1000*error);
+	  }
+	  latexStr+=" \\\\ \\hline \n";
+  }
+latexStr+="\\end{tabular} \n\\end{table}\n";
+//std::cout<<latexStr.c_str()<<std::endl;
+return latexStr;
+}
+
 TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 {
 	//TODO
@@ -1327,6 +1362,19 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 
 	Double_t SieveEventID[NFoils][NSieveCol][NSieveRow][5] = { { { { 0 } } } };
 
+	TH1F *CorrectedThetaResid[NSieveCol][NSieveRow];
+	TH1F *CorrectedPhiResid[NSieveCol][NSieveRow];
+	//initilize the theta and phi
+	for (int col = 0; col<NSieveCol; col++){
+		for(int row=0; row<NSieveRow;row++){
+			CorrectedThetaResid[col][row]=new TH1F(Form("SieveThetaCol%d_Row%d_resid",col,row),Form("SieveThetaCol%d_Row%d_resid",col,row),
+					100,-0.005,0.005);
+			CorrectedPhiResid[col][row]=new TH1F(Form("SievePhiCol%d_Row%d_resid",col,row),Form("SievePhiCol%d_Row%d_resid",col,row),
+								100,-0.005,0.005);
+		}
+	}
+
+
 	for (UInt_t idx = 0; idx < fNRawData; idx++) {
 		const EventData &eventdata = fRawData[idx];
 
@@ -1381,9 +1429,12 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 				+ CalcTargetVar(fPTAMatrixElems, powers);
 
 		HSieveCorrectedThetaPhi[FoilID]->Fill(phi, theta);
-		HSieveMomRealThetaPhi[DpkineID]->Fill(phi, theta);
+		HSieveMomRealThetaPhi[DpkineID]->Fill(phi, theta); //
+		if(DpkineID==2){
+		CorrectedThetaResid[Col][Row]->Fill(theta-RealTheta);
+		CorrectedPhiResid[Col][Row]->Fill(phi-RealPhi);
+		}
 
-//
 //        dX += ProjectionX - SieveHoleCorrectionTCS.X();
 //        dY += ProjectionY - SieveHoleCorrectionTCS.Y();
 //
@@ -1455,7 +1506,95 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 	}
 	c2->SaveAs("/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/Opt/Result/temp/checkSieve2.jpg");
 
+	// used for get the optimize error
+	TCanvas *c3=new TCanvas("sieveResd","sieveResd",1800,1100);
+	c3->Divide(NSieveCol,NSieveRow);
+	c3->Draw();
+	for(int col=0; col< NSieveCol; col++){
+		for(int row=0; row<NSieveRow; row++){
+			c3->cd(col*NSieveRow+row+1);
+			CorrectedThetaResid[col][row]->Draw("hist");
+		}
+	}
+
+	c3->Update();
+
+	// generate the fit error
+	TCanvas *c4=new TCanvas("CThetaCorrectionError","CThetaCorrectionError",1800,1100);
+	c4->Divide(1,2);
+	c4->Draw();
+	TH1F *sieveThetaResidualDistri=new TH1F("SieveThetaResiduals","Sieve #Theta' Residuals",NSieveCol*NSieveRow+10,0,NSieveCol*NSieveRow+10);
+	sieveThetaResidualDistri->GetYaxis()->SetRangeUser(-0.003,0.003);
+
+	std::map<int,std::map<int,double>> thetaErrorTable;
+	std::map<int,std::map<int,double>> PhiErrorTable;
+
+
+	for(int col=0; col< NSieveCol ; col++){
+			for(int row=0; row<NSieveRow; row++){
+				//c3->cd(col*NSieveRow+row+1);
+				std::cout<<"("<<col<<","<<row<<") :::  Mean:"<<CorrectedThetaResid[col][row]->GetMean()<<" Error"<<TMath::ATan(CorrectedThetaResid[col][row]->GetRMS()*1000.0/180.0)<<"  , phi:"<<
+				CorrectedThetaResid[col][row]->GetRMS()<<" Error:"<<TMath::ATan(CorrectedPhiResid[col][row]->GetRMS()*1000.0/180.0) <<std::endl;
+				sieveThetaResidualDistri->Fill(col*NSieveRow+row,CorrectedThetaResid[col][row]->GetMean());
+				sieveThetaResidualDistri->SetBinError(col*NSieveRow+row+1,CorrectedThetaResid[col][row]->GetRMS());
+
+//				   int bin1 = CorrectedThetaResid[col][row]->FindFirstBinAbove(CorrectedThetaResid[col][row]->GetMaximum()/2);
+//				   int bin2 = CorrectedThetaResid[col][row]->FindLastBinAbove(CorrectedThetaResid[col][row]->GetMaximum()/2);
+//				   double fwhm = CorrectedThetaResid[col][row]->GetBinCenter(bin2) - CorrectedThetaResid[col][row]->GetBinCenter(bin1);
+				double errortheta_temp=TMath::ATan(CorrectedThetaResid[col][row]->GetRMS());
+				thetaErrorTable[col][row]=errortheta_temp;//;TMath::ATan(CorrectedThetaResid[col][row]->GetRMS())*1000.0/180.0;
+			}
+		}
+	c4->cd(1);
+	gStyle->SetEndErrorSize(5);
+
+	sieveThetaResidualDistri->GetXaxis()->SetTitle("SieveHoleID");
+	sieveThetaResidualDistri->GetYaxis()->SetTitle("#Theta' Residuals");
+
+	sieveThetaResidualDistri->SetLineWidth(2);
+	sieveThetaResidualDistri->SetMarkerStyle(20);
+//	sieveThetaResidualDistri->SetMarkerSize(2);
+	TLine *line1=new TLine(0,0,100,0);
+	line1->SetLineColor(3);
+	line1->SetLineWidth(2);
+
+	sieveThetaResidualDistri->Draw("E1");
+    line1->Draw("same");
+	c4->Update();
+
+//	TCanvas *c5=new TCanvas("CPhiCorrectionError","CPhiCorrectionError",1800,1100);
+//	c5->Draw();
+
+	TH1F *sievePhiResidualDistri=new TH1F("SievePhiResiduals","Sieve #Phi' Residuals",NSieveCol*NSieveRow+10,0,NSieveCol*NSieveRow+10);
+	sievePhiResidualDistri->GetYaxis()->SetRangeUser(-0.003,0.003);
+	sievePhiResidualDistri->GetXaxis()->SetTitle("SieveHoleID");
+	sievePhiResidualDistri->GetYaxis()->SetTitle("#Phi' Residuals");
+
+	for(int col=0; col< NSieveCol; col++){
+			for(int row=0; row<NSieveRow; row++){
+				//c3->cd(col*NSieveRow+row+1);
+				CorrectedPhiResid[col][row]->GetMean();
+				CorrectedPhiResid[col][row]->GetRMS();
+				sievePhiResidualDistri->Fill(col*NSieveRow+row,CorrectedPhiResid[col][row]->GetMean());
+				sievePhiResidualDistri->SetBinError(col*NSieveRow+row+1,CorrectedPhiResid[col][row]->GetRMS());
+				double errorphi_temp=TMath::ATan(CorrectedPhiResid[col][row]->GetRMS());
+				PhiErrorTable[col][row]=errorphi_temp;
+			}
+		}
+	c4->cd(2);
+	sievePhiResidualDistri->SetLineWidth(2);
+	sievePhiResidualDistri->SetMarkerStyle(20);
+	sievePhiResidualDistri->Draw("E1");
+	line1->Draw("same");
+	c4->Update();
+	std::cout<<LatexTableGenerator(thetaErrorTable).c_str();
+	std::cout<<LatexTableGenerator(PhiErrorTable).c_str();
+
 	return c2;
+
+
+	// latex table generator
+
 }
 
 
