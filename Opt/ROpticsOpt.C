@@ -3123,6 +3123,16 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH2F *>>>hhRealSieve;  // the theoretical value, calculated from the scattered angle
 	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH1F *>>>hhRealSieveScatteredAngle;
 
+	TH1F *CorrectedDpResid[NSieveCol][NSieveRow];
+		//initilize the theta and phi
+		for (int col = 0; col<NSieveCol; col++){
+			for(int row=0; row<NSieveRow;row++){
+				CorrectedDpResid[col][row]=new TH1F(Form("SieveDpCol%d_Row%d_resid",col,row),Form("SieveDpCol%d_Row%d_resid",col,row),
+						100,-0.005,0.005);
+
+			}
+		}
+
 	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
 		SieveThetaPhihh[KineID] = new TH2F(
 				Form("SieveThetaPhi_%d%%", KineID - 2),
@@ -3132,7 +3142,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 				Form("Dp_Kin for Delta Scan Kine. %d%%", (KineID - 2)),
 				NDpRange, -2 * DpRange, 2 * DpRange);
 		hDpKinCalibRMS[KineID] = new TH1D(Form("hDpKinCalibRMS%d", KineID),
-				Form("Dp_Kin for Delta Scan Kine.RMS %d%%", (KineID - 2)),500,-0.002,0.002);
+				Form("Dp Optimition Residuals %d%%", (KineID - 2)),500,-0.002,0.002);
 		hDpKinReal[KineID] = new TH1D(Form("hDpKinReal%d", KineID),
 				Form("Dp_Kin Real for Delta Scan Kine. %d%%", (KineID - 2)),
 				NDpRange, -2 * DpRange, 2 * DpRange);
@@ -3233,6 +3243,9 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 
 			hDpKinRealSieve[KineID][Col][Row]->Fill(realAngleCalDp);
 			hMomRealSieve[KineID][Col][Row]->Fill(realAngleCalMom);
+           if(KineID==2)  //nominal
+			CorrectedDpResid[Col][Row]->Fill(matrixprojectedMom-realAngleCalMom);
+
 			hhRealSieveScatteredAngle[KineID][Col][Row]->Fill(eventdata.Data[kScatterAngle]);
 			// plot the theta phi and plot, ready to add the theoretical momentum
 			SieveThetaPhihh[KineID]->Fill(eventdata.Data[kRealPhi],eventdata.Data[kRealTh]);
@@ -3428,6 +3441,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 				t2->SetTextSize(0.03);
 				t2->Draw("same");
 
+//				CorrectedDpResid[itter->first][]
 
 			}
 		}
@@ -3462,8 +3476,34 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		    t0->Draw();
 
 	}
+	std::map<int,std::map<int,double>> PErrorTable;
+	TCanvas *c5=new TCanvas("CPhiCorrectionError","CPhiCorrectionError",1800,1100);
+		c5->Draw();
+		TLine *line1=new TLine(0,0,100,0);
+		line1->SetLineColor(3);
+		line1->SetLineWidth(2);
+	TH1F *sievePResidualDistri=new TH1F("Sieve_P_Residuals","Sieve P Residuals",NSieveCol*NSieveRow+10,0,NSieveCol*NSieveRow+10);
+		sievePResidualDistri->GetYaxis()->SetRangeUser(-0.003,0.003);
+		sievePResidualDistri->GetXaxis()->SetTitle("SieveHoleID");
+		sievePResidualDistri->GetYaxis()->SetTitle("p Residuals");
+		for(int col=0; col< NSieveCol; col++){
+				for(int row=0; row<NSieveRow; row++){
+					//c3->cd(col*NSieveRow+row+1);
+					CorrectedDpResid[col][row]->GetMean();
+					CorrectedDpResid[col][row]->GetRMS();
+					sievePResidualDistri->Fill(col*NSieveRow+row,CorrectedDpResid[col][row]->GetMean());
+					sievePResidualDistri->SetBinError(col*NSieveRow+row+1,CorrectedDpResid[col][row]->GetRMS());
+					PErrorTable[col][row]=CorrectedDpResid[col][row]->GetRMS();
 
+				}
+			}
 
+		sievePResidualDistri->SetLineWidth(2);
+		sievePResidualDistri->SetMarkerStyle(20);
+		sievePResidualDistri->Draw("E1");
+		line1->Draw("same");
+
+		std::cout<<LatexTableGenerator(PErrorTable).c_str()<<std::endl;
 	return c1;
 
 }
