@@ -12,7 +12,7 @@
 #include <TSystem.h>
 
 #define th_ph_optimize true
-#define y_optimize false
+#define y_optimize true
 #define dp_optimize false
 
 #include "ROpticsOpt.h"
