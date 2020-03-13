@@ -3269,9 +3269,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 			AverCalcDpKin[KineID] += eventdata.Data[kCalcDpKinMatrix];
 			NEvntDpKin[KineID]++;
 		}
-		//        hDpKinAll[KineID]->Fill(eventdata.Data[kCalcDpKin] + eventdata.Data[kElossDp]);
-		//        hDpKinAll[KineID]->Fill(eventdata.Data[kCalcDpKin]);
-		//        RealDpKin[KineID] = eventdata.Data[kRealDpKin] + eventdata.Data[kElossDp];
+
 		RealDpKin[KineID] = eventdata.Data[kRealDpKinMatrix];
 		for (UInt_t ExcitID = 0; ExcitID < NExcitationStates; ExcitID++) {
 			assert(kRealDpKinExcitations + ExcitID < kRealTh); //index check
@@ -3335,8 +3333,6 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		hDpKinCalib[KineID]->Fit(FitFunc, "R");
 
 		f->SetLineColor(2);
-//		f->Draw("SAME");
-		//	l->Draw();
 
 		TLatex *t1 = new TLatex(f->GetParameter(1) + 2 * f->GetParameter(2),
 				f->GetParameter(0),
