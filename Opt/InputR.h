@@ -104,7 +104,7 @@ const Double_t HRSCentralMom[] = {
   }; 
 
 const Double_t GroundNuclearMass = 12*.931494028-.511e-3*6;// -.511e-3*6; //GeV/c^2  //c Target
-const Double_t ExcitationEnergy[] = {0.,0.0,0.0,0.0,0.0};//selected excitation states for each kinematics
+const Double_t ExcitationEnergy[] = {0.0,0.0,0.0,0.0,0.00443891,0.00443891,0.00443891,0.00443891};//selected excitation states for each kinematics
 //{0.,0.00443891,0.00443891,0.00443891,0.00443891};
 
 const UInt_t NExcitationStates = 1; // C Excitation States
