@@ -15,11 +15,9 @@ const TString InputID = "prexLHRS";
 // Input Sections
 /////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////
-//const Double_t Ebeam = 2.3004;
 // HRS Position Inputs
 const Double_t D2R = TMath::Pi() / 180.;
-//set as central sieve hole angle
+//set as central sieve hole angle for LHRS
 const Double_t HRSAngle = 4.7469 * D2R;
 
 
@@ -27,11 +25,11 @@ const Double_t HRSAngle = 4.7469 * D2R;
 // not used
 //------------------------------------------------------------------------
 //LH2 target information
-const Double_t LH2_TargetLength = 0.*1.e-2; //unit m
-const Double_t LH2_Target_Tip_Radius = 0.*2.54*1.e-2; //target width and tip radius
-const Double_t LH2_Thickness_Entance = 0.*1.e-3;//Al 7075, aluminum thickness for the entrance window
-const Double_t LH2_Thickness_Side = 0.*1.e-3;  //Al 7075, aluminum thickness for the side wall
-const Double_t LH2_Thickness_Tip = 0.*1.e-3;  //Al 7075, aluminum thickness for tip
+const Double_t LH2_TargetLength = 0.*1.e-2*0.0; //unit m
+const Double_t LH2_Target_Tip_Radius = 0.*2.54*1.e-2*0.0; //target width and tip radius
+const Double_t LH2_Thickness_Entance = 0.*1.e-3*0.0;//Al 7075, aluminum thickness for the entrance window
+const Double_t LH2_Thickness_Side = 0.*1.e-3*0.0;  //Al 7075, aluminum thickness for the side wall
+const Double_t LH2_Thickness_Tip = 0.*1.e-3*0.0;  //Al 7075, aluminum thickness for tip
 
 // MissPoint* are in HCS
 const Double_t MissPointZ =0.0;//
@@ -76,11 +74,16 @@ const Double_t targetfoils[] = {0.0,0.0,0.0,0.0};
 
  ///////////////////////////////////////////////////////////////////////// 
  // Excitation State Inputs 
-const UInt_t NKine = 4; //N Delta Scans */
+const UInt_t NKine = 8; //N Delta Scans */
 
 #define DIPOLE_MAG2MOM(Mag) (2.702*(Mag)-1.6e-03*(Mag)*(Mag)*(Mag)) 
 
 const Double_t Ebeam[] = { 
+  2.17596, //21642   -2%
+  2.17591, //21641   -1%
+  2.17575, //21627    0%
+  2.17605,  //21636   +1%
+  	  	  	  	  	  	  // prepare for the P1 application
   2.17596, //21642   -2%
   2.17591, //21641   -1%
   2.17575, //21627    0%
@@ -89,6 +92,11 @@ const Double_t Ebeam[] = {
 
 // this need to read from the database and convert with the equation
 const Double_t HRSCentralMom[] = { 
+		2.141358228, //21642   -2%
+		2.162722897, //21641   -1%
+		2.185155798, //21626    0%
+		2.197131257,  //21632   +1%
+
 		2.141358228, //21642   -2%
 		2.162722897, //21641   -1%
 		2.185155798, //21626    0%
@@ -108,7 +116,7 @@ const Double_t AllLossExceptFoil
 	  2.78*2.035*16*1.e-3*2.54 //Al 2024, rho 2.78, scattering exit window Al
 	  +1.205E-03*2.6922*14.79*2.54//air, Target Enclosure to HRS
 	  +1.42*2.138*12*1.e-3*2.54 //kapton window on spectrometer entrance
-        ); //AllLossExceptFoil==1e-3*0.444;
+        )*0.0; //AllLossExceptFoil==1e-3*0.444;
 
 const Double_t LossEntranceWindow = 1e-3*2.81*2.0795*LH2_Thickness_Entance*100*0.0;//eloss at entrance window
 const Double_t LossEachUnitB = 0.0723*4.7516*100*1e-3*0.0; // Radiation loss in 1m LH2 before scattering, 2.3004GeV
@@ -120,8 +128,8 @@ const Double_t LossEachUnitA_Al2024 = 2.78*2.036*100*1e-3*0.0; // Al Eloss in 1m
 /////////////////////////////////////////////////////////////////////////
 // Disable Extended Target Correction
 
-const Double_t ExtTarCor_ThetaCorr = 0.;//0.61;//0.00;//
-const Double_t ExtTarCor_DeltaCorr = 1e36;//5.18;//1e36;//
+const Double_t ExtTarCor_ThetaCorr = 0.61;//0.00;//
+const Double_t ExtTarCor_DeltaCorr = 5.18;//1e36;//
 
 
 /////////////////////////////////////////////////////////////////////////
