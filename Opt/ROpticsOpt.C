@@ -1077,7 +1077,7 @@ const TVector3 ROpticsOpt::GetSieveHoleTCS(UInt_t Col, UInt_t Row){
     double_t rowID_temp=(double_t)Row -3.0;
 
     Double_t PRex_x=rowID_temp*13.3*(1e-3)+XOffset[Col]*(1e-3);
-    Double_t PRex_y=PositionIndex_y[Col]*(-1e-3);
+    Double_t PRex_y=PositionIndex_y[Col]*(1e-3);
 
     assert(PRex_x<0.2 && PRex_x<-0.2);
     assert(PRex_y<0.2 && PRex_y<-0.2);
@@ -1119,7 +1119,7 @@ const TVector3 ROpticsOpt::GetSieveHoleTCS_PRex(TString hrs, UInt_t Col, UInt_t 
     double_t rowID_temp=(double_t)Row -3.0;
 
     Double_t PRex_x=rowID_temp*13.3*(1e-3)+XOffset[Col]*(1e-3);
-    Double_t PRex_y=PositionIndex_y[Col]*(-1e-3);
+    Double_t PRex_y=PositionIndex_y[Col]*(1e-3);
 
     assert(PRex_x<0.2 && PRex_x<-0.2);
     assert(PRex_y<0.2 && PRex_y<-0.2);

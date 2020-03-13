@@ -11,7 +11,7 @@
 #include "TVirtualFitter.h"
 #include <TSystem.h>
 
-#define th_ph_optimize false
+#define th_ph_optimize true
 #define y_optimize false
 #define dp_optimize false
 
