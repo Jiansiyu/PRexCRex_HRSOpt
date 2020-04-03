@@ -29,9 +29,10 @@ Bool_t freepara[10000] = {kFALSE}; //NPara
 
 UInt_t MaxDataPerGroup = 100;
 
-//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.test_reform";
-TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveThetaPhi.Full.test_reform";
-//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Mom.Full.test_reform";
+//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveThetaPhi.test_reform";
+//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveMom.test_reform";
+TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.LargeDataSetNotPcut.test_reform";
+
 
 typedef void (*PTRFCN)(Int_t &, Double_t *, Double_t &, Double_t*, Int_t);
 PTRFCN myfcn = NULL;
@@ -269,7 +270,7 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     assert(fitter->GetNumberFreeParameters() > 0);
     assert(fitter->GetNumberTotalParameters() == NPara);
 
-    Double_t arglist[2] = {1000,0.01};
+    Double_t arglist[2] = {1000,0.001};
     fitter->ExecuteCommand("MIGRAD", arglist, 2);
 #endif         
 
@@ -281,7 +282,7 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
 //    opt->CheckDpGlobal();
 //    TCanvas * c1 = opt->CheckDp();
 //    TCanvas * c1 = opt->CheckDp_test();
-    TCanvas * c2 = opt->CheckDp_test2();
+    TCanvas * c2 = opt->CheckDp_test();
 //    c1->Print(DestDataBase + ".Dp.Opt.png", "png");
 #if dp_optimze
     delete fitter;
