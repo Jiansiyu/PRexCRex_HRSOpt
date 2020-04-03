@@ -1,0 +1,118 @@
+# -------------------------------------------------------------
+# Optimized by Shujie Li @ Fri Mar 13 01:58:06 2020
+# Saved to ../CRex_DB/LHRS_20200311/Initial_T2.db.theta.phi.theta.phi.new
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Fri Mar 13 01:57:41 2020
+# Saved to ../CRex_DB/LHRS_20200311/Initial_T2.db.theta.phi.theta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Fri Mar 13 01:56:56 2020
+# Saved to ../CRex_DB/LHRS_20200311/Initial_T2.db.theta.phi
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Fri Mar 13 01:56:34 2020
+# Saved to ../CRex_DB/LHRS_20200311/Initial_T2.db.theta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Sun Jan 19 13:21:22 2020
+# Saved to ../CRex_DB/LHRS_temp/result
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Sun Jan 19 13:13:41 2020
+# Saved to ../CRex_DB/LHRS_temp/result
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Sun Jan 19 13:12:20 2020
+# Saved to ../CRex_DB/LHRS_temp/result
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Sun Jan 19 13:10:31 2020
+# Saved to ../CRex_DB/LHRS_temp/result
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Sun Jan 19 12:59:37 2020
+# Saved to ../CRex_DB/LHRS_temp/result
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Sun Jan 19 12:53:51 2020
+# Saved to ../CRex_DB/LHRS_temp/result
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Sun Jan 19 01:17:00 2020
+# Saved to ../CRex_DB/LHRS_temp/result
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Sun Jan 19 00:29:59 2020
+# Saved to ../CRex_DB/LHRS_temp/result
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Sun Jan 19 00:21:28 2020
+# Saved to ../CRex_DB/LHRS_temp/result
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Fri Jan 17 15:08:33 2020
+# Saved to ../CRex_DB/LHRS_temp/temp
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Fri Jan 17 14:44:29 2020
+# Saved to ../CRex_DB/LHRS_temp/temp
+######################### DO NOT REMOVE THIS HEADER ###############################
+# LHRS Optics Database
+# Author: Ge Jin <gjin@jlab.org>
+#
+# This is LHRS optics databse for Ay and e'd experiments 1st pass, 2nd pass and 3rd pass data analysis.
+# It covers an angle ranging from 12.5 degrees to 17 degrees
+# t0 time where extracted from data for dvcs run  [7089,7090,7091,7092]
+###################################################################################
+#
+# Sum of progress.
+# * Full (1.2 ~ 3.6) GeV and (12.5 ~ 17) degrees region optics,
+# * with radiation correction (http://physics.nist.gov/PhysRefData/Star/Text/ESTAR.html -> Collision Loss Only)
+# * with spectrometer pointing offsets
+# * With Extended Target Correction
+# * No  term larger than 1000
+# * With Sieve Offsets
+# * Finer phi correction with H2 and carbon elastic peaks
+# ===========================================
+# Theta and phi part is optimized from a 2nd pass and 14.5 degree run 3483 and is tested on a 1st pass 17 degree run 1461
+# y_tg part is optimized from a 1st pass and 17 degrees run 1425 and is tested on other configurations ranging in (1.2 ~ 3.6) GeV and (12.5 ~ 17) degrees region 
+# Dp part is optimized by 1st pass carbon elastic runs 1454,1456,1461. 
+# Dp is tested on 1st pass H2 elastic runs 1396, 1408,1419, and 2nd pass H2 elastic runs 2610,2611,2614,2615
+##################################################
+#
+############ LEFT VDC #########################
+D 0 0 0  -3.725407E-03 7.726149E-02 6.273499E-05 6.206608E-02 4.720622E-02 -9.641570E-01
+D 1 0 0  5.783223E-02 4.467702E-01 -1.247972E-01 -3.791061E-01
+D 2 0 0  -1.597740E+00 8.384548E+00 -2.945616E+00
+D 0 0 2  2.016124E+00 -2.246225E+00 -2.563870E+00
+D 0 2 0  4.213329E-01 -4.264022E+00 -7.375879E-02
+D 0 1 1  1.504397E+00 -5.127124E+00
+D 1 0 2  3.838734E+00
+D 1 1 1  4.024651E+02 3.696825E+02
+D 2 0 2  -6.674267E+03
+D 2 1 1  1.299156E+03
+D 3 0 0  -1.090199E+02
+D 1 2 0  3.590540E+02 3.586920E+02
+D 4 0 0  3.088865E+03
+D 2 2 0  3.164321E+03
+D 0 1 3  9.308748E+02
+T 0 0 0  -2.059176E-03 1.576461E-02 -9.423960E-04 1.184759E-02 -2.620471E-02
+T 0 0 1  -2.364233E-01 3.389887E-01
+T 0 0 2  -1.109904E+01 2.409816E+00
+T 0 1 0  -1.820628E-01 4.715750E-01
+T 0 1 1  -2.062602E+01
+T 0 2 0  -8.631309E+00
+T 1 0 0  -2.034326E+00 4.412446E-01 -1.081850E+00 4.568173E+00 -4.371537E+00
+T 1 0 1  3.167297E+00 -1.695970E+01
+T 1 1 0  -3.146143E+01 -5.821434E+00
+T 1 1 1  6.816094E+02 -3.780651E+02
+T 2 0 0  -5.378528E+00 1.319034E+00
+P 0 0 0  5.150080E-04 -9.193330E-05 5.171869E-03 -3.914643E-03
+P 0 0 1  3.791376E-01 -1.142469E-01 -3.654509E-01 9.099938E-01
+P 0 0 2  -2.661462E+00 1.609245E+00 -2.032076E+01
+P 0 1 0  -4.784712E-01 -8.692544E-02
+P 0 1 1  -1.657664E+00 -1.373685E+00 -1.002926E+01
+P 0 2 0  1.583708E+00
+P 1 0 0  4.079562E-02 1.574260E-02
+P 1 0 1  6.300726E+00
+P 1 1 1  7.192482E+01
+P 2 0 0  -4.314087E+00
+Y 0 0 0  5.222025E-05 -1.552131E-05 2.119948E-04 8.885643E-04
+Y 0 0 1  1.712340E-03 4.754668E-03 -9.105890E-03
+Y 0 0 2  6.744787E-02
+Y 0 1 0  2.788841E-03 -5.621333E-04
+Y 0 1 1  6.293508E-02 -2.426415E-01
+Y 0 2 0  7.501013E-03 1.457377E-01
+Y 1 1 0  -4.428054E-02
+Y 1 1 1  -4.946372E+00
+Y 2 0 0  -1.809680E-01
+Y 2 0 1  -4.661738E+00
+Y 2 1 0  6.201386E+00
+Y 1 0 1  6.817014E-02

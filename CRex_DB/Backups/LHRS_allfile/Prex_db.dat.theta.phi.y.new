@@ -1,0 +1,125 @@
+# -------------------------------------------------------------
+# Optimized by Shujie Li @ Sun Jan 12 23:18:53 2020
+# Saved to ../CRex_DB/LHRS_allfile/Prex_db.dat.theta.phi.y.new
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Sun Jan 12 23:18:18 2020
+# Saved to ../CRex_DB/LHRS_allfile/Prex_db.dat.theta.phi
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Sun Jan 12 23:17:35 2020
+# Saved to ../CRex_DB/LHRS_allfile/Prex_db.dat.theta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Thu Jan  9 15:56:55 2020
+# Saved to ../CRex_DB/LHRS_test/test.dat
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Dec 17 05:49:49 2019
+# Saved to ../CRex_DB/LHRS_test/Prex_db.dat.theta.phi.y.dp
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Dec 17 05:06:48 2019
+# Saved to ../CRex_DB/LHRS_test/Prex_db.dat.theta.phi.y
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Dec 17 05:06:33 2019
+# Saved to ../CRex_DB/LHRS_test/Prex_db.dat.theta.phi
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Tue Dec 17 05:06:12 2019
+# Saved to ../CRex_DB/LHRS_test/Prex_db.dat.theta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Mon Dec 16 16:46:57 2019
+# Saved to ../CRex_DB/LHRS/Prex_db.dat.theta.phi.y
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Mon Dec 16 16:46:36 2019
+# Saved to ../CRex_DB/LHRS/Prex_db.dat.theta.phi
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Mon Dec 16 16:45:38 2019
+# Saved to ../CRex_DB/LHRS/Prex_db.dat.theta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Mon Dec 16 13:37:22 2019
+# Saved to ../CRex_DB/LHRS/Prex_db.dat.theta.phi.theta.phi.y
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Mon Dec 16 13:36:59 2019
+# Saved to ../CRex_DB/LHRS/Prex_db.dat.theta.phi.theta.phi
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Mon Dec 16 13:36:34 2019
+# Saved to ../CRex_DB/LHRS/Prex_db.dat.theta.phi.theta
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Mon Dec 16 13:35:49 2019
+# Saved to ../CRex_DB/LHRS/Prex_db.dat.theta.phi
+# -------------------------------------------------------------
+# Optimized by Chao Gu @ Mon Dec 16 13:35:22 2019
+# Saved to ../CRex_DB/LHRS/Prex_db.dat.theta
+# -------------------------------------------------------------
+# Optimized by Shujie Li @ Tue Jul  9 21:14:32 2019
+# Saved to ./prex2/./PRex_DB/Prex_db.dat.theta.phi
+# -------------------------------------------------------------
+# Optimized by Shujie Li @ Tue Jul  9 21:13:50 2019
+# Saved to ./prex2/./PRex_DB/Prex_db.dat.theta
+######################### DO NOT REMOVE THIS HEADER ###############################
+# LHRS Optics Database
+# Author: Ge Jin <gjin@jlab.org>
+#
+# This is LHRS optics databse for Ay and e'd experiments 1st pass, 2nd pass and 3rd pass data analysis.
+# It covers an angle ranging from 12.5 degrees to 17 degrees
+#
+# t0 time where extracted from data for dvcs run  [7089,7090,7091,7092]
+###################################################################################
+#
+# Sum of progress.
+# * Full (1.2 ~ 3.6) GeV and (12.5 ~ 17) degrees region optics,
+# * with radiation correction (http://physics.nist.gov/PhysRefData/Star/Text/ESTAR.html -> Collision Loss Only)
+# * with spectrometer pointing offsets
+# * With Extended Target Correction
+# * No  term larger than 1000
+# * With Sieve Offsets
+# * Finer phi correction with H2 and carbon elastic peaks
+# ===========================================
+# Theta and phi part is optimized from a 2nd pass and 14.5 degree run 3483 and is tested on a 1st pass 17 degree run 1461
+# y_tg part is optimized from a 1st pass and 17 degrees run 1425 and is tested on other configurations ranging in (1.2 ~ 3.6) GeV and (12.5 ~ 17) degrees region 
+# Dp part is optimized by 1st pass carbon elastic runs 1454,1456,1461. 
+# Dp is tested on 1st pass H2 elastic runs 1396, 1408,1419, and 2nd pass H2 elastic runs 2610,2611,2614,2615
+##################################################
+#
+############ LEFT VDC #########################
+D 0 0 0  -3.910447E-03 8.178999E-02 -1.833967E-02
+D 0 0 1  2.640260E-02 -1.939529E-02
+D 0 0 2  -8.062870E-01
+D 0 1 0  4.142550E-02 -1.205427E-02
+D 0 2 0  1.100833E+00
+D 1 0 0  5.354110E-02 3.053874E-01
+D 1 0 1  1.262509E+00
+D 1 0 2  -1.307683E+00
+D 1 1 0  -4.120552E+00
+D 1 1 1  1.279546E+02
+D 2 0 0  1.185500E+00
+T 0 0 0  -3.329011E-03 1.781807E-02 1.975831E-03
+T 0 0 1  -3.305224E-01 4.831309E-01
+T 0 0 2  -1.394810E+01
+T 0 1 0  -2.475572E-01 5.475244E-01
+T 0 1 1  -2.540002E+01
+T 0 2 0  -9.558597E+00
+T 1 0 0  -2.072228E+00 5.974963E-01
+T 1 0 1  1.175556E+00
+T 1 1 0  -3.283179E+01
+T 1 1 1  6.214867E+02
+T 2 0 0  -5.496713E+00
+P 0 0 0  1.410927E-03 2.438693E-03 -2.375862E-04
+P 0 0 1  3.603974E-01 7.286157E-02
+P 0 0 2  -3.890069E+00 1.314655E+00
+P 0 1 0  -5.033255E-01 1.314399E-01
+P 0 1 1  -4.970062E+00 1.888685E+00
+P 0 2 0  -5.260762E-01 -1.652437E-01
+P 1 0 0  1.647402E-03 4.218675E-02
+P 1 0 1  4.236203E+00 -5.225921E-01
+P 1 1 1  5.513267E+01 -5.813644E+01
+P 2 0 0  -3.557001E+00 2.001303E+00
+P 1 1 0  -3.059645E+00 8.673252E-02
+Y 0 0 0  7.646311E-05 -1.332818E-05 9.393412E-05 1.958994E-04
+Y 0 0 1  7.001657E-04 7.904353E-04 -3.406433E-03
+Y 0 0 2  4.208500E-02
+Y 0 1 0  6.623165E-05 1.638669E-05
+Y 0 1 1  -1.542065E-02 8.652032E-02
+Y 0 2 0  2.124265E-02 -5.850865E-02
+Y 1 1 0  -1.994185E-02
+Y 1 1 1  -4.019135E-01
+Y 2 0 0  9.508776E-02 -1.410775E-01 -5.997173E-01
+Y 2 0 1  -1.166568E+00
+Y 2 1 0  2.664345E+00
+Y 1 0 1  -4.326827E-03
