@@ -30,9 +30,9 @@ Bool_t freepara[10000] = {kFALSE}; //NPara
 UInt_t MaxDataPerGroup = 100;
 
 //TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveThetaPhi.test_reform";
-//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveMom.test_reform";
-TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.LargeDataSetNotPcut.test_reform";
-
+TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveMom.test_reform";
+//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.LargeDataSetNotPcut.test_reform";
+//TString DataSource = "/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200322/Test/LHRS_EventNewNewRun/LargeDataSetVersion/WithOutMomCut/Sieve.Full.test";
 
 typedef void (*PTRFCN)(Int_t &, Double_t *, Double_t &, Double_t*, Int_t);
 PTRFCN myfcn = NULL;
@@ -277,12 +277,12 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     opt->Print();
     opt->SaveDataBase(DestDataBase);
     opt->SaveNewDataBase(Form("%s",DestDataBase.Data()));
-    opt->SumSquareDp();
+    opt->SumSquareDp();      // recalculate the matrix project parameter
 //    opt->CheckDp();
 //    opt->CheckDpGlobal();
 //    TCanvas * c1 = opt->CheckDp();
-//    TCanvas * c1 = opt->CheckDp_test();
-    TCanvas * c2 = opt->CheckDp_test();
+    TCanvas * c1 = opt->CheckDp_test();
+    TCanvas * c2 = opt->CheckDp_test2();
 //    c1->Print(DestDataBase + ".Dp.Opt.png", "png");
 #if dp_optimze
     delete fitter;

@@ -453,6 +453,10 @@ Int_t ROpticsOpt::LoadDataBase(TString DataBaseName)
         // order optimize to
         ME.OptOrder = atoi(line_spl[line_spl.size() - 1].c_str());
 
+        // added by siyu to fix the issues when the number of none-zero > optOrder
+        ME.order=ME.OptOrder;
+
+
         // Don't bother with all-zero matrix elements
         if (ME.iszero) continue;
 
@@ -1278,6 +1282,45 @@ latexStr+="\\end{tabular} \n\\end{table}\n";
 return latexStr;
 }
 
+
+inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>content,std::map<int,std::map<int, double>>errorArray) {
+
+  std::cout<<"====> Generating latex"<<std::endl;
+  std::string latexStr;
+  latexStr+="\\begin{table}[]\n";
+  latexStr+="\\begin{tabular}{";
+  for(int i =0; i < content.size();i++){
+	  latexStr+="|l|";
+  }
+  latexStr+="} \n \\hline\n";
+
+  latexStr+=" Col \t";
+
+  for (auto colIter=content.begin();colIter!=content.end();colIter++){
+  	  int Col = colIter->first;
+  	latexStr+=Form(" & %d \t",Col);
+  }
+  latexStr+=" \\\\ \\hline \n";
+
+  //for single row loop on Cal
+  double error=0.0;
+  for(int row=0; row<NSieveRow; row++){
+	  latexStr+=Form("Row %d \t", row);
+	  for(int col=0; col<NSieveCol; col++){
+		  if(content.find(col)!=content.end()&& content[col].find(row)!=content[col].end()){
+			  error=content[col][row];
+		  }
+		  latexStr+=Form(" & %1.2f \\pm %1.2f \t",1000*error, 1000*errorArray[col][row]);
+	  }
+	  latexStr+=" \\\\ \\hline \n";
+  }
+latexStr+="\\end{tabular} \n\\end{table}\n";
+//std::cout<<latexStr.c_str()<<std::endl;
+return latexStr;
+}
+
+
+
 TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 {
 	//TODO
@@ -1528,6 +1571,8 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 
 	std::map<int,std::map<int,double>> thetaErrorTable;
 	std::map<int,std::map<int,double>> PhiErrorTable;
+	std::map<int,std::map<int,double>> thetaErrorSigmaTable;
+	std::map<int,std::map<int,double>> PhiErrorSigmaTable;
 
 
 	for(int col=0; col< NSieveCol ; col++){
@@ -1541,8 +1586,15 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 //				   int bin1 = CorrectedThetaResid[col][row]->FindFirstBinAbove(CorrectedThetaResid[col][row]->GetMaximum()/2);
 //				   int bin2 = CorrectedThetaResid[col][row]->FindLastBinAbove(CorrectedThetaResid[col][row]->GetMaximum()/2);
 //				   double fwhm = CorrectedThetaResid[col][row]->GetBinCenter(bin2) - CorrectedThetaResid[col][row]->GetBinCenter(bin1);
-				double errortheta_temp=TMath::ATan(CorrectedThetaResid[col][row]->GetRMS());
+
+
+				double errortheta_temp=TMath::ATan(CorrectedThetaResid[col][row]->GetMean());
 				thetaErrorTable[col][row]=errortheta_temp;//;TMath::ATan(CorrectedThetaResid[col][row]->GetRMS())*1000.0/180.0;
+
+				double errorthetaRMS_temp=TMath::ATan(CorrectedThetaResid[col][row]->GetRMS());
+				thetaErrorSigmaTable[col][row]=errorthetaRMS_temp;//;TMath::ATan(CorrectedThetaResid[col][row]->GetRMS())*1000.0/180.0;
+
+
 			}
 		}
 	c4->cd(1);
@@ -1577,8 +1629,15 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 				CorrectedPhiResid[col][row]->GetRMS();
 				sievePhiResidualDistri->Fill(col*NSieveRow+row,CorrectedPhiResid[col][row]->GetMean());
 				sievePhiResidualDistri->SetBinError(col*NSieveRow+row+1,CorrectedPhiResid[col][row]->GetRMS());
-				double errorphi_temp=TMath::ATan(CorrectedPhiResid[col][row]->GetRMS());
+
+				double errorphi_temp=TMath::ATan(CorrectedPhiResid[col][row]->GetMean());
 				PhiErrorTable[col][row]=errorphi_temp;
+
+				double errorphiSigma_temp=TMath::ATan(CorrectedPhiResid[col][row]->GetRMS());
+				PhiErrorSigmaTable[col][row]=errorphiSigma_temp;
+
+
+
 			}
 		}
 	c4->cd(2);
@@ -1588,7 +1647,15 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 	line1->Draw("same");
 	c4->Update();
 	std::cout<<LatexTableGenerator(thetaErrorTable).c_str();
+
+	std::cout<<"\n\n Residual Mean with Sigma"<<std::endl;
+	std::cout<<LatexTableGenerator(thetaErrorTable,thetaErrorSigmaTable).c_str();
+
+	std::cout<<"\n\n"<<std::endl;
 	std::cout<<LatexTableGenerator(PhiErrorTable).c_str();
+	std::cout<<"\n\n Residual Mean with Sigma"<<std::endl;
+	std::cout<<LatexTableGenerator(PhiErrorTable,PhiErrorSigmaTable).c_str();
+
 
 	return c2;
 
@@ -2760,6 +2827,23 @@ void ROpticsOpt::PrepareDp(void)
         dp = CalcTargetVar(fDMatrixElems, powers);
 
 
+//        for (auto i : fDMatrixElems){
+//        	i.print();
+//        }
+//
+//        for (int i = 0; i < kNUM_PRECOMP_POW; i++) {
+//
+//        	std::cout<<"Power["<<i<<"]:  0 -> "<<powers[i][0]<<
+//        			"   1 -> "<<powers[i][1]<<
+//					"   2 -> "<<powers[i][2]<<
+//					"   3 -> "<<powers[i][3]<<
+//					"   4 -> "<<powers[i][4]<<std::endl;
+//        }
+//
+//        std::cout<<Form("%3.7f	%3.7f	%3.7f	%3.7f	%3.7f \n",eventdata.Data[kX],eventdata.Data[kTh],eventdata.Data[kY],eventdata.Data[kPhi],dp)<<std::endl;
+//        getchar();
+
+
 	    TVector3 BeamSpotHCS(eventdata.Data[kBeamX], eventdata.Data[kBeamY], eventdata.Data[kBeamVZ]);
 	    //TVector3 BeamSpotHCS(BeamX_average, BeamY_average, eventdata.Data[kBeamVZ]);
         TVector3 BeamSpotTCS = fTCSInHCS.Inverse()*(BeamSpotHCS - fPointingOffset);
@@ -3680,6 +3764,15 @@ TCanvas* ROpticsOpt::CheckDp_test(void) {
 	Double_t NewArbitaryDpKinShift[NKine];
 	Double_t AveRealDpKinMatrix[NKine] = { 0 };
 
+	//used for check the parameters --added Apr 4 2020 by Siyu
+	Double_t measuredVDCTheta_temp;
+	Double_t measuredVDCPhi_temp;
+	Double_t measuredVDCX_temp;
+	Double_t measuredVDCY_temp;
+	Double_t measuredDp_temp;    // vdc projected result
+	Double_t measuredMomentum_temp;
+
+
 	// add the plot to plot the momentum on central sieve
 	TH1F *hRealMomentumCentralSieve[NKine];      // used for plot the momentum on the central sieve hole. probably also need to add the fit funtions
 
@@ -3710,6 +3803,7 @@ TCanvas* ROpticsOpt::CheckDp_test(void) {
 	}
 
 	// start fill the histgram with the data
+	// check how the data are calculated , the most important part is the Dp since Dp is directly related to the data
 	for (UInt_t idx = 0; idx < fNRawData; idx++) {
 		const EventData &eventdata = fRawData[idx];
 		UInt_t KineID = HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
@@ -3740,11 +3834,14 @@ TCanvas* ROpticsOpt::CheckDp_test(void) {
 								* eventdata.Data[kCentralp]
 								+ eventdata.Data[kCentralp]);
 		// momentum
-		hRealMomentumCentralSieve[KineID]->Fill(
-				(eventdata.Data[kCalcDpKin]+ eventdata.Data[kDpKinOffsets])
-						* eventdata.Data[kCentralp]
-						+ eventdata.Data[kCentralp]);
+		// TODO
+		// need to select the central sieve
 
+		double mom_temp=eventdata.Data[kCentralp]*(eventdata.Data[kCalcDpKinMatrix] + eventdata.Data[kDpKinOffsets]+1.0);   // the reconstructed Momentum
+		if ((Row==3) &&(Col==6)){
+			hRealMomentumCentralSieve[KineID]->Fill(mom_temp);
+		}
+//		hRealMomentumCentralSieve[KineID]->Fill(eventdata.Data[kCentralp]*(eventdata.Data[kCalcDpKinMatrix] + eventdata.Data[kDpKinOffsets]+1.0));
 
 		hMomentumRealKin[KineID]->SetLineColor(41 + KineID * 5);
 		hMomentumKin[KineID]->SetLineColor(41 + KineID * 5);
@@ -3755,6 +3852,12 @@ TCanvas* ROpticsOpt::CheckDp_test(void) {
 //		std::cout <<"theta, phi ("<< eventdata.Data[kRealTh] << ",   "
 //				<< eventdata.Data[kRealPhi]<<",  Scattered Angle:"<<eventdata.Data[kScatterAngle] <<"   Kine:"<<KineID<< std::endl;
 		hScatteredAngle[KineID]->SetLineColor(41 + KineID * 5);
+
+
+		// added by siyu used for check the Dp reconstruction
+//		std::cout<<Form("%3.7f	%3.7f	%3.7f	%3.7f	%3.7f 	%3.7f\n",eventdata.Data[kX],eventdata.Data[kTh],eventdata.Data[kY],eventdata.Data[kPhi],eventdata.Data[kCalcDpKinMatrix] + eventdata.Data[kDpKinOffsets],mom_temp)<<std::endl;
+//		getchar();
+
 
 	}
 
@@ -3796,10 +3899,10 @@ TCanvas* ROpticsOpt::CheckDp_test(void) {
 		for (UInt_t KineID = 1; KineID < NKine; KineID++) {
 			hMomentumRealKin[KineID]->Draw("same");
 		}
- c2->Update();
- c2->cd(1)->BuildLegend();
- c2->cd(2)->BuildLegend();
- c2->Update();
+	c2->Update();
+	c2->cd(1)->BuildLegend();
+	c2->cd(2)->BuildLegend();
+	c2->Update();
 	 // plot the sacttered angle vs the momentum
 
 	 //create the plot used for buffer the momentum(central sieve)
@@ -3855,11 +3958,9 @@ TCanvas* ROpticsOpt::CheckDp_test(void) {
 			fCrystalMomentum->GetParameters(fCrystalMomentumPar);
 
 			TPaveText *pt = new TPaveText(0.1,0.8,0.3,0.9,"NDC");
-				pt->AddText(Form("%1.3f MeV (%2.2f\%%)",1000.0*(fCrystalMomentumPar[1]-fCrystalMomentumPar[6]),100.0*abs(abs(fCrystalMomentumPar[1]-fCrystalMomentumPar[6])-0.00443891)/0.00443891));
-				pt->Draw("same");
-
+			pt->AddText(Form("%1.3f MeV (%2.2f\%%)",1000.0*(fCrystalMomentumPar[1]-fCrystalMomentumPar[6]),100.0*abs(abs(fCrystalMomentumPar[1]-fCrystalMomentumPar[6])-0.00443891)/0.00443891));
+			pt->Draw("same");
 		 }
-
 	 }
 	 CentralSieveMomentumCanv->Update();
 
@@ -4010,7 +4111,11 @@ Double_t ROpticsOpt::SumSquareDp(Bool_t IncludeExtraData)
 
         // calculate momentum
         dp = CalcTargetVar(fDMatrixElems, powers);
-	dp_kin = dp - eventdata.Data[kDpKinOffsets];
+
+//        std::cout<<Form("%3.7f	%3.7f	%3.7f	%3.7f	%3.7f \n",eventdata.Data[kX],eventdata.Data[kTh],eventdata.Data[kY],eventdata.Data[kPhi],dp)<<std::endl;
+//        getchar();
+
+        dp_kin = dp - eventdata.Data[kDpKinOffsets];
 
         //const UInt_t KineID = (UInt_t) (eventdata.Data[kKineID]);
         assert(KineID < NKine); //check array index size
@@ -4068,8 +4173,10 @@ Double_t ROpticsOpt::CalcTargetVar(const vector<THaMatrixElement>& matrix, const
         if (it->v != 0.0) {
             v = it->v;
             unsigned int np = it->pw.size(); // generalize for extra matrix elems.
-            for (unsigned int i = 0; i < np; i++)
+            for (unsigned int i = 0; i < np; i++){
                 v *= powers[it->pw[i]][i + 1];
+            	//std::cout<<"Power["<<(it->pw[i])<<"["<<(i+1)<<"] ::"<<powers[it->pw[i]][i + 1]<<", "<<v<<std::endl;
+            }
             retval += v;
             //      retval += it->v * powers[it->pw[0]][1]
             //	              * powers[it->pw[1]][2]
