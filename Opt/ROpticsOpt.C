@@ -1656,6 +1656,14 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 	std::cout<<"\n\n Residual Mean with Sigma"<<std::endl;
 	std::cout<<LatexTableGenerator(PhiErrorTable,PhiErrorSigmaTable).c_str();
 
+	std::cout<<"\n\n theta sigma table"<<std::endl;
+
+	std::cout<<LatexTableGenerator(thetaErrorSigmaTable).c_str();
+
+	std::cout<<"\n\n theta sigma table"<<std::endl;
+
+	std::cout<<LatexTableGenerator(PhiErrorSigmaTable).c_str();
+
 
 	return c2;
 
@@ -3201,10 +3209,10 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 
 //	TH1F *hDpKinCalibSieve[NKine][13][7];
 	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH1F *>>>hDpKinCalibSieve;
-	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH1F *>>>hDpKinRealSieve;  // the theoretical value, calculated from the scattered angle
-	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH1F *>>>hMomRealSieve;  // the theoretical value, calculated from the scattered angle
-	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH1F *>>>hCalcMomRealSieve;  // matrix projected Momentum
-	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH2F *>>>hhRealSieve;  // the theoretical value, calculated from the scattered angle
+	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH1F *>>>hDpKinRealSieve;     // the theoretical value, calculated from the scattered angle
+	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH1F *>>>hMomRealSieve;       // the theoretical value, calculated from the scattered angle
+	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH1F *>>>hCalcMomRealSieve;   // matrix projected Momentum
+	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH2F *>>>hhRealSieve;         // the theoretical value, calculated from the scattered angle
 	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH1F *>>>hhRealSieveScatteredAngle;
 
 	TH1F *CorrectedDpResid[NKine][NSieveCol][NSieveRow];
@@ -3521,18 +3529,17 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 				t2->SetTextColor(3);
 				t2->SetTextSize(0.03);
 				t2->Draw("same");
-
-//				CorrectedDpResid[itter->first][]
-
 			}
 		}
 	}
 
 	//for temp usage,compare the cenrtral sieve hole
 	sieveThetaphiCanvas_cal->cd(NKine+1);
+	if(NKine==8) // if it contains the first excited and the ground states, otherwise it will case the crash
 	{
 		TPaveText *t0 = new TPaveText(0.03,0.05,0.97,0.95,"NDC");
 		    t0->SetShadowColor(0);
+
 		    for(auto KineID=0; KineID<4; KineID++){
 			if (hCalcMomRealSieve.find(KineID) != hCalcMomRealSieve.end()) {
 				t0->AddText(
@@ -3557,6 +3564,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		    t0->Draw();
 
 	}
+
 	std::map<int, std::map<int,std::map<int,double>>> PErrorTable;
 	TCanvas *c5=new TCanvas("MomemtumOptCanv","MomemtumOptCanv",1800,1100);
 	c5->Divide((int)NKine/2,2);
@@ -3589,10 +3597,22 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		std::cout<<"KindID::"<<KineID<<std::endl;
 		std::cout<<LatexTableGenerator(PErrorTable[KineID]).c_str()<<std::endl;
 
+		// draw the data on the canvas
+		if ((hCalcMomRealSieve.find(KineID) != hCalcMomRealSieve.end())&&(KineID<4)) {
+			TLatex *t=new TLatex(30,-0.001,Form("%1.3f(ideal:%1.3f)",(hCalcMomRealSieve[KineID][6][3]->GetMean()
+					- hCalcMomRealSieve[KineID + 4][6][3]->GetMean())
+					* 1000,(hMomRealSieve[KineID][6][3]->GetMean()
+							- hMomRealSieve[KineID + 4][6][3]->GetMean())
+							* 1000));
+			t->Draw("same");
+		}
+
+
 	}
 	c5->Update();
 
 	// add the first gaus and second gaus difference for each individual holes
+	// gaus fit probably is not a good choise for those kind of small fraction of data set
 	TCanvas *c6=new TCanvas("MomemtumDifferenceCanv","MomemtumDifferenceCanv",1800,1100);
 	c6->Divide(4,2);
 	c6->Draw();
@@ -3601,11 +3621,8 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 	line2->SetLineColor(3);
 	line2->SetLineWidth(2);
 
-
-
-	if(NKine==8){
-
-
+	if(NKine==8)
+	{
 		TH1F *sievePDifferenceDistri[NKine/2];
 		TH1F *sievePDifferencePercentageDistri[NKine/2];
 		for(auto KineID=0; KineID<4; KineID++){
@@ -3624,23 +3641,15 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 					line2->SetLineWidth(2);*/
 
 					for (int row = 0; row < NSieveRow; row++) {
-						if (hCalcMomRealSieve.find(KineID)
-								!= hCalcMomRealSieve.end()
-								&& hCalcMomRealSieve[KineID].find(col)
-										!= hCalcMomRealSieve[KineID].end()
-								&& hCalcMomRealSieve[KineID][col].find(row)
-										!= hCalcMomRealSieve[KineID][col].end()
-								&& hCalcMomRealSieve.find(KineID + 4)
-										!= hCalcMomRealSieve.end()
-								&& hCalcMomRealSieve[KineID + 4].find(col)
-										!= hCalcMomRealSieve[KineID + 4].end()
-								&& hCalcMomRealSieve[KineID + 4][col].find(row)
-										!= hCalcMomRealSieve[KineID + 4][col].end()){
-									sievePDifferenceDistri[KineID]->Fill(col*NSieveRow+row,(hCalcMomRealSieve[KineID][col][row]->GetMean()
-											- hCalcMomRealSieve[KineID + 4][col][row]->GetMean())
-											* 1000);
+						if (hCalcMomRealSieve.find(KineID)!= hCalcMomRealSieve.end()
+								&& hCalcMomRealSieve[KineID].find(col)!= hCalcMomRealSieve[KineID].end()
+								&& hCalcMomRealSieve[KineID][col].find(row)!= hCalcMomRealSieve[KineID][col].end()
+								&& hCalcMomRealSieve.find(KineID + 4)!= hCalcMomRealSieve.end()
+								&& hCalcMomRealSieve[KineID + 4].find(col)!= hCalcMomRealSieve[KineID + 4].end()
+								&& hCalcMomRealSieve[KineID + 4][col].find(row)!= hCalcMomRealSieve[KineID + 4][col].end()){
+									sievePDifferenceDistri[KineID]->Fill(col*NSieveRow+row,(hCalcMomRealSieve[KineID][col][row]->GetMean() - hCalcMomRealSieve[KineID + 4][col][row]->GetMean())* 1000);
 //									sievePDifferenceDistri[KineID]->SetBinError(col*NSieveRow+row+1,TMath::Sqrt(hCalcMomRealSieve[KineID][col][row]->GetRMS()*hCalcMomRealSieve[KineID][col][row]->GetRMS()+hCalcMomRealSieve[KineID+4][col][row]->GetRMS()*hCalcMomRealSieve[KineID+4][col][row]->GetRMS()));
-									sievePDifferenceDistri[KineID]->SetBinError(col*NSieveRow+row+1,0.1);
+									sievePDifferenceDistri[KineID]->SetBinError(col*NSieveRow+row+1,0.01);
 						}
 					}
 				}
@@ -3730,7 +3739,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 
 	c6->Update();
 
-	return c1;
+	return c5;
 
 }
 

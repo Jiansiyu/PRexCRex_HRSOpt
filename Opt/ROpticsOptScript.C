@@ -11,9 +11,19 @@
 #include "TVirtualFitter.h"
 #include <TSystem.h>
 
+#define CHECKFLAG true    //used for check only, only do the plot, no optimization
+//#define CHECKFLAG false   // used for the Dp optimization
+
+
 #define th_ph_optimize false
 #define y_optimize false
-#define dp_optimize false
+
+#if CHECKFLAG
+	#define dp_optimize false
+#else
+	#define dp_optimize true
+#endif
+
 
 #include "ROpticsOpt.h"
 //#include "SaveCanvas.C"
@@ -29,9 +39,16 @@ Bool_t freepara[10000] = {kFALSE}; //NPara
 
 UInt_t MaxDataPerGroup = 100;
 
-//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveThetaPhi.test_reform";
+
+
+#if dp_optimize
 TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveMom.test_reform";
-//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.LargeDataSetNotPcut.test_reform";
+#else
+TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.LargeDataSetNotPcut.test_reform";
+#endif
+
+//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveThetaPhi.test_reform";
+
 //TString DataSource = "/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200322/Test/LHRS_EventNewNewRun/LargeDataSetVersion/WithOutMomCut/Sieve.Full.test";
 
 typedef void (*PTRFCN)(Int_t &, Double_t *, Double_t &, Double_t*, Int_t);
@@ -281,9 +298,16 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
 //    opt->CheckDp();
 //    opt->CheckDpGlobal();
 //    TCanvas * c1 = opt->CheckDp();
-    TCanvas * c1 = opt->CheckDp_test();
+
+#if dp_optimize
     TCanvas * c2 = opt->CheckDp_test2();
-//    c1->Print(DestDataBase + ".Dp.Opt.png", "png");
+
+#else
+    TCanvas * c1 = opt->CheckDp_test();
+
+#endif
+
+    //    c1->Print(DestDataBase + ".Dp.Opt.png", "png");
 #if dp_optimze
     delete fitter;
 #endif
