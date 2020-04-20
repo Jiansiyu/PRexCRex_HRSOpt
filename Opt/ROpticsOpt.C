@@ -3085,6 +3085,564 @@ TCanvas * ROpticsOpt::CheckDp()
         
     return c1;
 }
+
+
+TCanvas* ROpticsOpt::CheckDp_test2() {
+	// Visualize 1D hitogram of dp_kin
+
+	DEBUG_INFO("CheckDp_test2", "Entry Point");
+
+	// calculate Data[kCalcDpKin] for all events
+	SumSquareDp(kTRUE);
+
+	const Double_t DpRange = .04;
+	const UInt_t NDpRange = 2500;
+
+	TH1D *hDpKinCalib[NKine];
+	TH1D *hDpKinReal[NKine];
+	TH1D *hDpKinCalibRMS[NKine];
+	TH1D *hDpKinAll[NKine];
+	TH1D *hRealReactZ[NKine];
+	TH1D *hElossTgBefore[NKine];
+	TH2D *hElossTg_ReactZ_Before[NKine];
+	TH2D *hElossTg_ReactZ_After[NKine];
+	TH2D *hTravelLength_ReactZ_Before[NKine];
+	TH2D *hTravelLength_ReactZ_After[NKine];
+	Double_t RealDpKin[NKine] = { 0 };
+	Double_t AverCalcDpKin[NKine] = { 0 };
+	UInt_t NEvntDpKin[NKine] = { 0 };
+	Double_t RealDpKinAllExcit[NExcitationStates][NKine] = { { 0 } };
+	Double_t NewArbitaryDpKinShift[NKine];
+	Double_t AveRealDpKinMatrix[NKine] = { 0 };
+
+	TH2F *SieveThetaPhihh[NKine];
+
+//	TH1F *hDpKinCalibSieve[NKine][13][7];
+	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH1F *>>>hDpKinCalibSieve;
+	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH1F *>>>hDpKinRealSieve;     // the theoretical value, calculated from the scattered angle
+	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH1F *>>>hMomRealSieve;       // the theoretical value, calculated from the scattered angle
+	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH1F *>>>hCalcMomRealSieve;   // matrix projected Momentum
+	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH2F *>>>hhRealSieve;         // the theoretical value, calculated from the scattered angle
+	std::map<uint8_t, std::map<uint8_t, std::map<uint8_t, TH1F *>>>hhRealSieveScatteredAngle;
+
+	TH1F *CorrectedDpResid[NKine][NSieveCol][NSieveRow];
+		//initilize the theta and phi
+	for(int kineID=0; kineID<NKine; kineID++){
+		for (int col = 0; col<NSieveCol; col++){
+			for(int row=0; row<NSieveRow;row++){
+				CorrectedDpResid[kineID][col][row]=new TH1F(Form("SieveDp_%d_Col%d_Row%d_resid",kineID,col,row),Form("SieveDp_%d_Col%d_Row%d_resid",kineID,col,row),100,-0.005,0.005);
+			}
+		}
+	}
+
+	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+		SieveThetaPhihh[KineID] = new TH2F(
+				Form("SieveThetaPhi_%d%%", KineID - 2),
+				Form("SieveThetaPhi_%d%%", KineID - 2), 1000, -0.03, 0.03, 1000,
+				0.045, 0.045);
+		hDpKinCalib[KineID] = new TH1D(Form("hDpKinCalib%d", KineID),
+				Form("Dp_Kin for Delta Scan Kine. %d%%", (KineID - 2)),
+				NDpRange, -2 * DpRange, 2 * DpRange);
+		hDpKinCalibRMS[KineID] = new TH1D(Form("hDpKinCalibRMS%d", KineID),
+				Form("Dp Optimition Residuals %d%%", (KineID - 2)),500,-0.002,0.002);
+		hDpKinReal[KineID] = new TH1D(Form("hDpKinReal%d", KineID),
+				Form("Dp_Kin Real for Delta Scan Kine. %d%%", (KineID - 2)),
+				NDpRange, -2 * DpRange, 2 * DpRange);
+
+		hDpKinAll[KineID] = new TH1D(Form("hDpKinAll%d", KineID),
+				Form("Dp_Kin for Delta Scan Kine. #%d", KineID), NDpRange,
+				-DpRange, DpRange);
+
+		hRealReactZ[KineID] = new TH1D(Form("hRealReactZ%d", KineID),
+				Form("ReacZ for Delta Scan Kine. %d%%", 2 * (KineID - 2)), 400,
+				-0.15, 0.15);
+		hElossTgBefore[KineID] = new TH1D(Form("hElossTg%d", KineID),
+				Form("ElossTg for Delta Scan Kine. %d%%", 2 * (KineID - 2)),
+				400, 0, 0.0055);
+		hElossTg_ReactZ_Before[KineID] = new TH2D(
+				Form("hElossTg_ReacZ%d", KineID),
+				Form("ElossTg for Delta Scan Kine. %d%%", 2 * (KineID - 2)),
+				400, -0.15, 0.15, 400, 0, 7);
+		hElossTg_ReactZ_After[KineID] = new TH2D(
+				Form("hElossTg_ReacZ%d", KineID),
+				Form("ElossTg for Delta Scan Kine. %d%%", 2 * (KineID - 2)),
+				400, -0.15, 0.15, 400, 0, 3.5);
+		hTravelLength_ReactZ_Before[KineID] = new TH2D(
+				Form("hTravelLength_ReacZ%d", KineID),
+				Form("TravelLength vs ReacZ Before for Delta Scan Kine. %d%%",
+						2 * (KineID - 2)), 400, -0.15, 0.15, 800, 0, 0.15);
+		hTravelLength_ReactZ_After[KineID] = new TH2D(
+				Form("hElossTg_ReacZ%d", KineID),
+				Form("TravelLength vs ReacZ After for Delta Scan Kine. %d%%",
+						2 * (KineID - 2)), 400, -0.15, 0.15, 800, 0, 0.07);
+
+		assert(hDpKinCalib[KineID]); //pointer check
+		assert(hDpKinAll[KineID]); //pointer check
+	}
+
+	for (UInt_t idx = 0; idx < fNRawData; idx++) {
+		const EventData &eventdata = fRawData[idx];
+		const UInt_t KineID = HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
+		const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
+		const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
+
+		if(!CutcutCut(Col,Row, KineID))continue;
+
+		const UInt_t ExtraDataFlag = (UInt_t) (eventdata.Data[kExtraDataFlag]);
+		assert(ExtraDataFlag == 0 || ExtraDataFlag == 1); //flag definition consistency check
+//		const UInt_t KineID = (UInt_t) (eventdata.Data[kKineID]);
+
+		assert(KineID < NKine);
+		if (!ExtraDataFlag)
+		{
+			if ((hDpKinCalibSieve.find(KineID) != hDpKinCalibSieve.end())
+					&& (hDpKinCalibSieve[KineID].find(Col)
+							!= hDpKinCalibSieve[KineID].end())
+					&& (hDpKinCalibSieve[KineID][Col].find(Row)
+							!= hDpKinCalibSieve[KineID][Col].end())) {
+
+			}else{
+				hDpKinCalibSieve[KineID][Col][Row]= new TH1F(Form("hDpKinCalib%d%%_Col%d_Row%d", KineID-2,Col,Row),
+						Form("Dp_KinCalib_.%d%%.Col%d_Row%d.", (KineID - 2),Col,Row),
+						NDpRange, -2 * DpRange, 2 * DpRange);
+				hDpKinRealSieve[KineID][Col][Row]= new TH1F(Form("hDpKinReal%d%%_Col%d_Row%d", KineID-2,Col,Row),
+						Form("Dp_KinReal_ .%d%%.Col%d_Row%d.", (KineID - 2),Col,Row),
+						NDpRange, -2 * DpRange, 2 * DpRange);
+				hhRealSieve[KineID][Col][Row]= new TH2F(Form("hDpKinReal%d%%_Col%d_Row%d", KineID-2,Col,Row),
+						Form("Dp_KinReal_ .%d%%.Col%d_Row%d.", (KineID - 2),Col,Row),
+						1000,-0.03,0.03,1000,-0.045,0.045);
+				hMomRealSieve[KineID][Col][Row]=new TH1F(Form("SieveMom%d%%",KineID-2),Form("SieveMom%d%%",KineID-2),1000,2.0,2.30);
+				hhRealSieveScatteredAngle[KineID][Col][Row]=new TH1F(Form("SieveAngle%d%%",KineID-2),Form("SieveAngle%d%%",KineID-2),1000,0,2);
+				hCalcMomRealSieve[KineID][Col][Row]=new TH1F(Form("SieveCalMom%d%%",KineID-2),Form("SieveCalMom%d%%",KineID-2),1000,2.0,2.30);
+			}
+
+			AveRealDpKinMatrix[KineID] += eventdata.Data[kRealDpKinMatrix];
+			hDpKinCalib[KineID]->Fill((eventdata.Data[kCalcDpKinMatrix]));
+			hDpKinReal[KineID]->Fill(eventdata.Data[kRealDpKinMatrix]);
+			hDpKinCalibSieve[KineID][Col][Row]->Fill((eventdata.Data[kCalcDpKinMatrix]));
+
+			// fill the Real Scatered momentum (which is calculated from the angle )
+			auto realAngleCalDp=eventdata.Data[kDpKinOffsets]+eventdata.Data[kRealDpKin];
+			auto realAngleCalMom=realAngleCalDp*eventdata.Data[kCentralp]+eventdata.Data[kCentralp];
+
+			std::cout<<"KineID: "<<KineID<<"  ==> "<< eventdata.Data[kCentralp] <<std::endl;
+
+			auto matrixprojectedDp=eventdata.Data[kCalcDpKin]+eventdata.Data[kDpKinOffsets];
+			auto matrixprojectedMom=matrixprojectedDp*eventdata.Data[kCentralp]+eventdata.Data[kCentralp];
+			hCalcMomRealSieve[KineID][Col][Row]->Fill(matrixprojectedMom);
+
+
+			hDpKinRealSieve[KineID][Col][Row]->Fill(realAngleCalDp);
+			hMomRealSieve[KineID][Col][Row]->Fill(realAngleCalMom);
+
+			// write the correction error
+			CorrectedDpResid[KineID][Col][Row]->Fill(matrixprojectedMom-realAngleCalMom);
+
+			hhRealSieveScatteredAngle[KineID][Col][Row]->Fill(eventdata.Data[kScatterAngle]);
+			// plot the theta phi and plot, ready to add the theoretical momentum
+			SieveThetaPhihh[KineID]->Fill(eventdata.Data[kRealPhi],eventdata.Data[kRealTh]);
+			hhRealSieve[KineID][Col][Row]->Fill(eventdata.Data[kRealPhi],eventdata.Data[kRealTh]);
+
+			hDpKinCalibRMS[KineID]->Fill(eventdata.Data[kCalcDpKinMatrix]-eventdata.Data[kRealDpKinMatrix]);
+
+			hRealReactZ[KineID]->Fill(eventdata.Data[kRealReactZ]);
+			hElossTgBefore[KineID]->Fill(eventdata.Data[kElossTgBefore]);
+			hElossTg_ReactZ_Before[KineID]->Fill(eventdata.Data[kRealReactZ],
+					eventdata.Data[kElossTgBefore] * 1.e3);
+			hElossTg_ReactZ_After[KineID]->Fill(eventdata.Data[kRealReactZ],
+					eventdata.Data[kElossTgAfter] * 1.e3);
+			hTravelLength_ReactZ_Before[KineID]->Fill(
+					eventdata.Data[kRealReactZ],
+					eventdata.Data[kTravelLengthBefore]);
+			hTravelLength_ReactZ_After[KineID]->Fill(
+					eventdata.Data[kRealReactZ],
+					eventdata.Data[kTravelLengthAfter]);
+
+			AverCalcDpKin[KineID] += eventdata.Data[kCalcDpKinMatrix];
+			NEvntDpKin[KineID]++;
+		}
+
+		RealDpKin[KineID] = eventdata.Data[kRealDpKinMatrix];
+		for (UInt_t ExcitID = 0; ExcitID < NExcitationStates; ExcitID++) {
+			assert(kRealDpKinExcitations + ExcitID < kRealTh); //index check
+			RealDpKinAllExcit[ExcitID][KineID] =
+					eventdata.Data[kRealDpKinExcitations + ExcitID];
+		}
+	}
+	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+		AveRealDpKinMatrix[KineID] = AveRealDpKinMatrix[KineID]
+				/ NEvntDpKin[KineID];
+	}
+
+	TCanvas *c1 = new TCanvas("CheckDp", "Check Dp Kin Reconstruction", 1800,
+			900);
+	c1->Divide(3, 3);
+
+	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+		c1->cd(KineID + 1);
+		if(hDpKinCalib[KineID]->GetEntries()==0) continue;
+		AverCalcDpKin[KineID] /= NEvntDpKin[KineID];
+		DEBUG_MASSINFO("CheckDp", "AverCalcDpKin[%d] = %f", KineID,
+				AverCalcDpKin[KineID]);
+
+		// Histograms
+		hDpKinCalib[KineID]->SetXTitle("Dp_Kin");
+		hDpKinCalib[KineID]->GetXaxis()->SetLabelSize(0.028);
+		hDpKinCalib[KineID]->GetXaxis()->SetRangeUser(
+				AverCalcDpKin[KineID] - 0.002, AverCalcDpKin[KineID] + 0.002);
+		hDpKinCalib[KineID]->Draw();
+
+		hDpKinReal[KineID]->SetLineColor(42);
+		hDpKinReal[KineID]->Draw("same");
+
+		// expectation lines
+		Double_t MaxPlot = 20000;
+		c1->cd(KineID + 1)->Update();
+		MaxPlot = c1->cd(KineID + 1)->GetUymax();
+
+		TLine *l = new TLine(AveRealDpKinMatrix[KineID], 0,
+				AveRealDpKinMatrix[KineID], MaxPlot);
+		//	TLine *l = new TLine(RealDpKin[KineID], 0, RealDpKin[KineID], MaxPlot);
+		cout << "KineID:" << KineID << endl;
+		cout << "AveRealDpKinMatrix[KineID]" << AveRealDpKinMatrix[KineID]
+				<< endl;
+		l->SetLineColor(6);
+		l->SetLineWidth(2);
+		l->Draw("");
+
+		// Fits
+		const Double_t DefResolution = 1e-4;
+		const Double_t FitRangeMultiply = 20;
+
+		TString FitFunc = Form("DpPeak%d", KineID);
+		TF1 *f = new TF1(FitFunc, "gaus",
+				AverCalcDpKin[KineID] - DefResolution * FitRangeMultiply,
+				AverCalcDpKin[KineID] + DefResolution * FitRangeMultiply);
+		f->SetParameter(1, AverCalcDpKin[KineID]);
+		//        f->SetParameter(2, DefResolution);
+		//        hDpKinAll[KineID] -> Fit(FitFunc, "RN0");
+
+		hDpKinCalib[KineID]->Fit(FitFunc, "R");
+
+		f->SetLineColor(2);
+
+		TLatex *t1 = new TLatex(f->GetParameter(1) + 2 * f->GetParameter(2),
+				f->GetParameter(0),
+				Form("\\Delta = %2.1f \\times 10^{-4}  \\delta P=%2.1f  ",
+						10000
+								* (f->GetParameter(1)
+										- AveRealDpKinMatrix[KineID]),
+						10000
+								* (f->GetParameter(1)
+										- AveRealDpKinMatrix[KineID])
+								* HRSCentralMom[KineID]));
+		TLatex *t2 = new TLatex(f->GetParameter(1) + 2 * f->GetParameter(2),
+				0.9 * f->GetParameter(0),
+				Form("\\sigma =  %2.1f  \\times 10^{-4}",
+						10000 * f->GetParameter(2)));
+		t1->SetTextSize(0.055);
+		t1->SetTextAlign(12);
+		t1->SetTextColor(2);
+		t1->Draw("same");
+		t2->SetTextSize(0.055);
+		t2->SetTextAlign(12);
+		t2->SetTextColor(2);
+		t2->Draw("same");
+
+//		if (hDpKinCalibSieve.find(KineID) != hDpKinCalibSieve.end()) {
+//				for (std::map<uint8_t, std::map<uint8_t, TH1F*>>::iterator iter =
+//						hDpKinCalibSieve[KineID].begin();
+//						iter != hDpKinCalibSieve[KineID].end(); iter++) {
+//					for (std::map<uint8_t, TH1F*>::iterator iter_hist=(iter->second).begin();iter_hist!=(iter->second).end();iter_hist++){
+//						iter_hist->second->Draw("same");
+//					}
+//
+//				}
+//			}
+
+		NewArbitaryDpKinShift[KineID] = f->GetParameter(1)
+				- AveRealDpKinMatrix[KineID] + fArbitaryDpKinShift[KineID];
+
+	}
+
+	c1->cd(NKine+1);
+	TPaveText *t0 = new TPaveText(0.03, 0.05, 0.97, 0.95, "NDC");
+	t0->SetShadowColor(0);
+	t0->AddText(
+			"DpKin_{Real} = #frac{P_{#theta_{HRS}} - P_{Central}}{P_{Central}}");
+	t0->AddText(
+			"DpKin = dp - #frac{(P_{#theta} - P_{Loss}) - P_{#theta_{HRS}} }{ P_{Central} }");
+	t0->AddText(
+			"DpKin - DpKin_{Real} = dp - #frac{(P_{#theta} - P_{Loss}) - P_{Central}}{P_{Central}}");
+	t0->Draw();
+
+	Info("CheckDp", "New set of arbitary dp shifts:");
+	for (UInt_t KineID = 0; KineID < NKine; KineID++)
+		printf("opt->fArbitaryDpKinShift[%d] = %e;\n", KineID,
+				NewArbitaryDpKinShift[KineID]);
+
+	TCanvas *ccanvasrms = new TCanvas("CheckDp_RMS", "Check Dp Kin Reconstruction RMS", 1800,
+				900);
+	ccanvasrms->Divide(3,3);
+	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+		ccanvasrms->cd(KineID + 1);
+		ccanvasrms->cd(KineID + 1)->SetGridx(10);
+		ccanvasrms->cd(KineID + 1)->SetGridy(10);
+		if(hDpKinCalibRMS[KineID]->GetEntries()==0) continue;
+	hDpKinCalibRMS[KineID]->SetLineColor(41 + KineID * 5);
+	hDpKinCalibRMS[KineID]->Fit("gaus");
+	auto f=hDpKinCalibRMS[KineID]->GetFunction("gaus");
+	TLatex *t2 = new TLatex(f->GetParameter(1) + 2 * f->GetParameter(2),
+					0.9 * f->GetParameter(0),
+					Form("\\sigma =  %2.1f  \\times 10^{-4}",
+							10000 * f->GetParameter(2)));
+	hDpKinCalibRMS[KineID]->Draw();
+	t2->Draw("same");
+	}
+	ccanvasrms->cd(NKine + 1);
+	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+		if(hDpKinCalibRMS[KineID]->GetEntries()==0) continue;
+		hDpKinCalibRMS[KineID]->Draw("same");
+	}
+
+
+	TCanvas *sieveThetaphiCanvas_cal= new TCanvas("sieveThetaphiCanvasMatrixProjected", "sieveThetaphiCanvasMatrixProjected", 1800,
+						900);
+	sieveThetaphiCanvas_cal->Divide(3,3);
+	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+		if(SieveThetaPhihh[KineID]->GetEntries()==0) continue;
+		sieveThetaphiCanvas_cal->cd(KineID+1);   // plot the  sieve canvas
+		sieveThetaphiCanvas_cal->cd(KineID+1)->SetGridx(10);
+		sieveThetaphiCanvas_cal->cd(KineID+1)->SetGridy(10);
+
+		SieveThetaPhihh[KineID]->Draw("zcol");
+		sieveThetaphiCanvas_cal->Update();
+		for (auto itter=hhRealSieve[KineID].begin();itter!=hhRealSieve[KineID].end();itter++){
+			for(auto ittter=(itter->second).begin();ittter!=(itter->second).end();ittter++){
+				TLatex *t1=new TLatex((ittter->second)->GetMean(1)-0.001,(ittter->second)->GetMean(2)+0.0015, Form("%2.5fGeV",hCalcMomRealSieve[KineID][itter->first][ittter->first]->GetMean()));
+//				TLatex *t1=new TLatex((ittter->second)->GetMean(1)-0.001,(ittter->second)->GetMean(2)+0.0015, Form("%2.4fGeV",hhRealSieveScatteredAngle[KineID][itter->first][ittter->first]->GetMean()));
+				t1->SetTextSize(0.03);
+				t1->Draw("same");
+
+				TLatex *t2=new TLatex((ittter->second)->GetMean(1)-0.001,(ittter->second)->GetMean(2)+0.004, Form("%2.5fGeV",hMomRealSieve[KineID][itter->first][ittter->first]->GetMean()));
+				t2->SetTextColor(3);
+				t2->SetTextSize(0.03);
+				t2->Draw("same");
+			}
+		}
+	}
+
+	//for temp usage,compare the cenrtral sieve hole
+	sieveThetaphiCanvas_cal->cd(NKine+1);
+	if(NKine==8) // if it contains the first excited and the ground states, otherwise it will case the crash
+	{
+		TPaveText *t0 = new TPaveText(0.03,0.05,0.97,0.95,"NDC");
+		    t0->SetShadowColor(0);
+
+		    for(auto KineID=0; KineID<4; KineID++){
+			if (hCalcMomRealSieve.find(KineID) != hCalcMomRealSieve.end()) {
+				t0->AddText(
+						Form("Dp %d vs %d : #delta %2.4f (%2.5f - %2.5f GeV)",
+								KineID, KineID + 4,
+								(hCalcMomRealSieve[KineID][6][3]->GetMean()
+										- hCalcMomRealSieve[KineID + 4][6][3]->GetMean())
+										* 1000,
+								hCalcMomRealSieve[KineID][6][3]->GetMean(),
+								hCalcMomRealSieve[KineID + 4][6][3]->GetMean()));
+				t0->AddText(
+						Form("     ideal=> : #delta %2.4f (%2.5f - %2.5f GeV)",
+								KineID, KineID + 4,
+								(hMomRealSieve[KineID][6][3]->GetMean()
+										- hMomRealSieve[KineID + 4][6][3]->GetMean())
+										* 1000,
+								hMomRealSieve[KineID][6][3]->GetMean(),
+								hMomRealSieve[KineID + 4][6][3]->GetMean()));
+
+			}
+		    }
+		    t0->Draw();
+
+	}
+
+	std::map<int, std::map<int,std::map<int,double>>> PErrorTable;
+	TCanvas *c5=new TCanvas("MomemtumOptCanv","MomemtumOptCanv",1800,1100);
+	c5->Divide((int)NKine/2,2);
+	c5->Draw();
+
+	TLine *line1=new TLine(0,0,100,0);
+	line1->SetLineColor(3);
+	line1->SetLineWidth(2);
+
+	TH1F *sievePResidualDistri[NKine];
+	for(int KineID=0; KineID<NKine;KineID++){
+		c5->cd(KineID+1);
+		sievePResidualDistri[KineID]=new TH1F(Form("Sieve_P_Residuals_KineID%d",KineID),Form("Sieve_P_Residuals_KineID%d",KineID),NSieveCol*NSieveRow+10,0,NSieveCol*NSieveRow+10);
+		sievePResidualDistri[KineID]->GetYaxis()->SetRangeUser(-0.003,0.003);
+		sievePResidualDistri[KineID]->GetXaxis()->SetTitle("SieveHoleID");
+		sievePResidualDistri[KineID]->GetYaxis()->SetTitle("#deltaP(GeV)");
+
+		for (int col = 0; col < NSieveCol; col++) {
+			for (int row = 0; row < NSieveRow; row++) {
+				sievePResidualDistri[KineID]->Fill(col*NSieveRow+row,CorrectedDpResid[KineID][col][row]->GetMean());
+				sievePResidualDistri[KineID]->SetBinError(col*NSieveRow+row+1,CorrectedDpResid[KineID][col][row]->GetRMS());
+				sievePResidualDistri[KineID]->GetYaxis()->SetRangeUser(-0.0015,0.0015);
+				PErrorTable[KineID][col][row]=CorrectedDpResid[KineID][col][row]->GetMean();
+			}
+		}
+		sievePResidualDistri[KineID]->SetLineWidth(2);
+		sievePResidualDistri[KineID]->SetMarkerStyle(20);
+		sievePResidualDistri[KineID]->Draw("E1");
+		line1->Draw("same");
+		std::cout<<"KindID::"<<KineID<<std::endl;
+		std::cout<<LatexTableGenerator(PErrorTable[KineID]).c_str()<<std::endl;
+
+		// draw the data on the canvas
+		if ((hCalcMomRealSieve.find(KineID) != hCalcMomRealSieve.end())&&(KineID<4)) {
+			TLatex *t=new TLatex(30,-0.001,Form("%1.3f(ideal:%1.3f)",(hCalcMomRealSieve[KineID][6][3]->GetMean()
+					- hCalcMomRealSieve[KineID + 4][6][3]->GetMean())
+					* 1000,(hMomRealSieve[KineID][6][3]->GetMean()
+							- hMomRealSieve[KineID + 4][6][3]->GetMean())
+							* 1000));
+			t->Draw("same");
+		}
+
+
+	}
+	c5->Update();
+
+	// add the first gaus and second gaus difference for each individual holes
+	// gaus fit probably is not a good choise for those kind of small fraction of data set
+	TCanvas *c6=new TCanvas("MomemtumDifferenceCanv","MomemtumDifferenceCanv",1800,1100);
+	c6->Divide(4,2);
+	c6->Draw();
+
+	TLine *line2=new TLine(0,4.43982,100,4.43982);
+	line2->SetLineColor(3);
+	line2->SetLineWidth(2);
+
+	if(NKine==8)
+	{
+		TH1F *sievePDifferenceDistri[NKine/2];
+		TH1F *sievePDifferencePercentageDistri[NKine/2];
+		for(auto KineID=0; KineID<4; KineID++){
+			c6->cd(KineID+1);
+			sievePDifferenceDistri[KineID]=new TH1F(Form("Sieve_P_Difference_KineID%d",KineID),Form("Sieve_P_Difference_KineID%d",KineID),NSieveCol*NSieveRow+10,0,NSieveCol*NSieveRow+10);
+			sievePDifferenceDistri[KineID]->GetXaxis()->SetTitle("SieveHoleID");
+			sievePDifferenceDistri[KineID]->GetYaxis()->SetTitle("#Delta(P_0-P_1)");
+			sievePDifferenceDistri[KineID]->GetYaxis()->SetRangeUser(3.7,5.0);
+//			sievePDifferenceDistri[KineID]->GetXaxis()->SetRangeUser(20,90);
+
+
+			if (hCalcMomRealSieve.find(KineID) != hCalcMomRealSieve.end()) {
+				for (int col = 0; col < NSieveCol; col++) {
+/*					TLine *line2=new TLine(col*NSieveRow,3.8,col*NSieveRow,5);
+					line2->SetLineColor(3);
+					line2->SetLineWidth(2);*/
+
+					for (int row = 0; row < NSieveRow; row++) {
+						if (hCalcMomRealSieve.find(KineID)!= hCalcMomRealSieve.end()
+								&& hCalcMomRealSieve[KineID].find(col)!= hCalcMomRealSieve[KineID].end()
+								&& hCalcMomRealSieve[KineID][col].find(row)!= hCalcMomRealSieve[KineID][col].end()
+								&& hCalcMomRealSieve.find(KineID + 4)!= hCalcMomRealSieve.end()
+								&& hCalcMomRealSieve[KineID + 4].find(col)!= hCalcMomRealSieve[KineID + 4].end()
+								&& hCalcMomRealSieve[KineID + 4][col].find(row)!= hCalcMomRealSieve[KineID + 4][col].end()){
+									sievePDifferenceDistri[KineID]->Fill(col*NSieveRow+row,(hCalcMomRealSieve[KineID][col][row]->GetMean() - hCalcMomRealSieve[KineID + 4][col][row]->GetMean())* 1000);
+//									sievePDifferenceDistri[KineID]->SetBinError(col*NSieveRow+row+1,TMath::Sqrt(hCalcMomRealSieve[KineID][col][row]->GetRMS()*hCalcMomRealSieve[KineID][col][row]->GetRMS()+hCalcMomRealSieve[KineID+4][col][row]->GetRMS()*hCalcMomRealSieve[KineID+4][col][row]->GetRMS()));
+									sievePDifferenceDistri[KineID]->SetBinError(col*NSieveRow+row+1,0.01);
+						}
+					}
+				}
+			}
+
+			sievePDifferenceDistri[KineID]->SetLineWidth(2);
+			sievePDifferenceDistri[KineID]->SetMarkerStyle(20);
+			sievePDifferenceDistri[KineID]->Draw();
+
+			// draw the data on the canvas
+			if (hCalcMomRealSieve.find(KineID) != hCalcMomRealSieve.end()) {
+				TLatex *t=new TLatex(30,3.8,Form("%1.3f(ideal:%1.3f)",(hCalcMomRealSieve[KineID][6][3]->GetMean()
+						- hCalcMomRealSieve[KineID + 4][6][3]->GetMean())
+						* 1000,(hMomRealSieve[KineID][6][3]->GetMean()
+								- hMomRealSieve[KineID + 4][6][3]->GetMean())
+								* 1000));
+				t->Draw("same");
+			}
+
+			for (int col = 0; col < NSieveCol; col++) {
+				TLine *line3 = new TLine(col * NSieveRow, 4, col * NSieveRow,
+						4.8);
+				line3->SetLineColor(3);
+				line3->SetLineWidth(2);
+				line3->Draw("same");
+			}
+
+			for(int iter=1; iter<5; iter++){
+				TLine *linetemp1 = new TLine(0, 4.43982+4.43982*iter*0.005,100,
+						4.43982+4.43982*iter*0.005);
+				linetemp1->SetLineColor(3+iter);
+				linetemp1->SetLineWidth(2);
+				linetemp1->Draw("same");
+
+				TLine *linetemp2 = new TLine(0, 4.43982-4.43982*iter*0.005,100,
+										4.43982-4.43982*iter*0.005);
+				linetemp2->SetLineColor(3+iter);
+				linetemp2->SetLineWidth(2);
+				linetemp2->Draw("same");
+			}
+
+			line2->Draw("same");
+
+			c6->cd(KineID+1+4);
+			sievePDifferencePercentageDistri[KineID]=new TH1F(Form("Sieve_Pecentage_Difference_KineID%d",KineID),Form("Sieve_Pecentage_Difference_KineID%d",KineID),NSieveCol*NSieveRow+10,0,NSieveCol*NSieveRow+10);
+			sievePDifferencePercentageDistri[KineID]->GetXaxis()->SetTitle("SieveHoleID");
+			sievePDifferencePercentageDistri[KineID]->GetYaxis()->SetTitle("#Delta(P_0-P_1)");
+			sievePDifferencePercentageDistri[KineID]->GetYaxis()->SetRangeUser(-0.15,0.15);
+			if (hCalcMomRealSieve.find(KineID) != hCalcMomRealSieve.end()) {
+				for (int col = 0; col < NSieveCol; col++) {
+					for (int row = 0; row < NSieveRow; row++) {
+						if (hCalcMomRealSieve.find(KineID)
+								!= hCalcMomRealSieve.end()
+								&& hCalcMomRealSieve[KineID].find(col)
+										!= hCalcMomRealSieve[KineID].end()
+								&& hCalcMomRealSieve[KineID][col].find(row)
+										!= hCalcMomRealSieve[KineID][col].end()
+								&& hCalcMomRealSieve.find(KineID + 4)
+										!= hCalcMomRealSieve.end()
+								&& hCalcMomRealSieve[KineID + 4].find(col)
+										!= hCalcMomRealSieve[KineID + 4].end()
+								&& hCalcMomRealSieve[KineID + 4][col].find(row)
+										!= hCalcMomRealSieve[KineID + 4][col].end()){
+
+							sievePDifferencePercentageDistri[KineID]->Fill(col*NSieveRow+row,((hCalcMomRealSieve[KineID][col][row]->GetMean()- hCalcMomRealSieve[KineID + 4][col][row]->GetMean())* 1000.0-4.43982)/4.43982);
+							sievePDifferencePercentageDistri[KineID]->SetBinError(col*NSieveRow+row+1,0.01);
+						}
+					}
+				}
+			}
+			sievePDifferencePercentageDistri[KineID]->SetLineWidth(2);
+			sievePDifferencePercentageDistri[KineID]->SetMarkerStyle(20);
+			sievePDifferencePercentageDistri[KineID]->Draw("E1");
+			for (int col = 0; col < NSieveCol; col++) {
+				TLine *line2 = new TLine(col * NSieveRow, -0.15, col * NSieveRow,
+						0.15);
+				line2->SetLineColor(3);
+				line2->SetLineWidth(2);
+				line2->Draw("same");
+			}
+			line1->Draw("same");
+		}
+
+	}else{
+		std::cout<<"Probably Did not include all the excited states"<<std::endl;
+	}
+
+	c6->Update();
+
+	return c5;
+
+}
+
+/*
 TCanvas* ROpticsOpt::CheckDp_test2() {
 	// Visualize 1D hitogram of dp_kin
 
@@ -3185,16 +3743,16 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
 
 		if(!CutcutCut(Col,Row, KineID))continue;
-/*;
-		UInt_t res = (UInt_t) eventdata.Data[kCutID];
-		// const UInt_t KineID = res / (NSieveRow * NSieveCol * NFoils); //starting 0!
-		res = res % (NSieveRow * NSieveCol * NFoils);
-		const UInt_t FoilID = res / (NSieveRow * NSieveCol); //starting 0!
 
-		res = res % (NSieveRow * NSieveCol);
-		const UInt_t Col = res / (NSieveRow); //starting 0!
-		const UInt_t Row = res % (NSieveRow); //starting 0!
-*/
+//		UInt_t res = (UInt_t) eventdata.Data[kCutID];
+		// const UInt_t KineID = res / (NSieveRow * NSieveCol * NFoils); //starting 0!
+//		res = res % (NSieveRow * NSieveCol * NFoils);
+//		const UInt_t FoilID = res / (NSieveRow * NSieveCol); //starting 0!
+
+//		res = res % (NSieveRow * NSieveCol);
+//		const UInt_t Col = res / (NSieveRow); //starting 0!
+//		const UInt_t Row = res % (NSieveRow); //starting 0!
+
 
 
 		const UInt_t ExtraDataFlag = (UInt_t) (eventdata.Data[kExtraDataFlag]);
@@ -3508,7 +4066,9 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 
 }
 
+*/
 // used for check the Dp Optimize result --siyu
+/*
 TCanvas* ROpticsOpt::CheckDp_test(void) {
 
 	DEBUG_INFO("CheckDp_test", "Entry Point");
@@ -3641,6 +4201,241 @@ TCanvas* ROpticsOpt::CheckDp_test(void) {
 	 // plot the sacttered angle vs the momentum
 
 }
+
+*/
+
+TCanvas* ROpticsOpt::CheckDp_test(void) {
+
+	DEBUG_INFO("CheckDp_test", "Entry Point");
+	// calculate Data[kCalcDpKin] for all events
+	SumSquareDp(kTRUE);
+
+	const Double_t DpRange = .04;
+	const UInt_t NDpRange = 2500;
+
+	TH1D *hDpKinCalib[NKine];
+	TH1D *hDpKinOffset[NKine];
+	TH1D *hMomentumKin[NKine];
+	TH1D *hMomentumRealKin[NKine];
+	TH1D *hScatteredAngle[NKine];
+
+	TH1D *hDpKinAll[NKine];
+	TH1D *hRealReactZ[NKine];
+	TH1D *hElossTgBefore[NKine];
+	TH2D *hElossTg_ReactZ_Before[NKine];
+	TH2D *hElossTg_ReactZ_After[NKine];
+	TH2D *hTravelLength_ReactZ_Before[NKine];
+	TH2D *hTravelLength_ReactZ_After[NKine];
+	Double_t RealDpKin[NKine] = { 0 };
+	Double_t AverCalcDpKin[NKine] = { 0 };
+	UInt_t NEvntDpKin[NKine] = { 0 };
+	Double_t RealDpKinAllExcit[NExcitationStates][NKine] = { { 0 } };
+	Double_t NewArbitaryDpKinShift[NKine];
+	Double_t AveRealDpKinMatrix[NKine] = { 0 };
+
+	//used for check the parameters --added Apr 4 2020 by Siyu
+	Double_t measuredVDCTheta_temp;
+	Double_t measuredVDCPhi_temp;
+	Double_t measuredVDCX_temp;
+	Double_t measuredVDCY_temp;
+	Double_t measuredDp_temp;    // vdc projected result
+	Double_t measuredMomentum_temp;
+
+
+	// add the plot to plot the momentum on central sieve
+	TH1F *hRealMomentumCentralSieve[NKine];      // used for plot the momentum on the central sieve hole. probably also need to add the fit funtions
+
+	// loop on each KineID, for different Dp scan
+	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+		hDpKinCalib[KineID] = new TH1D(Form("hDpKinCalib%d", KineID),
+				Form("Dp_Kin for Delta Scan Kine. %d%%", (KineID - 1)),
+				NDpRange, -2 * DpRange, 2 * DpRange);
+		hDpKinOffset[KineID] = new TH1D(Form("hDpKinOffset%d", KineID),
+				Form("Dp_Kin offset for Delta Scan Kine. %d%%", (KineID - 2)),
+				NDpRange, -2 * DpRange, 2 * DpRange);
+		hMomentumKin[KineID] = new TH1D(Form("hMomentumKin%d", KineID),
+				Form("Momentum_Kin for Delta Scan Kine.%d%%", (KineID - 2)), 200,
+				2.1725, 2.175);
+		hMomentumRealKin[KineID] = new TH1D(Form("hMomentumKin_REAL%d", KineID),
+						Form("Momentum_Kin for Delta Scan Kine.REAL%d%%", (KineID - 2)), 200,
+						2.1725, 2.175);
+		hScatteredAngle[KineID] = new TH1D(Form("Scatteredangle%d", KineID),
+				Form("Scattered angle for Delta Scan Kine.", (KineID - 2)), 500,
+				0.06, 0.16);
+
+
+		hRealMomentumCentralSieve[KineID] = new TH1F(Form("hMomentumKin%d_centralSieve", KineID),
+				Form("hMomentumKin%d_centralSieve", (KineID - 2)), 500,
+				2.16, 2.178);
+
+		assert(hDpKinCalib[KineID]); //pointer check
+	}
+
+	// start fill the histgram with the data
+	// check how the data are calculated , the most important part is the Dp since Dp is directly related to the data
+	for (UInt_t idx = 0; idx < fNRawData; idx++) {
+		const EventData &eventdata = fRawData[idx];
+		UInt_t KineID = HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
+		const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
+		const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
+
+		if(!CutcutCut(Col,Row,KineID))continue;
+
+
+		const UInt_t ExtraDataFlag = (UInt_t) (eventdata.Data[kExtraDataFlag]);
+		assert(ExtraDataFlag == 0 || ExtraDataFlag == 1); //flag definition consistency check
+		//const UInt_t KineID = (UInt_t) (eventdata.Data[kKineID]);
+		assert(eventdata.Data[kKineID]==KineID);
+		assert(KineID < NKine);  // whis is the central momentum ID
+
+		hDpKinCalib[KineID]->Fill((eventdata.Data[kCalcDpKinMatrix]));
+		hDpKinOffset[KineID]->Fill((eventdata.Data[kDpKinOffsets]));
+
+		// this is the theoretic calculated
+		hMomentumKin[KineID]->Fill(
+				(eventdata.Data[kDpKinOffsets] + eventdata.Data[kRealDpKin])
+						* eventdata.Data[kCentralp]
+						+ eventdata.Data[kCentralp]);
+
+		// this is the matrix projected momentum
+		hMomentumRealKin[KineID]->Fill(
+						(eventdata.Data[kCalcDpKin]+ eventdata.Data[kDpKinOffsets])
+								* eventdata.Data[kCentralp]
+								+ eventdata.Data[kCentralp]);
+		// momentum
+		// TODO
+		// need to select the central sieve
+
+		double mom_temp=eventdata.Data[kCentralp]*(eventdata.Data[kCalcDpKinMatrix] + eventdata.Data[kDpKinOffsets]+1.0);   // the reconstructed Momentum
+		if ((Row==3) &&(Col==6)){
+			hRealMomentumCentralSieve[KineID]->Fill(mom_temp);
+		}
+//		hRealMomentumCentralSieve[KineID]->Fill(eventdata.Data[kCentralp]*(eventdata.Data[kCalcDpKinMatrix] + eventdata.Data[kDpKinOffsets]+1.0));
+
+		hMomentumRealKin[KineID]->SetLineColor(41 + KineID * 5);
+		hMomentumKin[KineID]->SetLineColor(41 + KineID * 5);
+
+
+
+		hScatteredAngle[KineID]->Fill(eventdata.Data[kScatterAngle]);
+//		std::cout <<"theta, phi ("<< eventdata.Data[kRealTh] << ",   "
+//				<< eventdata.Data[kRealPhi]<<",  Scattered Angle:"<<eventdata.Data[kScatterAngle] <<"   Kine:"<<KineID<< std::endl;
+		hScatteredAngle[KineID]->SetLineColor(41 + KineID * 5);
+
+
+		// added by siyu used for check the Dp reconstruction
+//		std::cout<<Form("%3.7f	%3.7f	%3.7f	%3.7f	%3.7f 	%3.7f\n",eventdata.Data[kX],eventdata.Data[kTh],eventdata.Data[kY],eventdata.Data[kPhi],eventdata.Data[kCalcDpKinMatrix] + eventdata.Data[kDpKinOffsets],mom_temp)<<std::endl;
+//		getchar();
+
+
+	}
+
+	// start plot
+	TCanvas *c1 = new TCanvas("CheckDp", "Check Dp Kin Reconstruction11", 1800,
+			900);
+	c1->Divide(3, 2);
+
+	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+		c1->cd(KineID + 1);
+		// Histograms
+		hDpKinCalib[KineID]->SetXTitle("Dp_Kin");
+		hDpKinCalib[KineID]->GetXaxis()->SetLabelSize(0.028);
+
+		hDpKinCalib[KineID]->Draw();
+		hDpKinOffset[KineID]->SetLineColor(42);
+		hDpKinOffset[KineID]->Draw("same");
+	}
+
+	// start plot
+	TCanvas *c2 = new TCanvas("CheckP", "Check momentum Kin Reconstruction",
+			1800, 900);
+	c2->Divide(2, 2);
+	c2->cd(1);
+	hMomentumKin[0]->Draw();
+	for (UInt_t KineID = 1; KineID < NKine; KineID++) {
+
+		hMomentumKin[KineID]->Draw("same");
+	}
+
+	c2->cd(2);
+	hScatteredAngle[0]->Draw();
+	for (UInt_t KineID = 1; KineID < NKine; KineID++) {
+		hScatteredAngle[KineID]->Draw("same");
+	}
+
+	c2->cd(3);
+	hMomentumRealKin[0]->Draw();
+		for (UInt_t KineID = 1; KineID < NKine; KineID++) {
+			hMomentumRealKin[KineID]->Draw("same");
+		}
+	c2->Update();
+	c2->cd(1)->BuildLegend();
+	c2->cd(2)->BuildLegend();
+	c2->Update();
+	 // plot the sacttered angle vs the momentum
+
+	 //create the plot used for buffer the momentum(central sieve)
+	 TCanvas *CentralSieveMomentumCanv = new TCanvas("CentralSieveMomentumCanv", "CentralSieveMomentumCanv", 1800,
+	 			900);
+	 CentralSieveMomentumCanv->Divide(4, 2);
+	 CentralSieveMomentumCanv->Draw();
+
+	 // start the fit functions
+	 for (int i = 0; i <NKine; i ++ ){
+		 CentralSieveMomentumCanv->cd(i+1);
+		 CentralSieveMomentumCanv->cd(i+1)->SetLogy();
+		 hRealMomentumCentralSieve[i]->Draw();
+
+		 TH1F *momentum=(TH1F *)hRealMomentumCentralSieve[i]->Clone("momentum");
+		 // start the fit functions
+		 if (hRealMomentumCentralSieve[i]->GetEntries()>1000){
+			 auto CGroundp=momentum->GetXaxis()->GetBinCenter(momentum->GetMaximumBin());
+			 auto C1stp=CGroundp-0.00443891;
+			 hRealMomentumCentralSieve[i]->GetXaxis()->SetRangeUser(CGroundp-0.0044*3,CGroundp+0.0044*2);
+
+			 double_t fgroudGausPar[3];
+			 double_t ffirstGuasPar[3];
+			 TF1 *fgroudGaus=new TF1("groudstatesgaus","gaus",CGroundp-0.0005,CGroundp+0.0005);
+			 momentum->Fit("groudstatesgaus","R","ep",fgroudGaus->GetXmin(),fgroudGaus->GetXmax());
+			 fgroudGaus->GetParameters(fgroudGausPar);
+
+			 TF1 *ffirstGuas=new TF1 ("firststatesgaus","gaus",C1stp-0.0006,C1stp+0.0004);
+			 momentum->Fit("firststatesgaus","R","ep",ffirstGuas->GetXmin(),ffirstGuas->GetXmax());
+			 //ffirstGuas->Draw("same");
+			 ffirstGuas->GetParameters(ffirstGuasPar);
+			 // change the gause fit to cristal ball
+			double_t fgroundCrystalballPar[5];
+			TF1 *fgroundCrystalball=new TF1("fgroundCrystal","crystalball",fgroudGausPar[1]-0.0030,fgroudGaus->GetXmax()+0.0003);
+			fgroundCrystalball->SetParameters(fgroudGausPar[0],fgroudGausPar[1],fgroudGausPar[2],1.64,1.1615);
+			momentum->Fit("fgroundCrystal","R","same",fgroundCrystalball->GetXmin(),fgroundCrystalball->GetXmax());
+			fgroundCrystalball->GetParameters(fgroundCrystalballPar);
+			//fgroundCrystalball->Draw("same");
+			double_t ffirstCrystalPar[5];
+			TF1 *ffirstCrystal=new TF1("ffirstCrystal","crystalball",ffirstGuasPar[1]-0.0025,ffirstGuas->GetXmax());
+			ffirstCrystal->SetParameters(ffirstGuasPar[0],ffirstGuasPar[1],ffirstGuasPar[2],1.64,1.1615);
+			momentum->Fit("ffirstCrystal","R","ep",ffirstCrystal->GetXmin(),ffirstCrystal->GetXmax());
+			ffirstCrystal->GetParameters(ffirstCrystalPar);
+
+			// fit together
+			double_t fCrystalMomentumPar[10];
+			TF1 *fCrystalMomentum=new TF1("fCrystalMomentum","crystalball(0)+crystalball(5)",ffirstCrystal->GetXmin(),fgroundCrystalball->GetXmax());
+			std::copy(fgroundCrystalballPar,fgroundCrystalballPar+5,fCrystalMomentumPar);
+			std::copy(ffirstCrystalPar,ffirstCrystalPar+5,fCrystalMomentumPar+5);
+			fCrystalMomentum->SetParameters(fCrystalMomentumPar);
+			momentum->Fit("fCrystalMomentum","","",fCrystalMomentum->GetXmin(),fCrystalMomentum->GetXmax());
+			fCrystalMomentum->Draw("same");
+			fCrystalMomentum->GetParameters(fCrystalMomentumPar);
+
+			TPaveText *pt = new TPaveText(0.1,0.8,0.3,0.9,"NDC");
+			pt->AddText(Form("%1.3f MeV (%2.2f\%%)",1000.0*(fCrystalMomentumPar[1]-fCrystalMomentumPar[6]),100.0*abs(abs(fCrystalMomentumPar[1]-fCrystalMomentumPar[6])-0.00443891)/0.00443891));
+			pt->Draw("same");
+		 }
+	 }
+	 CentralSieveMomentumCanv->Update();
+
+}
+
+
 TCanvas * ROpticsOpt::CheckDpGlobal()
 {
     // Visualize 1D hitogram of dp_kin
