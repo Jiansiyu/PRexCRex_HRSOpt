@@ -1240,53 +1240,64 @@ void ROpticsOpt::PrepareSieve(void)
 
     DEBUG_INFO("PrepareSieve", "Done!");
 
-
-
-
-
-
 }
 
-inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>content) {
-	std::cout<<"====> Generating latex"<<std::endl;
-  std::string latexStr;
-  latexStr+="\\begin{table}[]\n";
-  latexStr+="\\begin{tabular}{";
-  for(int i =0; i < content.size();i++){
-	  latexStr+="|l|";
-  }
-  latexStr+="} \n \\hline\n";
+inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>content, std::string saveLatex="") {
+	std::cout << "====> Generating latex" << std::endl;
+	std::string latexStr;
+	latexStr += "\\documentclass[preview]{standalone}\n";
+	latexStr += "\\usepackage{booktabs}\n";
+	latexStr += "\\begin{document}\n";
+	latexStr += "\\begin{table}[]\n";
+	latexStr += "\\begin{tabular}{";
+	for (int i = 0; i < content.size(); i++) {
+		latexStr += "|l|";
+	}
+	latexStr += "} \n \\hline\n";
 
-  latexStr+=" Col \t";
+	latexStr += " Col \t";
 
-  for (auto colIter=content.begin();colIter!=content.end();colIter++){
-  	  int Col = colIter->first;
-  	latexStr+=Form(" & %d \t",Col);
-  }
-  latexStr+=" \\\\ \\hline \n";
+	for (auto colIter = content.begin(); colIter != content.end(); colIter++) {
+		int Col = colIter->first;
+		latexStr += Form(" & %d \t", Col);
+	}
+	latexStr += " \\\\ \\hline \n";
 
-  //for single row loop on Cal
-  double error=0.0;
-  for(int row=0; row<NSieveRow; row++){
-	  latexStr+=Form("Row %d \t", row);
-	  for(int col=0; col<NSieveCol; col++){
-		  if(content.find(col)!=content.end()&& content[col].find(row)!=content[col].end()){
-			  error=content[col][row];
-		  }
-		  latexStr+=Form(" & %1.2f \t",1000*error);
-	  }
-	  latexStr+=" \\\\ \\hline \n";
-  }
-latexStr+="\\end{tabular} \n\\end{table}\n";
+	//for single row loop on Cal
+	double error = 0.0;
+	for (int row = 0; row < NSieveRow; row++) {
+		latexStr += Form("Row %d \t", row);
+		for (int col = 0; col < NSieveCol; col++) {
+			if (content.find(col) != content.end()
+					&& content[col].find(row) != content[col].end()) {
+				error = content[col][row];
+			}
+			latexStr += Form(" & %1.2f \t", 1000 * error);
+		}
+		latexStr += " \\\\ \\hline \n";
+	}
+	latexStr += "\\end{tabular} \n\\end{table}\n";
 //std::cout<<latexStr.c_str()<<std::endl;
+	latexStr += "\\end{document}\n";
+
+	if(!saveLatex.empty()){
+		std::ofstream out(saveLatex.c_str());
+		out<<latexStr.c_str();
+		out.close();
+	}
 return latexStr;
 }
 
 
-inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>content,std::map<int,std::map<int, double>>errorArray) {
+
+inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>content,std::map<int,std::map<int, double>>errorArray, std::string saveLatex="") {
 
   std::cout<<"====> Generating latex"<<std::endl;
   std::string latexStr;
+  latexStr += "\\documentclass[preview]{standalone}\n";
+  latexStr += "\\usepackage{booktabs}\n";
+  latexStr += "\\begin{document}\n";
+
   latexStr+="\\begin{table}[]\n";
   latexStr+="\\begin{tabular}{";
   for(int i =0; i < content.size();i++){
@@ -1316,6 +1327,12 @@ inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>conten
   }
 latexStr+="\\end{tabular} \n\\end{table}\n";
 //std::cout<<latexStr.c_str()<<std::endl;
+latexStr += "\\end{document}\n";
+if(!saveLatex.empty()){
+		std::ofstream out(saveLatex.c_str());
+		out<<latexStr.c_str();
+		out.close();
+	}
 return latexStr;
 }
 
@@ -2545,16 +2562,16 @@ TCanvas * ROpticsOpt::CheckVertex()
     for (UInt_t idx = 0; idx < fNRawData; idx++) {
         EventData &eventdata = fRawData[idx];
 
-/*
-        UInt_t res = (UInt_t) eventdata.Data[kCutID];
-        // const UInt_t KineID = res / (NSieveRow * NSieveCol * NFoils); //starting 0!
-        res = res % (NSieveRow * NSieveCol * NFoils);
-        const UInt_t FoilID = res / (NSieveRow * NSieveCol); //starting 0!
 
-        res = res % (NSieveRow * NSieveCol);
-        const UInt_t Col = res / (NSieveRow); //starting 0!
-        const UInt_t Row = res % (NSieveRow); //starting 0!
-*/
+//        UInt_t res = (UInt_t) eventdata.Data[kCutID];
+//        // const UInt_t KineID = res / (NSieveRow * NSieveCol * NFoils); //starting 0!
+//        res = res % (NSieveRow * NSieveCol * NFoils);
+//        const UInt_t FoilID = res / (NSieveRow * NSieveCol); //starting 0!
+//
+//        res = res % (NSieveRow * NSieveCol);
+//        const UInt_t Col = res / (NSieveRow); //starting 0!
+//        const UInt_t Row = res % (NSieveRow); //starting 0!
+
         const UInt_t FoilID =0;
 
 		const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
@@ -3177,7 +3194,9 @@ TCanvas * ROpticsOpt::CheckDp()
 
     return c1;
 }
-TCanvas* ROpticsOpt::CheckDp_test2() {
+
+
+TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 	// Visualize 1D hitogram of dp_kin
 
 	DEBUG_INFO("CheckDp_test2", "Entry Point");
@@ -3277,16 +3296,15 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
 
 		if(!CutcutCut(Col,Row, KineID))continue;
-/*;
-		UInt_t res = (UInt_t) eventdata.Data[kCutID];
-		// const UInt_t KineID = res / (NSieveRow * NSieveCol * NFoils); //starting 0!
-		res = res % (NSieveRow * NSieveCol * NFoils);
-		const UInt_t FoilID = res / (NSieveRow * NSieveCol); //starting 0!
 
-		res = res % (NSieveRow * NSieveCol);
-		const UInt_t Col = res / (NSieveRow); //starting 0!
-		const UInt_t Row = res % (NSieveRow); //starting 0!
-*/
+//		UInt_t res = (UInt_t) eventdata.Data[kCutID];
+//		// const UInt_t KineID = res / (NSieveRow * NSieveCol * NFoils); //starting 0!
+//		res = res % (NSieveRow * NSieveCol * NFoils);
+//		const UInt_t FoilID = res / (NSieveRow * NSieveCol); //starting 0!
+//
+//		res = res % (NSieveRow * NSieveCol);
+//		const UInt_t Col = res / (NSieveRow); //starting 0!
+//		const UInt_t Row = res % (NSieveRow); //starting 0!
 
 
 		const UInt_t ExtraDataFlag = (UInt_t) (eventdata.Data[kExtraDataFlag]);
@@ -3450,17 +3468,6 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		t2->SetTextColor(2);
 		t2->Draw("same");
 
-//		if (hDpKinCalibSieve.find(KineID) != hDpKinCalibSieve.end()) {
-//				for (std::map<uint8_t, std::map<uint8_t, TH1F*>>::iterator iter =
-//						hDpKinCalibSieve[KineID].begin();
-//						iter != hDpKinCalibSieve[KineID].end(); iter++) {
-//					for (std::map<uint8_t, TH1F*>::iterator iter_hist=(iter->second).begin();iter_hist!=(iter->second).end();iter_hist++){
-//						iter_hist->second->Draw("same");
-//					}
-//
-//				}
-//			}
-
 		NewArbitaryDpKinShift[KineID] = f->GetParameter(1)
 				- AveRealDpKinMatrix[KineID] + fArbitaryDpKinShift[KineID];
 
@@ -3505,6 +3512,8 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		if(hDpKinCalibRMS[KineID]->GetEntries()==0) continue;
 		hDpKinCalibRMS[KineID]->Draw("same");
 	}
+
+	c1->SaveAs(Form("%s/Check_Dp_Kin_Reconstruction.jpg",resultSavePath.c_str()));
 
 
 	TCanvas *sieveThetaphiCanvas_cal= new TCanvas("sieveThetaphiCanvasMatrixProjected", "sieveThetaphiCanvasMatrixProjected", 1800,
@@ -3565,6 +3574,8 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 
 	}
 
+	sieveThetaphiCanvas_cal->SaveAs(Form("%s/sieveThetaPhiCanv.jpg",resultSavePath.c_str()));
+
 	std::map<int, std::map<int,std::map<int,double>>> PErrorTable;
 	TCanvas *c5=new TCanvas("MomemtumOptCanv","MomemtumOptCanv",1800,1100);
 	c5->Divide((int)NKine/2,2);
@@ -3595,7 +3606,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		sievePResidualDistri[KineID]->Draw("E1");
 		line1->Draw("same");
 		std::cout<<"KindID::"<<KineID<<std::endl;
-		std::cout<<LatexTableGenerator(PErrorTable[KineID]).c_str()<<std::endl;
+		std::cout<<LatexTableGenerator(PErrorTable[KineID],Form("%s/momentumError.tex",resultSavePath.c_str())).c_str()<<std::endl;
 
 		// draw the data on the canvas
 		if ((hCalcMomRealSieve.find(KineID) != hCalcMomRealSieve.end())&&(KineID<4)) {
@@ -3610,6 +3621,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 
 	}
 	c5->Update();
+	c5->SaveAs(Form("%s/MomemtumOptCanv.jpg",resultSavePath.c_str()));
 
 	// add the first gaus and second gaus difference for each individual holes
 	// gaus fit probably is not a good choise for those kind of small fraction of data set
@@ -3738,13 +3750,14 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 	}
 
 	c6->Update();
+	c6->SaveAs(Form("%s/MomemtumDifferenceCanv.jpg",resultSavePath.c_str()));
 
 	return c5;
 
 }
 
 // used for check the Dp Optimize result --siyu
-TCanvas* ROpticsOpt::CheckDp_test(void) {
+TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 
 	DEBUG_INFO("CheckDp_test", "Entry Point");
 	// calculate Data[kCalcDpKin] for all events
@@ -3972,6 +3985,7 @@ TCanvas* ROpticsOpt::CheckDp_test(void) {
 		 }
 	 }
 	 CentralSieveMomentumCanv->Update();
+	 CentralSieveMomentumCanv->SaveAs(Form("%s/centralsievemom.jpg",resultSavePath.c_str()));
 
 }
 

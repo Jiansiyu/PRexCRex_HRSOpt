@@ -9,7 +9,14 @@
 #include "TList.h"
 #include "TMinuit.h"
 #include "TVirtualFitter.h"
+
 #include <TSystem.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 #define CHECKFLAG true    //used for check only, only do the plot, no optimization
 //#define CHECKFLAG false   // used for the Dp optimization
@@ -313,6 +320,106 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
 #endif
 
 }
+
+
+//automatically generate the minimization
+// the source file, the destination database , , do the optimzation or not
+inline std::string getFileName(const std::string & s){
+	char sep = '/';
+#ifdef _WIN32
+        sep = '\\';
+#endif
+	size_t i = s.rfind(sep, s.length());
+	if(i != std::string::npos){
+	    return(s.substr(i+1, s.length()-i));
+	}
+        return("");
+}
+
+inline std::string getFilePath(const std::string & s){
+	char sep = '/';
+#ifdef _WIN32
+        sep = '\\';
+#endif
+	size_t i = s.rfind(sep, s.length());
+	if(i != std::string::npos){
+	    return(s.substr(0, i+1));
+	}
+        return("");
+}
+void AutoDoMinDp(TString SourceDataBase, TString DestDataBase="", UInt_t MaxDataPerGroup = 200, Bool_t doOptmization=true)
+{
+	// extract the base name of the string
+
+	TString SourceDataBasePath=getFilePath(DestDataBase.Data());
+
+	if (DestDataBase.IsNull()){
+		DestDataBase=Form("%s_resultDelta",SourceDataBase.Data());
+	}
+
+
+    // minimize with root
+	assert(opt);
+    assert(opt->fCurrentMatrixElems);
+
+    cout << "Optimizing for dp\n";
+    opt->fCurrentMatrixElems = &(opt->fDMatrixElems);
+
+    opt->LoadDataBase(SourceDataBase);
+    NPara = opt->Matrix2Array(OldMatrixArray, freepara);
+    opt->LoadRawData(DataSource, (UInt_t) - 1, MaxDataPerGroup);
+    opt->PrepareSieve(); // used for calculate the Realth and Realph. Those two will be used for calculated the Real Dp in the Dp Optimization
+    opt->PrepareDp();
+
+    opt->fArbitaryDpKinShift[0] = 0.;
+    opt->fArbitaryDpKinShift[1] = 0.;
+    opt->fArbitaryDpKinShift[2] = 0.;
+    opt->fArbitaryDpKinShift[3] = 0.;
+    opt->Print();
+
+
+if (doOptmization){
+    TVirtualFitter::SetDefaultFitter("Minuit"); //default is Minuit
+    TVirtualFitter *fitter = TVirtualFitter::Fitter(NULL, NPara);
+
+    fitter->SetFCN(myfcn);
+
+    for (UInt_t i = 0; i < NPara; i++) {
+        Double_t absold = TMath::Abs(OldMatrixArray[i]);
+        Double_t abslimit = absold > 0 ? absold * 10000 : 10000;
+
+        fitter->SetParameter(i, Form("TMatrix%03d", i), OldMatrixArray[i], absold > 0 ? absold / 10 : 0.1, -abslimit, abslimit);
+        // fitter->SetParameter(1,"asdf",0,0,0,0);
+
+        if (!freepara[i]) fitter->FixParameter(i);
+    }
+
+   fitter->Print();
+    cout << fitter->GetNumberFreeParameters() << " Free  / " << fitter->GetNumberTotalParameters() << " Parameters\n";
+
+    assert(opt->fNRawData > 0);
+    assert(NPara > 0);
+    assert(fitter->GetNumberFreeParameters() > 0);
+    assert(fitter->GetNumberTotalParameters() == NPara);
+    Double_t arglist[2] = {1000,0.001};
+    fitter->ExecuteCommand("MIGRAD", arglist, 2);
+}
+
+    opt->Print();
+    opt->SaveDataBase(DestDataBase);
+    opt->SaveNewDataBase(Form("%s",DestDataBase.Data()));
+    opt->SumSquareDp();      // recalculate the matrix project parameter
+
+	if (doOptmization) {
+		TCanvas *c2 = opt->CheckDp_test2(SourceDataBasePath.Data());
+//    delete fitter;
+	} else {
+		TCanvas *c1 = opt->CheckDp_test(SourceDataBasePath.Data());
+	}
+
+}
+
+
 
 void PlotDataBase(TString DatabaseFileName, UInt_t MaxDataPerGroup = 1000)
 {
