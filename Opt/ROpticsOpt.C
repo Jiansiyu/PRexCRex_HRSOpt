@@ -989,10 +989,10 @@ UInt_t ROpticsOpt::LoadRawData(TString DataFileName, UInt_t NLoad, UInt_t MaxDat
         Double_t y_fp = eventdata[kY];
         Double_t ph_fp = eventdata[kPhi];
 
-//#if DEBUG_LEVEL>=4
+#if DEBUG_LEVEL>=4
         std::cout<<"DataID: "<< cutid<<"	kx: "<<eventdata[kX]<<"	kth:"<<eventdata[kTh]<<
         		"	ky:"<<eventdata[kY]<<"	kphi:"<<eventdata[kPhi]<<std::endl;
-//#endif
+#endif
         // calculate the powers we need
         for (int i = 0; i < kNUM_PRECOMP_POW; i++) {
             powers[i][0] = pow(x_fp, i);
@@ -1226,10 +1226,10 @@ void ROpticsOpt::PrepareSieve(void)
         rms_exttargcorr_th += x_tg * ExtTarCor_ThetaCorr * x_tg * ExtTarCor_ThetaCorr;
 
         DEBUG_MASSINFO("PrepareSieve", "Real_Th_Matrix = %f,\t Real_Phi = %f", eventdata.Data[kRealThMatrix], eventdata.Data[kRealPhi]);
-
+#if DEBUG_LEVEL>=4
         std::cout<<(UInt_t)eventdata.Data[kCutID]<<"  Col Row:("<<Col<<","<<Row<<")  Pos=> ("<<SieveHoleTCS.X()<<", "<<SieveHoleTCS.Y()<<", "<<SieveHoleTCS.Z()<<")   ";
         std::cout<<"kRealTh:"<< MomDirectionTCS.X() / MomDirectionTCS.Z() <<"  kRealPhi:"<<MomDirectionTCS.Y() / MomDirectionTCS.Z()<<std::endl;
-
+#endif
 	}
 
     DEBUG_INFO("PrepareSieve", "Average Extended Target Correction: th = %f,\t rms_th = %f", exttargcorr_th / fNRawData, TMath::Sqrt(rms_exttargcorr_th / fNRawData));
@@ -3096,8 +3096,10 @@ TCanvas * ROpticsOpt::CheckDp()
 
 	TLine *l = new TLine(AveRealDpKinMatrix[KineID], 0,AveRealDpKinMatrix[KineID] , MaxPlot);
 	//	TLine *l = new TLine(RealDpKin[KineID], 0, RealDpKin[KineID], MaxPlot);
+#if DEBUG_LEVEL>=4
 	cout<<"KineID:"<<KineID<<endl;
 	cout<<"AveRealDpKinMatrix[KineID]"<<AveRealDpKinMatrix[KineID]<<endl;
+#endif
         l->SetLineColor(6);
         l->SetLineWidth(2);
         l->Draw("");
@@ -3198,6 +3200,9 @@ TCanvas * ROpticsOpt::CheckDp()
 
 TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 	// Visualize 1D hitogram of dp_kin
+	// write the plot and fit plot to the
+
+	TFile *f1=new TFile(Form("%s/CheckDp_test2_result.root",resultSavePath.c_str()),"RECREATE");
 
 	DEBUG_INFO("CheckDp_test2", "Entry Point");
 
@@ -3343,9 +3348,9 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 			// fill the Real Scatered momentum (which is calculated from the angle )
 			auto realAngleCalDp=eventdata.Data[kDpKinOffsets]+eventdata.Data[kRealDpKin];
 			auto realAngleCalMom=realAngleCalDp*eventdata.Data[kCentralp]+eventdata.Data[kCentralp];
-
+#if DEBUG_LEVEL>=4
 			std::cout<<"KineID: "<<KineID<<"  ==> "<< eventdata.Data[kCentralp] <<std::endl;
-
+#endif
 			auto matrixprojectedDp=eventdata.Data[kCalcDpKin]+eventdata.Data[kDpKinOffsets];
 			auto matrixprojectedMom=matrixprojectedDp*eventdata.Data[kCentralp]+eventdata.Data[kCentralp];
 			hCalcMomRealSieve[KineID][Col][Row]->Fill(matrixprojectedMom);
@@ -3410,6 +3415,7 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 		hDpKinCalib[KineID]->GetXaxis()->SetRangeUser(
 				AverCalcDpKin[KineID] - 0.002, AverCalcDpKin[KineID] + 0.002);
 		hDpKinCalib[KineID]->Draw();
+		hDpKinCalib[KineID]->Write();
 
 		hDpKinReal[KineID]->SetLineColor(42);
 		hDpKinReal[KineID]->Draw("same");
@@ -3422,9 +3428,12 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 		TLine *l = new TLine(AveRealDpKinMatrix[KineID], 0,
 				AveRealDpKinMatrix[KineID], MaxPlot);
 		//	TLine *l = new TLine(RealDpKin[KineID], 0, RealDpKin[KineID], MaxPlot);
+#if DEBUG_LEVEL>=4
 		cout << "KineID:" << KineID << endl;
 		cout << "AveRealDpKinMatrix[KineID]" << AveRealDpKinMatrix[KineID]
 				<< endl;
+#endif
+
 		l->SetLineColor(6);
 		l->SetLineWidth(2);
 		l->Draw("");
@@ -3505,6 +3514,7 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 					Form("\\sigma =  %2.1f  \\times 10^{-4}",
 							10000 * f->GetParameter(2)));
 	hDpKinCalibRMS[KineID]->Draw();
+	hDpKinCalibRMS[KineID]->Write();
 	t2->Draw("same");
 	}
 	ccanvasrms->cd(NKine + 1);
@@ -3526,6 +3536,7 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 		sieveThetaphiCanvas_cal->cd(KineID+1)->SetGridy(10);
 
 		SieveThetaPhihh[KineID]->Draw("zcol");
+
 		sieveThetaphiCanvas_cal->Update();
 		for (auto itter=hhRealSieve[KineID].begin();itter!=hhRealSieve[KineID].end();itter++){
 			for(auto ittter=(itter->second).begin();ittter!=(itter->second).end();ittter++){
@@ -3575,6 +3586,7 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 	}
 
 	sieveThetaphiCanvas_cal->SaveAs(Form("%s/sieveThetaPhiCanv.jpg",resultSavePath.c_str()));
+	sieveThetaphiCanvas_cal->Write();
 
 	std::map<int, std::map<int,std::map<int,double>>> PErrorTable;
 	TCanvas *c5=new TCanvas("MomemtumOptCanv","MomemtumOptCanv",1800,1100);
@@ -3604,6 +3616,8 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 		sievePResidualDistri[KineID]->SetLineWidth(2);
 		sievePResidualDistri[KineID]->SetMarkerStyle(20);
 		sievePResidualDistri[KineID]->Draw("E1");
+		sievePResidualDistri[KineID]->Write();
+
 		line1->Draw("same");
 		std::cout<<"KindID::"<<KineID<<std::endl;
 		std::cout<<LatexTableGenerator(PErrorTable[KineID],Form("%s/momentumError.tex",resultSavePath.c_str())).c_str()<<std::endl;
@@ -3622,6 +3636,7 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 	}
 	c5->Update();
 	c5->SaveAs(Form("%s/MomemtumOptCanv.jpg",resultSavePath.c_str()));
+	c5->Write();
 
 	// add the first gaus and second gaus difference for each individual holes
 	// gaus fit probably is not a good choise for those kind of small fraction of data set
@@ -3670,7 +3685,7 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 			sievePDifferenceDistri[KineID]->SetLineWidth(2);
 			sievePDifferenceDistri[KineID]->SetMarkerStyle(20);
 			sievePDifferenceDistri[KineID]->Draw();
-
+			sievePDifferenceDistri[KineID]->Write();
 			// draw the data on the canvas
 			if (hCalcMomRealSieve.find(KineID) != hCalcMomRealSieve.end()) {
 				TLatex *t=new TLatex(30,3.8,Form("%1.3f(ideal:%1.3f)",(hCalcMomRealSieve[KineID][6][3]->GetMean()
@@ -3751,6 +3766,8 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 
 	c6->Update();
 	c6->SaveAs(Form("%s/MomemtumDifferenceCanv.jpg",resultSavePath.c_str()));
+	c6->Write();
+	f1->Close();
 
 	return c5;
 
@@ -3758,6 +3775,11 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 
 // used for check the Dp Optimize result --siyu
 TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
+
+	//write the read to
+	FILE *CheckDpResultIO;
+	CheckDpResultIO=fopen(Form("%s/CheckDp_test_result.txt",resultSavePath.c_str()),"w");
+	fprintf(CheckDpResultIO,"{");
 
 	DEBUG_INFO("CheckDp_test", "Entry Point");
 	// calculate Data[kCalcDpKin] for all events
@@ -3932,7 +3954,7 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 	 			900);
 	 CentralSieveMomentumCanv->Divide(4, 2);
 	 CentralSieveMomentumCanv->Draw();
-
+	 fprintf(CheckDpResultIO,"\"DpSeperation\":{\n");
 	 // start the fit functions
 	 for (int i = 0; i <NKine; i ++ ){
 		 CentralSieveMomentumCanv->cd(i+1);
@@ -3979,11 +4001,16 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 			fCrystalMomentum->Draw("same");
 			fCrystalMomentum->GetParameters(fCrystalMomentumPar);
 
-			TPaveText *pt = new TPaveText(0.1,0.8,0.3,0.9,"NDC");
+			TPaveText *pt = new TPaveText(0.1,0.65,0.5,0.9,"NDC");
 			pt->AddText(Form("%1.3f MeV (%2.2f\%%)",1000.0*(fCrystalMomentumPar[1]-fCrystalMomentumPar[6]),100.0*abs(abs(fCrystalMomentumPar[1]-fCrystalMomentumPar[6])-0.00443891)/0.00443891));
 			pt->Draw("same");
+			fprintf(CheckDpResultIO,Form("\"%d\":%f,\n",i,1000.0*(fCrystalMomentumPar[1]-fCrystalMomentumPar[6])));
 		 }
+
 	 }
+	 fprintf(CheckDpResultIO,"\"999\":0\n}");
+	 fprintf(CheckDpResultIO,"}");
+	 fclose(CheckDpResultIO);
 	 CentralSieveMomentumCanv->Update();
 	 CentralSieveMomentumCanv->SaveAs(Form("%s/centralsievemom.jpg",resultSavePath.c_str()));
 
@@ -4157,8 +4184,10 @@ Double_t ROpticsOpt::SumSquareDp(Bool_t IncludeExtraData)
     if (!IncludeExtraData)
         assert(fNCalibData == NCalibData); // check number of event for calibration
 
+#if DEBUG_LEVEL>=4
     // DEBUG_INFO("SumSquareDp", "#%d : d_dp = %f, rms_dp = %f", NCall, d_dp / NCalibData, TMath::Sqrt(rms_dp / NCalibData));
     printf("SumSquareDp: #%d : d_dp = %f, rms_dp = %f\n", NCall, d_dp / NCalibData, 100*TMath::Sqrt(rms_dp / NCalibData));
+#endif
 
     return rms_dp;
 }
