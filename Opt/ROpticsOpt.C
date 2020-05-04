@@ -1663,6 +1663,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 	sievePhiResidualDistri->Draw("E1");
 	line1->Draw("same");
 	c4->Update();
+
 	std::cout<<LatexTableGenerator(thetaErrorTable).c_str();
 
 	std::cout<<"\n\n Residual Mean with Sigma"<<std::endl;
@@ -3619,8 +3620,11 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 		sievePResidualDistri[KineID]->Write();
 
 		line1->Draw("same");
-		std::cout<<"KindID::"<<KineID<<std::endl;
-		std::cout<<LatexTableGenerator(PErrorTable[KineID],Form("%s/momentumError.tex",resultSavePath.c_str())).c_str()<<std::endl;
+
+		LatexTableGenerator(PErrorTable[KineID],Form("%s/momentumError.tex",resultSavePath.c_str()));
+
+//		std::cout<<"KindID::"<<KineID<<std::endl;
+//		std::cout<<LatexTableGenerator(PErrorTable[KineID],Form("%s/momentumError.tex",resultSavePath.c_str())).c_str()<<std::endl;
 
 		// draw the data on the canvas
 		if ((hCalcMomRealSieve.find(KineID) != hCalcMomRealSieve.end())&&(KineID<4)) {

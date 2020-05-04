@@ -101,9 +101,9 @@ class optDatabaseTemplateGenerator():
         randomNumb_surFix=randint(11111111,99999999)
         pathCandidate=os.path.join(self.TargetPath,'DBScan_{}_{}'.format(datePreFix,randomNumb_surFix))
         while os.path.exists(pathCandidate):
-            randomNumb_surFix=randint(11111111,99999999)
+            randomNumb_surFix=randint(11111111111,99999999999)
             pathCandidate=os.path.join("",self.TargetPath,'DBScan_{}_{}'.format(datePreFix,randomNumb_surFix))
-        os.mkdir(pathCandidate)
+        os.makedirs(pathCandidate)
         return pathCandidate
 
     def CheckCombinationExist(self,combinations={}):
@@ -116,6 +116,12 @@ class optDatabaseTemplateGenerator():
     def LogTemplateCombinations(self,combinations={}):
         pass
 
+    def WriteTemplateSingle(self,workDir="./",dbCombination={}):
+        '''
+        Single thread process generate template
+        '''
+        
+        pass
     def WriteTemplate(self, workDir="./"):
         '''
         write the template database file to seperate sub-folders
