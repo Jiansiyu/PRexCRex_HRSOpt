@@ -22,6 +22,7 @@ TargetFolder=$2
 #create the template name and check the existance of the template of the database template
 TemplateFname=${TargetFolder}/templateDB.db
 OptimizedDBFname=${TargetFolder}/templateDB.db.optimied
+OptimizedDBFname_postrun=${TargetFolder}/templateDB.db.optimied_junk
 
 # check the existance of the folders
 if [ ! -d "${TargetFolder}" ]; then 
@@ -51,4 +52,4 @@ cd ${RunOptFolder}
 echo "run start the Optimation process!!"
 analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('true',"delta","'${TemplateFname}'","'${OptimizedDBFname}'")'
 echo "run start the Optimation Check process!!"
-analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('false',"delta","'${TemplateFname}'","'${OptimizedDBFname}'")'
+analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('false',"delta","'${OptimizedDBFname}'","'${OptimizedDBFname_postrun}'")'

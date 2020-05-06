@@ -12,7 +12,8 @@ from multiprocessing import Pool     # multithread process the single files
 import statistics
 
 class OptScannerResult(object):
-    def __init__(self):
+    def __init__(self,runConfigFname="runConfig.json"):
+        self.runConfigJsonFname=runConfigFname
         self.OptConfigFname=""
         self.TargetPath=""
         self.CurrentWorkFolder=""
@@ -23,7 +24,10 @@ class OptScannerResult(object):
         self.LoadConfig()
         self.GetSubFolders()
 
-    def LoadConfig(self, runConfigFname="runConfig.json"):
+    def LoadConfig(self, runConfigFname=""):
+        if not runConfigFname:
+            runConfigFname=self.runConfigJsonFname
+
         with open(runConfigFname) as runCondigFile:
             self.runConfig_data=json.load(runCondigFile,object_pairs_hook=OrderedDict) # keep the initial order of the database
             self.OptConfigFname=self.runConfig_data["optConfigFname"]
@@ -56,7 +60,7 @@ class OptScannerResult(object):
                             #print("{}:{}".format(item,result["DpSeperation"][item]))
                             standDevLib.append(float(result["DpSeperation"][item]))
                     if float(result["DpSeperation"]['0']) > 4.4 and float(result["DpSeperation"]['3']) < 4.5:
-                        print("\n{}==>Mean:{}, stdv:{}\n".format(standDevLib,statistics.mean(standDevLib),statistics.stdev(standDevLib)))
+                        print("\n{}==>Mean:{}, stdv:{}\n{}\n".format(standDevLib,statistics.mean(standDevLib[1:]),statistics.stdev(standDevLib[1:]),path))
         bar.finish()
     def ReadSingleCheckDpResultText(self,txtResultPath=""):
         print("Total Processed Template {} / {}\n\n\n".format(len(self.OptTemplatedOptmizedFolders),0))#,float(self.OptTemplatedOptmizedFolders)/self.OptTemplateSubFolders))
@@ -77,6 +81,6 @@ class OptScannerResult(object):
 
 
 if __name__ == "__main__":
-    test=OptScannerResult()
+    test=OptScannerResult(runConfigFname="runConfig_test.json")
     #test.ReadCheckDpMultiThread()
     test.ReadCheckDpResultText()

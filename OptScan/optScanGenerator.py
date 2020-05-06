@@ -14,7 +14,8 @@ from random import random, randint
 
 class optDatabaseTemplateGenerator():
 
-    def __init__(self):
+    def __init__(self,runConfigFname="runConfig.json"):
+        self.runConfigJsonFname=runConfigFname
         self.OptConfigFname=""
         self.TargetPath=""
         self.CurrentWorkFolder=""
@@ -22,7 +23,10 @@ class optDatabaseTemplateGenerator():
         self.LoadConfig()
         pass
 
-    def LoadConfig(self, runConfigFname="runConfig.json"):
+    def LoadConfig(self, runConfigFname=""):
+        if not runConfigFname:
+            runConfigFname=self.runConfigJsonFname
+            
         with open(runConfigFname) as runCondigFile:
             self.runConfig_data=json.load(runCondigFile,object_pairs_hook=OrderedDict) # keep the initial order of the database
             self.OptConfigFname=self.runConfig_data["optConfigFname"]
@@ -101,7 +105,7 @@ class optDatabaseTemplateGenerator():
         randomNumb_surFix=randint(11111111,99999999)
         pathCandidate=os.path.join(self.TargetPath,'DBScan_{}_{}'.format(datePreFix,randomNumb_surFix))
         while os.path.exists(pathCandidate):
-            randomNumb_surFix=randint(11111111111,99999999999)
+            randomNumb_surFix=randint(111111111,99999999999)
             pathCandidate=os.path.join("",self.TargetPath,'DBScan_{}_{}'.format(datePreFix,randomNumb_surFix))
         os.makedirs(pathCandidate)
         return pathCandidate
@@ -173,6 +177,6 @@ class optDatabaseTemplateGenerator():
         pass
 
 if __name__ == "__main__":
-    test=optDatabaseTemplateGenerator()
+    test=optDatabaseTemplateGenerator(runConfigFname="runConfig_test.json")
     test.WriteTemplate()
     

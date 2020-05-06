@@ -1,5 +1,6 @@
 """
-
+Used for Call the Optimization bash script
+The default unumber of cores are 10
 """
 import os
 import json
@@ -18,6 +19,7 @@ class optScanner(object):
         self.OptConfigFname=""
         self.TargetPath=""
         self.CurrentWorkFolder=""
+        #self.OptTemplateSubFoldersEmp=[]
         self.OptTemplateSubFolders=[]
         self.OptSourceFolder=""
         self.optScannerBashScript=""
@@ -33,9 +35,14 @@ class optScanner(object):
             self.optScannerBashScript=self.runConfig_data["optScannerBashScript"]
     
     def GetSubFolders(self,topFolder=""):
+        '''
+        Modified version,
+        Only return the folders that have not been replayed
+        '''
         if not topFolder:
             topFolder=self.TargetPath
-        self.OptTemplateSubFolders=[x[0] for x in os.walk(topFolder)]
+        OptTemplateSubFoldersAll=[f.path for f in os.scandir(topFolder) if f.is_dir()]
+        self.OptTemplateSubFolders=[item for item in OptTemplateSubFoldersAll if not os.path.isfile("{}/CheckDp_test_result.txt".format(item))]
     
     def OptimizeSubFolder(self,folderName=""):
         if os.path.exists(folderName):
@@ -53,4 +60,4 @@ class optScanner(object):
 
 if __name__ == "__main__":
     test=optScanner()
-    test.MultiThreadOptimization()
+    test.MultiThreadOptimization(maxThread=8)

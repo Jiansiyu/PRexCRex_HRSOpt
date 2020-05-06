@@ -15,9 +15,16 @@ while [ ${TotalFileNumber} -gt ${CurrentReplayedNumber} ];
 do 
 	
 	pd=$(( ${CurrentReplayedNumber} * 73 / ${TotalFileNumber} ))
-  	printf "\r%3d.%1d%1d%% %.${pd}s" $(( ${CurrentReplayedNumber} * 100 / ${TotalFileNumber} )) $(( (${CurrentReplayedNumber} * 1000 / ${TotalFileNumber}) % 10 )) $(( (${CurrentReplayedNumber} * 10000 / ${TotalFileNumber}) % 100 ))  $pstr
+	printf "\r%3d.%1d%% %.${pd}s"  $(( ${CurrentReplayedNumber} * 100 / ${TotalFileNumber} )) $(( (${CurrentReplayedNumber} * 10000 / ${TotalFileNumber}) % 100 ))  $pstr
 	sleep 20
 	CurrentReplayedNumber=$(ls ${FolderPath}/*/CheckDp_test_result.txt | wc -l)
 done 
 
-echo "\nProcess Done !!!"
+# post run process
+
+CurrentReplayedNumber=$(ls ${FolderPath}/*/CheckDp_test_result.txt | wc -l)
+pd=$(( ${CurrentReplayedNumber} * 73 / ${TotalFileNumber} ))
+printf "\r%3d.%1d%% %.${pd}s"  $(( ${CurrentReplayedNumber} * 100 / ${TotalFileNumber} )) $(( (${CurrentReplayedNumber} * 10000 / ${TotalFileNumber}) % 100 ))  $pstr
+
+echo 
+echo "Process Done !!!"
