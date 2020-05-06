@@ -49,6 +49,10 @@ fi
 echo "go into folder ${RunOptFolder}"
 cd ${RunOptFolder}
 
+optScriptBranch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+
+echo "Opt script branch name: ${optScriptBranch}"
+
 echo "run start the Optimation process!!"
 analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('true',"delta","'${TemplateFname}'","'${OptimizedDBFname}'")'
 echo "run start the Optimation Check process!!"
