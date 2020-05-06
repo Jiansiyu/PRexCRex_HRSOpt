@@ -1299,8 +1299,10 @@ inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>conten
   latexStr += "\\begin{document}\n";
 
   latexStr+="\\begin{table}[]\n";
+  latexStr+="\\centering\n";
+  latexStr+="\\begin{adjustbox}{width=1\textwidth}\n";
   latexStr+="\\begin{tabular}{";
-  for(int i =0; i < content.size();i++){
+  for(int i =0; i <= content.size();i++){
 	  latexStr+="|l|";
   }
   latexStr+="} \n \\hline\n";
@@ -1325,8 +1327,8 @@ inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>conten
 	  }
 	  latexStr+=" \\\\ \\hline \n";
   }
-latexStr+="\\end{tabular} \n\\end{table}\n";
-//std::cout<<latexStr.c_str()<<std::endl;
+
+latexStr+="\\end{tabular} \n \\end{adjustbox}\n \\end{table}\n";
 latexStr += "\\end{document}\n";
 if(!saveLatex.empty()){
 		std::ofstream out(saveLatex.c_str());

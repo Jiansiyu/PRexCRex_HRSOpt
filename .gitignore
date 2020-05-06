@@ -3,5 +3,8 @@
 *.pcm
 *.d
 *.o
+*.tex
 Opt/Result/*
-/Debug/
+./Debug/
+./OptScan/result1/*
+./OptScan/result/*
