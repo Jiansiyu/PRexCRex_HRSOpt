@@ -48,15 +48,10 @@ class optScanner(object):
         if os.path.exists(folderName):
             optBashCommand="{} {} {}".format(self.optScannerBashScript,self.OptSourceFolder,folderName)
             os.system(optBashCommand)
-            # check whether the result have already exist
-            #resultFnameCheck="{}/MomemtumDifferenceCanv.jpg".format(folderName)
-            #if not os.path.isfile(resultFnameCheck):
-            # print(optBashCommand)
-        
+            
     def MultiThreadOptimization(self, maxThread=10):
         threadPool=Pool(maxThread)
         threadPool.map(self.OptimizeSubFolder,self.OptTemplateSubFolders)
-
 
 if __name__ == "__main__":
     test=optScanner()
