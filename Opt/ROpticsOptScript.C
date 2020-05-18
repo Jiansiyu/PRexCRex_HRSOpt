@@ -35,7 +35,9 @@ UInt_t MaxDataPerGroup = 100;
 //TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.test_noPcut_reform";
 //TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveThetaPhi.test_reform";
 //TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveWithMomCut.test_reform";
-TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.FullThetaPhi.test_reform";
+
+//TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.FullThetaPhi.test_reform";
+TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.FullMom.test_reform";
 
 
 typedef void (*PTRFCN)(Int_t &, Double_t *, Double_t &, Double_t*, Int_t);

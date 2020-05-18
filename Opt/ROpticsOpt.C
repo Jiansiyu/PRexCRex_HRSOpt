@@ -3135,6 +3135,9 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		}
 	}
 
+
+
+
 	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
 		SieveThetaPhihh[KineID] = new TH2F(
 				Form("SieveThetaPhi_%d%%", KineID - 2),
@@ -3180,6 +3183,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		assert(hDpKinAll[KineID]); //pointer check
 	}
 
+	std::map<int, double> TheoreticalDpArray;
 	for (UInt_t idx = 0; idx < fNRawData; idx++) {
 		const EventData &eventdata = fRawData[idx];
 		const UInt_t KineID = HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
@@ -3187,6 +3191,14 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
 
 		if(!CutcutCut(Col,Row, KineID))continue;
+
+		// print out the Dp informations used for feed the cutPro code kRealDpKin
+		if ((Row==3)&&(Col==6)){
+			if(TheoreticalDpArray.find(KineID)==TheoreticalDpArray.end())
+				TheoreticalDpArray[KineID]=eventdata.Data[kRealDpKinMatrix];
+		}
+
+
 
 		const UInt_t ExtraDataFlag = (UInt_t) (eventdata.Data[kExtraDataFlag]);
 		assert(ExtraDataFlag == 0 || ExtraDataFlag == 1); //flag definition consistency check
@@ -3225,7 +3237,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 			auto realAngleCalDp=eventdata.Data[kDpKinOffsets]+eventdata.Data[kRealDpKin];
 			auto realAngleCalMom=realAngleCalDp*eventdata.Data[kCentralp]+eventdata.Data[kCentralp];
 
-			std::cout<<"KineID: "<<KineID<<"  ==> "<< eventdata.Data[kCentralp] <<std::endl;
+//			std::cout<<"KineID: "<<KineID<<"  ==> "<< eventdata.Data[kCentralp] <<std::endl;
 
 			auto matrixprojectedDp=eventdata.Data[kCalcDpKin]+eventdata.Data[kDpKinOffsets];
 			auto matrixprojectedMom=matrixprojectedDp*eventdata.Data[kCentralp]+eventdata.Data[kCentralp];
@@ -3638,6 +3650,10 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 
 	c6->Update();
 
+	for (auto item=TheoreticalDpArray.begin();item!=TheoreticalDpArray.end();item++){
+		std::cout<<item->second<<",";
+	}
+	std::cout<<std::endl;
 	return c5;
 
 }
