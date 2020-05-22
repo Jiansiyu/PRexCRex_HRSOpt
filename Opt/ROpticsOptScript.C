@@ -427,7 +427,7 @@ void PlotDataBase(TString DatabaseFileName, UInt_t MaxDataPerGroup = 1000)
     delete opt;
 }
 
-void ROpticsOptScript(TString select, TString SourceDataBase, TString DestDataBase="")
+void ROpticsOptScript(TString select, TString SourceDataBase, TString DestDataBase)
 {
     opt = new ROpticsOpt();
 
@@ -484,7 +484,7 @@ void ROpticsOptScript(TString select, TString SourceDataBase, TString DestDataBa
 }
 
 
-void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TString DestDataBase="")
+void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TString DestDataBase)
 {
 
 
