@@ -1246,7 +1246,7 @@ void ROpticsOpt::PrepareSieve(void)
 
 }
 
-inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>content) {
+/*inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>content) {
 	std::cout<<"====> Generating latex"<<std::endl;
   std::string latexStr;
   latexStr+="\\begin{table}[]\n";
@@ -1279,7 +1279,102 @@ inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>conten
 latexStr+="\\end{tabular} \n\\end{table}\n";
 //std::cout<<latexStr.c_str()<<std::endl;
 return latexStr;
+}*/
+
+inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>content, std::string saveLatex="") {
+	std::cout << "====> Generating latex" << std::endl;
+	std::string latexStr;
+	latexStr += "\\documentclass[preview]{standalone}\n";
+	latexStr += "\\usepackage{booktabs}\n";
+	latexStr += "\\begin{document}\n";
+	latexStr += "\\begin{table}[]\n";
+	latexStr += "\\begin{tabular}{";
+	for (int i = 0; i < content.size(); i++) {
+		latexStr += "|l|";
+	}
+	latexStr += "} \n \\hline\n";
+
+	latexStr += " Col \t";
+
+	for (auto colIter = content.begin(); colIter != content.end(); colIter++) {
+		int Col = colIter->first;
+		latexStr += Form(" & %d \t", Col);
+	}
+	latexStr += " \\\\ \\hline \n";
+
+	//for single row loop on Cal
+	double error = 0.0;
+	for (int row = 0; row < NSieveRow; row++) {
+		latexStr += Form("Row %d \t", row);
+		for (int col = 0; col < NSieveCol; col++) {
+			if (content.find(col) != content.end()
+					&& content[col].find(row) != content[col].end()) {
+				error = content[col][row];
+			}
+			latexStr += Form(" & %1.2f \t", 1000 * error);
+		}
+		latexStr += " \\\\ \\hline \n";
+	}
+	latexStr += "\\end{tabular} \n\\end{table}\n";
+//std::cout<<latexStr.c_str()<<std::endl;
+	latexStr += "\\end{document}\n";
+
+	if(!saveLatex.empty()){
+		std::ofstream out(saveLatex.c_str());
+		out<<latexStr.c_str();
+		out.close();
+	}
+return latexStr;
 }
+
+inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>content,std::map<int,std::map<int, double>>errorArray, std::string saveLatex="") {
+
+  std::cout<<"====> Generating latex"<<std::endl;
+  std::string latexStr;
+  latexStr += "\\documentclass[preview]{standalone}\n";
+  latexStr += "\\usepackage{booktabs}\n";
+  latexStr += "\\begin{document}\n";
+
+  latexStr+="\\begin{table}[]\n";
+  latexStr+="\\centering\n";
+  latexStr+="\\begin{adjustbox}{width=1\textwidth}\n";
+  latexStr+="\\begin{tabular}{";
+  for(int i =0; i <= content.size();i++){
+	  latexStr+="|l|";
+  }
+  latexStr+="} \n \\hline\n";
+
+  latexStr+=" Col \t";
+
+  for (auto colIter=content.begin();colIter!=content.end();colIter++){
+  	  int Col = colIter->first;
+  	latexStr+=Form(" & %d \t",Col);
+  }
+  latexStr+=" \\\\ \\hline \n";
+
+  //for single row loop on Cal
+  double error=0.0;
+  for(int row=0; row<NSieveRow; row++){
+	  latexStr+=Form("Row %d \t", row);
+	  for(int col=0; col<NSieveCol; col++){
+		  if(content.find(col)!=content.end()&& content[col].find(row)!=content[col].end()){
+			  error=content[col][row];
+		  }
+		  latexStr+=Form(" & %1.2f \\pm %1.2f \t",1000*error, 1000*errorArray[col][row]);
+	  }
+	  latexStr+=" \\\\ \\hline \n";
+  }
+
+latexStr+="\\end{tabular} \n \\end{adjustbox}\n \\end{table}\n";
+latexStr += "\\end{document}\n";
+if(!saveLatex.empty()){
+		std::ofstream out(saveLatex.c_str());
+		out<<latexStr.c_str();
+		out.close();
+	}
+return latexStr;
+}
+
 
 TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 {
@@ -2466,16 +2561,16 @@ TCanvas * ROpticsOpt::CheckVertex()
     for (UInt_t idx = 0; idx < fNRawData; idx++) {
         EventData &eventdata = fRawData[idx];
 
-/*
-        UInt_t res = (UInt_t) eventdata.Data[kCutID];
-        // const UInt_t KineID = res / (NSieveRow * NSieveCol * NFoils); //starting 0!
-        res = res % (NSieveRow * NSieveCol * NFoils);
-        const UInt_t FoilID = res / (NSieveRow * NSieveCol); //starting 0!
 
-        res = res % (NSieveRow * NSieveCol);
-        const UInt_t Col = res / (NSieveRow); //starting 0!
-        const UInt_t Row = res % (NSieveRow); //starting 0!
-*/
+//        UInt_t res = (UInt_t) eventdata.Data[kCutID];
+//        // const UInt_t KineID = res / (NSieveRow * NSieveCol * NFoils); //starting 0!
+//        res = res % (NSieveRow * NSieveCol * NFoils);
+//        const UInt_t FoilID = res / (NSieveRow * NSieveCol); //starting 0!
+//
+//        res = res % (NSieveRow * NSieveCol);
+//        const UInt_t Col = res / (NSieveRow); //starting 0!
+//        const UInt_t Row = res % (NSieveRow); //starting 0!
+
         const UInt_t FoilID =0;
 
 		const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
@@ -3083,9 +3178,9 @@ TCanvas * ROpticsOpt::CheckDp()
 }
 
 
-TCanvas* ROpticsOpt::CheckDp_test2() {
+TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 	// Visualize 1D hitogram of dp_kin
-
+	TFile *f1=new TFile(Form("%s/CheckDp_test2_result.root",resultSavePath.c_str()),"RECREATE");
 	DEBUG_INFO("CheckDp_test2", "Entry Point");
 
 	// calculate Data[kCalcDpKin] for all events
@@ -3130,9 +3225,6 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 			}
 		}
 	}
-
-
-
 
 	for (UInt_t KineID = 0; KineID < NKine; KineID++) {
 		SieveThetaPhihh[KineID] = new TH2F(
@@ -3232,9 +3324,9 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 			// fill the Real Scatered momentum (which is calculated from the angle )
 			auto realAngleCalDp=eventdata.Data[kDpKinOffsets]+eventdata.Data[kRealDpKin];
 			auto realAngleCalMom=realAngleCalDp*eventdata.Data[kCentralp]+eventdata.Data[kCentralp];
-
-//			std::cout<<"KineID: "<<KineID<<"  ==> "<< eventdata.Data[kCentralp] <<std::endl;
-
+#if DEBUG_LEVEL>=4
+			std::cout<<"KineID: "<<KineID<<"  ==> "<< eventdata.Data[kCentralp] <<std::endl;
+#endif
 			auto matrixprojectedDp=eventdata.Data[kCalcDpKin]+eventdata.Data[kDpKinOffsets];
 			auto matrixprojectedMom=matrixprojectedDp*eventdata.Data[kCentralp]+eventdata.Data[kCentralp];
 			hCalcMomRealSieve[KineID][Col][Row]->Fill(matrixprojectedMom);
@@ -3405,6 +3497,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 					Form("\\sigma =  %2.1f  \\times 10^{-4}",
 							10000 * f->GetParameter(2)));
 	hDpKinCalibRMS[KineID]->Draw();
+	hDpKinCalibRMS[KineID]->Write();
 	t2->Draw("same");
 	}
 	ccanvasrms->cd(NKine + 1);
@@ -3412,7 +3505,8 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		if(hDpKinCalibRMS[KineID]->GetEntries()==0) continue;
 		hDpKinCalibRMS[KineID]->Draw("same");
 	}
-
+	c1->SaveAs(Form("%s/Check_Dp_Kin_Reconstruction.jpg",resultSavePath.c_str()));
+	c1->Write();
 
 	TCanvas *sieveThetaphiCanvas_cal= new TCanvas("sieveThetaphiCanvasMatrixProjected", "sieveThetaphiCanvasMatrixProjected", 1800,
 						900);
@@ -3424,6 +3518,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		sieveThetaphiCanvas_cal->cd(KineID+1)->SetGridy(10);
 
 		SieveThetaPhihh[KineID]->Draw("zcol");
+
 		sieveThetaphiCanvas_cal->Update();
 		for (auto itter=hhRealSieve[KineID].begin();itter!=hhRealSieve[KineID].end();itter++){
 			for(auto ittter=(itter->second).begin();ittter!=(itter->second).end();ittter++){
@@ -3471,6 +3566,9 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		    t0->Draw();
 
 	}
+	sieveThetaphiCanvas_cal->SaveAs(Form("%s/sieveThetaPhiCanv.jpg",resultSavePath.c_str()));
+	sieveThetaphiCanvas_cal->Write();
+
 
 	std::map<int, std::map<int,std::map<int,double>>> PErrorTable;
 	TCanvas *c5=new TCanvas("MomemtumOptCanv","MomemtumOptCanv",1800,1100);
@@ -3501,8 +3599,11 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 		sievePResidualDistri[KineID]->SetMarkerStyle(20);
 		sievePResidualDistri[KineID]->Draw("E1");
 		line1->Draw("same");
-		std::cout<<"KindID::"<<KineID<<std::endl;
-		std::cout<<LatexTableGenerator(PErrorTable[KineID]).c_str()<<std::endl;
+
+		LatexTableGenerator(PErrorTable[KineID],Form("%s/momentumError.tex",resultSavePath.c_str()));
+
+		//std::cout<<"KindID::"<<KineID<<std::endl;
+		//std::cout<<LatexTableGenerator(PErrorTable[KineID]).c_str()<<std::endl;
 
 		// draw the data on the canvas
 		if ((hCalcMomRealSieve.find(KineID) != hCalcMomRealSieve.end())&&(KineID<4)) {
@@ -3517,7 +3618,8 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 
 	}
 	c5->Update();
-
+	c5->SaveAs(Form("%s/MomemtumOptCanv.jpg",resultSavePath.c_str()));
+	c5->Write();
 	// add the first gaus and second gaus difference for each individual holes
 	// gaus fit probably is not a good choise for those kind of small fraction of data set
 	TCanvas *c6=new TCanvas("MomemtumDifferenceCanv","MomemtumDifferenceCanv",1800,1100);
@@ -3565,7 +3667,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 			sievePDifferenceDistri[KineID]->SetLineWidth(2);
 			sievePDifferenceDistri[KineID]->SetMarkerStyle(20);
 			sievePDifferenceDistri[KineID]->Draw();
-
+			sievePDifferenceDistri[KineID]->Write();
 			// draw the data on the canvas
 			if (hCalcMomRealSieve.find(KineID) != hCalcMomRealSieve.end()) {
 				TLatex *t=new TLatex(30,3.8,Form("%1.3f(ideal:%1.3f)",(hCalcMomRealSieve[KineID][6][3]->GetMean()
@@ -3645,7 +3747,9 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 	}
 
 	c6->Update();
-
+	c6->SaveAs(Form("%s/MomemtumDifferenceCanv.jpg",resultSavePath.c_str()));
+	c6->Write();
+	f1->Close();
 	for (auto item=TheoreticalDpArray.begin();item!=TheoreticalDpArray.end();item++){
 		std::cout<<item->second<<",";
 	}
@@ -4216,7 +4320,12 @@ TCanvas* ROpticsOpt::CheckDp_test(void) {
 
 */
 
-TCanvas* ROpticsOpt::CheckDp_test(void) {
+TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
+
+	FILE *CheckDpResultIO;
+	CheckDpResultIO=fopen(Form("%s/CheckDp_test_result.txt",resultSavePath.c_str()),"w");
+	fprintf(CheckDpResultIO,"{");
+
 
 	DEBUG_INFO("CheckDp_test", "Entry Point");
 	// calculate Data[kCalcDpKin] for all events
@@ -4391,7 +4500,7 @@ TCanvas* ROpticsOpt::CheckDp_test(void) {
 	 			900);
 	 CentralSieveMomentumCanv->Divide(4, 2);
 	 CentralSieveMomentumCanv->Draw();
-
+	 fprintf(CheckDpResultIO,"\"DpSeperation\":{\n");
 	 // start the fit functions
 	 for (int i = 0; i <NKine; i ++ ){
 		 CentralSieveMomentumCanv->cd(i+1);
@@ -4441,10 +4550,14 @@ TCanvas* ROpticsOpt::CheckDp_test(void) {
 			TPaveText *pt = new TPaveText(0.1,0.8,0.3,0.9,"NDC");
 			pt->AddText(Form("%1.3f MeV (%2.2f\%%)",1000.0*(fCrystalMomentumPar[1]-fCrystalMomentumPar[6]),100.0*abs(abs(fCrystalMomentumPar[1]-fCrystalMomentumPar[6])-0.00443891)/0.00443891));
 			pt->Draw("same");
+			fprintf(CheckDpResultIO,Form("\"%d\":%f,\n",i,1000.0*(fCrystalMomentumPar[1]-fCrystalMomentumPar[6])));
 		 }
 	 }
+	 fprintf(CheckDpResultIO,"\"999\":0\n}");
+	 fprintf(CheckDpResultIO,"}");
+	 fclose(CheckDpResultIO);
 	 CentralSieveMomentumCanv->Update();
-
+	 CentralSieveMomentumCanv->SaveAs(Form("%s/centralsievemom.jpg",resultSavePath.c_str()));
 }
 
 
