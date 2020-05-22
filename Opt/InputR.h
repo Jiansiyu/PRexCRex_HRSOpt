@@ -81,34 +81,50 @@ const UInt_t NKine = 8; //N Delta Scans */
 #define DIPOLE_MAG2MOM(Mag) (2.702*(Mag)-1.6e-03*(Mag)*(Mag)*(Mag)) 
 
 const Double_t Ebeam[] = {
-		2.1759184,
-		2.1759877,
-		2.1756448,
-		2.1762876,
+		2.1759184, // %-2
+		2.1759877, // %-1
+		2.1756448, // 0%
+		2.1762876, // 1%
 
 		2.1759184,
 		2.1759877,
 		2.1756448,
 		2.1762876
+  };
 
-  }; 
 
-// this need to read from the database and convert with the equation
+// read the NMR value and convert with equation (2.702*(Mag)-1.6e-03*(Mag)*(Mag)*(Mag))
 const Double_t HRSCentralMom[] = { 
-		  2.144818666, //21642   -2%
-		  2.166744333, //21641   -1%
-		  2.188559918, //21627    0%
-		  2.210268122,  //21636   +1%
+		  2.145074, //21642   -2%
+		  2.166697, //21641   -1%
+		  2.188563, //21627    0%
+		  2.210136,  //21636   +1%
 
-		  2.144818666, //21642   -2%
-		  2.166744333, //21641   -1%
-		  2.188559918, //21627    0%
-		  2.210268122  //21636   +1%
+		  2.145074, //21642   -2%
+		  2.166697, //21641   -1%
+		  2.188563, //21627    0%
+		  2.210136  //21636   +1%
+
+//		  2.144818666, //21642   -2%
+//		  2.166744333, //21641   -1%
+//		  2.188559918, //21627    0%
+//		  2.210268122  //21636   +1%
   }; 
 
-const Double_t GroundNuclearMass = 12*.931494028;// -.511e-3*6; //GeV/c^2  //c Target
-const Double_t ExcitationEnergy[] = {0.0,0.0,0.0,0.0,0.00443891,0.00443891,0.00443891,0.00443891};//selected excitation states for each kinematics
-//{0.,0.00443891,0.00443891,0.00443891,0.00443891};
+//
+const Double_t GroundNuclearMass = 12*.9314941 -.511e-3*6; //GeV/c^2
+
+const Double_t ExcitationEnergy[] = {
+		0.0,
+		0.0,
+		0.0,
+		0.0,
+		0.00443891,
+		0.00443891,
+		0.00443891,
+		0.00443891
+		};//selected excitation states for each kinematics
+
 
 const UInt_t NExcitationStates = 1; // C Excitation States
 const Double_t ExcitationEnergyList[] = {0};
