@@ -453,6 +453,9 @@ Int_t ROpticsOpt::LoadDataBase(TString DataBaseName)
         // order optimize to
         ME.OptOrder = atoi(line_spl[line_spl.size() - 1].c_str());
 
+        // added by siyu to fix the issues when the number of none-zero > optOrder
+        ME.order=ME.OptOrder;
+
         // Don't bother with all-zero matrix elements
         if (ME.iszero) continue;
 
