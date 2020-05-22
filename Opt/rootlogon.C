@@ -1,4 +1,5 @@
 {
+#include <TError.h>
  gStyle->SetPalette(1);
 
  gSystem->AddIncludePath("-I$ANALYZER/src/Podd");
@@ -10,9 +11,9 @@
  gSystem->AddIncludePath("-I$ANALYZER/src/hana_decode");
  gInterpreter->AddIncludePath("$ANALYZER/src/hana_decode");
 
- gROOT->LoadMacro("cut_R.C");
+ //gROOT->LoadMacro("cut_R.C");
  gROOT->LoadMacro("ROpticsOpt.C+");
  gROOT->LoadMacro("ROpticsOptScript.C");
-
+gErrorIgnoreLevel = kFatal;
 }
 
