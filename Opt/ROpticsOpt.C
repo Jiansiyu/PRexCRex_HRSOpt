@@ -985,10 +985,10 @@ UInt_t ROpticsOpt::LoadRawData(TString DataFileName, UInt_t NLoad, UInt_t MaxDat
         Double_t y_fp = eventdata[kY];
         Double_t ph_fp = eventdata[kPhi];
 
-//#if DEBUG_LEVEL>=4
+#if DEBUG_LEVEL>=4
         std::cout<<"DataID: "<< cutid<<"	kx: "<<eventdata[kX]<<"	kth:"<<eventdata[kTh]<<
         		"	ky:"<<eventdata[kY]<<"	kphi:"<<eventdata[kPhi]<<std::endl;
-//#endif
+#endif
         // calculate the powers we need
         for (int i = 0; i < kNUM_PRECOMP_POW; i++) {
             powers[i][0] = pow(x_fp, i);
@@ -1222,10 +1222,10 @@ void ROpticsOpt::PrepareSieve(void)
         rms_exttargcorr_th += x_tg * ExtTarCor_ThetaCorr * x_tg * ExtTarCor_ThetaCorr;
 	
         DEBUG_MASSINFO("PrepareSieve", "Real_Th_Matrix = %f,\t Real_Phi = %f", eventdata.Data[kRealThMatrix], eventdata.Data[kRealPhi]);
-
+#if DEBUG_LEVEL>=4
         std::cout<<(UInt_t)eventdata.Data[kCutID]<<"  Col Row:("<<Col<<","<<Row<<")  Pos=> ("<<SieveHoleTCS.X()<<", "<<SieveHoleTCS.Y()<<", "<<SieveHoleTCS.Z()<<")   ";
         std::cout<<"kRealTh:"<< MomDirectionTCS.X() / MomDirectionTCS.Z() <<"  kRealPhi:"<<MomDirectionTCS.Y() / MomDirectionTCS.Z()<<std::endl;
-
+#endif
 	}
 
     DEBUG_INFO("PrepareSieve", "Average Extended Target Correction: th = %f,\t rms_th = %f", exttargcorr_th / fNRawData, TMath::Sqrt(rms_exttargcorr_th / fNRawData));
@@ -1396,7 +1396,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 		// also need to plot the residual of thecalculated and real theta and phi
 		// fill the real theta and phi
 
-		const Double_t RealTheta = eventdata.Data[kRealTh];
+		const Double_t RealTheta = eventdata.Data[kRealThMatrix];
 		const Double_t RealPhi = eventdata.Data[kRealPhi];
 //        HSieveRealThetaPhi[FoilID]->Fill(eventdata.Data[kRealTh],eventdata.Data[kRealPhi]);
 		HSieveRealThetaPhi[FoilID]->Fill(RealPhi, RealTheta);
@@ -1464,8 +1464,8 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 		const EventData &eventdata = fRawData[idx];
 
 		TLine *line = new TLine((c1->cd(3)->GetUxmin()),
-				eventdata.Data[kRealTh], (c1->cd(3)->GetUxmax()),
-				eventdata.Data[kRealTh]);
+				eventdata.Data[kRealThMatrix], (c1->cd(3)->GetUxmax()),
+				eventdata.Data[kRealThMatrix]);
 		line->SetLineWidth(2);
 		line->SetLineColor(3);
 		line->Draw("same");
@@ -1490,8 +1490,8 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 			if(HRSOpt::GetMomID((UInt_t)eventdata.Data[kCutID])!=i) continue;
 
 			TLine *line3 = new TLine((c2->cd(i+1)->GetUxmin()),
-					eventdata.Data[kRealTh], (c2->cd(i+1)->GetUxmax()),
-					eventdata.Data[kRealTh]);
+					eventdata.Data[kRealThMatrix], (c2->cd(i+1)->GetUxmax()),
+					eventdata.Data[kRealThMatrix]);
 			line3->SetLineWidth(2);
 			line3->SetLineColor(3);
 			line3->Draw("same");
@@ -1562,9 +1562,6 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
     line1->Draw("same");
 	c4->Update();
 
-//	TCanvas *c5=new TCanvas("CPhiCorrectionError","CPhiCorrectionError",1800,1100);
-//	c5->Draw();
-
 	TH1F *sievePhiResidualDistri=new TH1F("SievePhiResiduals","Sieve #Phi' Residuals",NSieveCol*NSieveRow+10,0,NSieveCol*NSieveRow+10);
 	sievePhiResidualDistri->GetYaxis()->SetRangeUser(-0.003,0.003);
 	sievePhiResidualDistri->GetXaxis()->SetTitle("SieveHoleID");
@@ -1589,11 +1586,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 	c4->Update();
 	std::cout<<LatexTableGenerator(thetaErrorTable).c_str();
 	std::cout<<LatexTableGenerator(PhiErrorTable).c_str();
-
 	return c2;
-
-
-	// latex table generator
 
 }
 
@@ -2919,10 +2912,10 @@ TCanvas * ROpticsOpt::CheckDp()
 
       hRealReactZ[KineID] = new TH1D(Form("hRealReactZ%d", KineID), Form("ReacZ for Delta Scan Kine. %d%%", 2*(KineID-2)), 400, -0.15, 0.15);
       hElossTgBefore[KineID] = new TH1D(Form("hElossTg%d", KineID), Form("ElossTg for Delta Scan Kine. %d%%", 2*(KineID-2)), 400, 0, 0.0055);
-      hElossTg_ReactZ_Before[KineID] = new TH2D(Form("hElossTg_ReacZ%d", KineID), Form("ElossTg for Delta Scan Kine. %d%%", 2*(KineID-2)), 400,-0.15,0.15,400, 0, 7);
-      hElossTg_ReactZ_After[KineID] = new TH2D(Form("hElossTg_ReacZ%d", KineID), Form("ElossTg for Delta Scan Kine. %d%%", 2*(KineID-2)), 400,-0.15,0.15,400, 0, 3.5);
+      hElossTg_ReactZ_Before[KineID] = new TH2D(Form("hElossTg_ReacZ%d_before", KineID), Form("ElossTg for Delta Scan Kine. %d%%", 2*(KineID-2)), 400,-0.15,0.15,400, 0, 7);
+      hElossTg_ReactZ_After[KineID] = new TH2D(Form("hElossTg_ReacZ%d_after", KineID), Form("ElossTg for Delta Scan Kine. %d%%", 2*(KineID-2)), 400,-0.15,0.15,400, 0, 3.5);
       hTravelLength_ReactZ_Before[KineID] = new TH2D(Form("hTravelLength_ReacZ%d", KineID), Form("TravelLength vs ReacZ Before for Delta Scan Kine. %d%%", 2*(KineID-2)), 400,-0.15,0.15,800, 0, 0.15);
-      hTravelLength_ReactZ_After[KineID] = new TH2D(Form("hElossTg_ReacZ%d", KineID), Form("TravelLength vs ReacZ After for Delta Scan Kine. %d%%", 2*(KineID-2)), 400,-0.15,0.15,800, 0, 0.07);
+      hTravelLength_ReactZ_After[KineID] = new TH2D(Form("hElossTg_ReacZ%d_TravelLength_after", KineID), Form("TravelLength vs ReacZ After for Delta Scan Kine. %d%%", 2*(KineID-2)), 400,-0.15,0.15,800, 0, 0.07);
 
         assert(hDpKinCalib[KineID]); //pointer check
         assert(hDpKinAll[KineID]); //pointer check
@@ -3163,11 +3156,11 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 				Form("ElossTg for Delta Scan Kine. %d%%", 2 * (KineID - 2)),
 				400, 0, 0.0055);
 		hElossTg_ReactZ_Before[KineID] = new TH2D(
-				Form("hElossTg_ReacZ%d", KineID),
+				Form("hElossTg_ReacZ%d_Before", KineID),
 				Form("ElossTg for Delta Scan Kine. %d%%", 2 * (KineID - 2)),
 				400, -0.15, 0.15, 400, 0, 7);
 		hElossTg_ReactZ_After[KineID] = new TH2D(
-				Form("hElossTg_ReacZ%d", KineID),
+				Form("hElossTg_ReacZ%d_After", KineID),
 				Form("ElossTg for Delta Scan Kine. %d%%", 2 * (KineID - 2)),
 				400, -0.15, 0.15, 400, 0, 3.5);
 		hTravelLength_ReactZ_Before[KineID] = new TH2D(
@@ -3175,7 +3168,7 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 				Form("TravelLength vs ReacZ Before for Delta Scan Kine. %d%%",
 						2 * (KineID - 2)), 400, -0.15, 0.15, 800, 0, 0.15);
 		hTravelLength_ReactZ_After[KineID] = new TH2D(
-				Form("hElossTg_ReacZ%d", KineID),
+				Form("hElossTg_ReacZ%d_travelLength_After", KineID),
 				Form("TravelLength vs ReacZ After for Delta Scan Kine. %d%%",
 						2 * (KineID - 2)), 400, -0.15, 0.15, 800, 0, 0.07);
 
@@ -3214,18 +3207,18 @@ TCanvas* ROpticsOpt::CheckDp_test2() {
 							!= hDpKinCalibSieve[KineID][Col].end())) {
 
 			}else{
-				hDpKinCalibSieve[KineID][Col][Row]= new TH1F(Form("hDpKinCalib%d%%_Col%d_Row%d", KineID-2,Col,Row),
-						Form("Dp_KinCalib_.%d%%.Col%d_Row%d.", (KineID - 2),Col,Row),
+				hDpKinCalibSieve[KineID][Col][Row]= new TH1F(Form("hDpKinCalibKineID%d_Col%d_Row%d", KineID-2,Col,Row),
+						Form("Dp_KinCalib_%d%%_Col%d_Row%d", (KineID - 2),Col,Row),
 						NDpRange, -2 * DpRange, 2 * DpRange);
-				hDpKinRealSieve[KineID][Col][Row]= new TH1F(Form("hDpKinReal%d%%_Col%d_Row%d", KineID-2,Col,Row),
-						Form("Dp_KinReal_ .%d%%.Col%d_Row%d.", (KineID - 2),Col,Row),
+				hDpKinRealSieve[KineID][Col][Row]= new TH1F(Form("hDpKinRealKineID%d_Col%d_Row%d_h", KineID-2,Col,Row),
+						Form("Dp_KinReal_%d%%_Col%d_Row%d_h", (KineID - 2),Col,Row),
 						NDpRange, -2 * DpRange, 2 * DpRange);
-				hhRealSieve[KineID][Col][Row]= new TH2F(Form("hDpKinReal%d%%_Col%d_Row%d", KineID-2,Col,Row),
-						Form("Dp_KinReal_ .%d%%.Col%d_Row%d.", (KineID - 2),Col,Row),
+				hhRealSieve[KineID][Col][Row]= new TH2F(Form("hDpKinRealKineID%d_Col%d_Row%d_hh", KineID-2,Col,Row),
+						Form("Dp_KinReal_%d%%_Col%d_Row%d_hh", (KineID - 2),Col,Row),
 						1000,-0.03,0.03,1000,-0.045,0.045);
-				hMomRealSieve[KineID][Col][Row]=new TH1F(Form("SieveMom%d%%",KineID-2),Form("SieveMom%d%%",KineID-2),1000,2.0,2.30);
-				hhRealSieveScatteredAngle[KineID][Col][Row]=new TH1F(Form("SieveAngle%d%%",KineID-2),Form("SieveAngle%d%%",KineID-2),1000,0,2);
-				hCalcMomRealSieve[KineID][Col][Row]=new TH1F(Form("SieveCalMom%d%%",KineID-2),Form("SieveCalMom%d%%",KineID-2),1000,2.0,2.30);
+				hMomRealSieve[KineID][Col][Row]=new TH1F(Form("SieveMomKineID%d_Col%d_Row%d",KineID-2,Col,Row),Form("SieveMom%d%%_Col%d_Row%d",KineID-2,Col,Row),1000,2.0,2.30);
+				hhRealSieveScatteredAngle[KineID][Col][Row]=new TH1F(Form("SieveAngleKineID%d_Col%d_Row%d",KineID-2,Col,Row),Form("SieveAngle%d%%_Col%d_Row%d",KineID-2,Col,Row),1000,0,2);
+				hCalcMomRealSieve[KineID][Col][Row]=new TH1F(Form("SieveCalMomKineID%d_Col%d_Row%d",KineID-2,Col,Row),Form("SieveCalMom%d%%_Col%d_Row%d",KineID-2,Col,Row),1000,2.0,2.30);
 			}
 
 			AveRealDpKinMatrix[KineID] += eventdata.Data[kRealDpKinMatrix];
