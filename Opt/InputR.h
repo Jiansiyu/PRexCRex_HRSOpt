@@ -9,27 +9,29 @@
 
 using namespace std;
 
-const TString InputID = "prexLHRS";
+const TString InputID = "prexRHRS";
 
 /////////////////////////////////////////////////////////////////////////
 // Input Sections
 /////////////////////////////////////////////////////////////////////////
 
+/////////////////////////////////////////////////////////////////////////
+//const Double_t Ebeam = 2.3004;
 // HRS Position Inputs
 const Double_t D2R = TMath::Pi() / 180.;
-//set as central sieve hole angle for LHRS
-const Double_t HRSAngle = 4.7469 * D2R;
+//set as central sieve hole angle
+const Double_t HRSAngle = -4.7572 * D2R;
 
 
 //------------------------------------------------------------------------
 // not used
 //------------------------------------------------------------------------
 //LH2 target information
-const Double_t LH2_TargetLength = 0.*1.e-2*0.0; //unit m
-const Double_t LH2_Target_Tip_Radius = 0.*2.54*1.e-2*0.0; //target width and tip radius
-const Double_t LH2_Thickness_Entance = 0.*1.e-3*0.0;//Al 7075, aluminum thickness for the entrance window
-const Double_t LH2_Thickness_Side = 0.*1.e-3*0.0;  //Al 7075, aluminum thickness for the side wall
-const Double_t LH2_Thickness_Tip = 0.*1.e-3*0.0;  //Al 7075, aluminum thickness for tip
+const Double_t LH2_TargetLength = 15*1.e-2*0.0; //unit m
+const Double_t LH2_Target_Tip_Radius = 1.5*2.54*1.e-2*0.0; //target width and tip radius
+const Double_t LH2_Thickness_Entance = 0.175*1.e-3*0.0;//Al 7075, aluminum thickness for the entrance window
+const Double_t LH2_Thickness_Side = 0.18*1.e-3*0.0;  //Al 7075, aluminum thickness for the side wall
+const Double_t LH2_Thickness_Tip = 0.11*1.e-3*0.0;  //Al 7075, aluminum thickness for tip
 
 // MissPoint* are in HCS
 const Double_t MissPointZ =0.0;//
@@ -61,7 +63,7 @@ const UInt_t NSieveRow = 7;
 // SieveOff* are in TCS
 const Double_t SieveOffY = 0.0;
 const Double_t SieveOffX = 0.0;
-const Double_t ZPos      = (99.4478) * 1e-2;
+const Double_t ZPos      = (99.669) * 1e-2;
 //const Double_t SieveOffY = 0.8e-3;// -(3.314-0.8)*1.e-3;
 //const Double_t SieveOffX = -1.07*1.e-3;//-(1.07+1.42)*1.e-3;
 //const Double_t ZPos =1059.61e-3+3.314e-3/TMath::Tan(-HRSAngle);//1059.61 * 1e-3;
@@ -70,7 +72,7 @@ const Double_t ZPos      = (99.4478) * 1e-2;
 // Vertex Position Inputs
 static const UInt_t NFoils = 1;
 const Double_t targetoffset = 0;
-const Double_t targetfoils[] = {0.0,0.0,0.0,0.0};
+const Double_t targetfoils[] = {0.0};
 
  ///////////////////////////////////////////////////////////////////////// 
  // Excitation State Inputs 
@@ -78,43 +80,46 @@ const UInt_t NKine = 8; //N Delta Scans */
 
 #define DIPOLE_MAG2MOM(Mag) (2.702*(Mag)-1.6e-03*(Mag)*(Mag)*(Mag)) 
 
-const Double_t Ebeam[] = { 
-//  2.17596, //21642   -2%
-//  2.17591, //21641   -1%
-//  2.17575, //21627    0%
-//  2.17605,  //21636   +1%
-//  	  	  	  	  	  	  // prepare for the P1 application
-//  2.17596, //21642   -2%
-//  2.17591, //21641   -1%
-//  2.17575, //21627    0%
-//  2.17605  //21636   +1%
-	2.1759184,
-	2.1759877,
-	2.1756448,
-	2.1762876,
+const Double_t Ebeam[] = {
+		2.1759184, // %-2
+		2.1759877, // %-1
+		2.1756448, // 0%
+		2.1762876, // 1%
 
-	2.1759184,
-	2.1759877,
-	2.1756448,
-	2.1762876
-};
+		2.1759184,
+		2.1759877,
+		2.1756448,
+		2.1762876
+  };
 
-// this need to read from the database and convert with the equation
+
+// read the NMR value and convert with equation (2.702*(Mag)-1.6e-03*(Mag)*(Mag)*(Mag))
 const Double_t HRSCentralMom[] = { 
-		2.141358228, //21642   -2%
-		2.162722897, //21641   -1%
-		2.185155798, //21626    0%
-		2.197131257,  //21632   +1%
+		  2.145074, //21642   -2%
+		  2.166697, //21641   -1%
+		  2.188563, //21627    0%
+		  2.210136,  //21636   +1%
 
-		2.141358228, //21642   -2%
-		2.162722897, //21641   -1%
-		2.185155798, //21626    0%
-		2.197131257  //21632   +1%
+		  2.145074, //21642   -2%
+		  2.166697, //21641   -1%
+		  2.188563, //21627    0%
+		  2.210136  //21636   +1%
   }; 
 
-const Double_t GroundNuclearMass = 12*.931494028-.511e-3*6;// -.511e-3*6; //GeV/c^2  //c Target
-const Double_t ExcitationEnergy[] = {0.0,0.0,0.0,0.0,0.00443891,0.00443891,0.00443891,0.00443891};//selected excitation states for each kinematics
-//{0.,0.00443891,0.00443891,0.00443891,0.00443891};
+//12*931.494028*1.e-3
+const Double_t GroundNuclearMass = 12*.9314941 -.511e-3*6; //GeV/c^2
+
+const Double_t ExcitationEnergy[] = {
+		0.0,
+		0.0,
+		0.0,
+		0.0,
+		0.00443891,
+		0.00443891,
+		0.00443891,
+		0.00443891
+		};//selected excitation states for each kinematics
+
 
 const UInt_t NExcitationStates = 1; // C Excitation States
 const Double_t ExcitationEnergyList[] = {0};
@@ -144,10 +149,10 @@ const Double_t ExtTarCor_DeltaCorr = 5.18;//1e36;//
 /////////////////////////////////////////////////////////////////////////
 // Database header
 
-const char * Prefix = "L.vdc.";
+const char * Prefix = "R.vdc.";
 
 const char * DatabaseHeader = "\
-[ L.global ]   \n\
+[ R.global ]   \n\
 0.3327 1 0.0 270.2 0.0 -1.6e-03        VDC Angle, Plane Spacing, Gamma Coefficents  \n\
 matrix elements   \n\
 t 0 0 0  -1.001135e+00 -3.313373e-01 -4.290819e-02  4.470852e-03  0.000000e+00  0.000000e+00  0.000000e+00  0\n\
