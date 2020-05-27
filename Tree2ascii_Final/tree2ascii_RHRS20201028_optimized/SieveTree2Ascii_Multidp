@@ -11,7 +11,7 @@ fi
 ARCH=$(arch)
 PROG=./tree2ascii
 
-ROOTFILEDIR="/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200522/rootfiles/"
+ROOTFILEDIR="/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200526/RHRS/rootfiles/"
 
 prefix="prexRHRS"
 # Path that contains the cut 

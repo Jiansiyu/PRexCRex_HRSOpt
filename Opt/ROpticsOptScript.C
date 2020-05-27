@@ -11,9 +11,9 @@
 #include "TVirtualFitter.h"
 #include <TSystem.h>
 
-#define th_ph_optimize true
-#define y_optimize true
-#define dp_optimize true
+#define th_ph_optimize false
+#define y_optimize false
+#define dp_optimize false
 
 #include "ROpticsOpt.h"
 //#include "SaveCanvas.C"
@@ -36,9 +36,9 @@ UInt_t MaxDataPerGroup = 100;
 //TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveThetaPhi.test_reform";
 //TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveWithMomCut.test_reform";
 
-TString DataSource =   "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.Mom.f51_reform";
+//TString DataSource =   "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.Mom.f51_reform";
 //TString DataSource =   "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.ThetaPhiY.f51_reform"; // theta phi optimization dataset
-
+TString DataSource =   "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_data/Sieve.Full.thetaphi.f51";
 
 
 
@@ -323,9 +323,9 @@ void AutoDoMinDp(TString SourceDataBase, TString DestDataBase="", UInt_t MaxData
 {
 	// extract the base name of the string
 	if (doOptmization){
-			DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.Mom.f51_reform";
+			DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_data/Sieve.Full.Mom.f51_reform";
 	}else{
-		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.LargeDataSet.f51";
+		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_data/Sieve.Full.LargeDataSet.f51";
 	}
 
 	TString SourceDataBasePath=getFilePath(DestDataBase.Data());

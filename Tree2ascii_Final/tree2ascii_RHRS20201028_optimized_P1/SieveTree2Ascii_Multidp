@@ -11,7 +11,7 @@ fi
 ARCH=$(arch)
 PROG=./tree2ascii
 #ROOTFILEDIR="/home/newdriver/Storage/Research/PRex_Experiment/prex_analyzer/optReplay/Result/Nov18_OptData/"
-ROOTFILEDIR="/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200522/rootfiles/"
+ROOTFILEDIR="/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200526/RHRS/rootfiles/"
 
 prefix="prexRHRS"
 # Path that contains the cut 
@@ -38,7 +38,9 @@ $PROG -pv -d SieveVars.def -O $Id\
         -g $DIR/prexRHRS_${keyrun}_-1.root.FullCut.root \
         -o $DIR/Sieve._${keyrun}_p4_p1.f51 \
         $ROOTFILEDIR/prexRHRS_${keyrun}_-1.root \
-        $ROOTFILEDIR/prexRHRS_${keyrun}_-1_1.root 
+        $ROOTFILEDIR/prexRHRS_${keyrun}_-1_1.root \
+        $ROOTFILEDIR/prexRHRS_${keyrun}_-1_2.root
+
         
 Id=490
 #21641 -1% dp scan
