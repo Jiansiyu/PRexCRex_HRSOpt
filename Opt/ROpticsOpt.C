@@ -4558,6 +4558,7 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 	 fclose(CheckDpResultIO);
 	 CentralSieveMomentumCanv->Update();
 	 CentralSieveMomentumCanv->SaveAs(Form("%s/centralsievemom.jpg",resultSavePath.c_str()));
+	 std::cout<<"File Save as ::"<< resultSavePath.c_str()<<std::endl;
 }
 
 

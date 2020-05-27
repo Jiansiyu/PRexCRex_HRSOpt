@@ -10,6 +10,10 @@ from random import seed
 from random import random, randint
 from multiprocessing import Pool     # multithread process the single files
 import statistics
+from progress.bar import Bar
+
+from fpdf import FPDF
+import PIL
 
 class OptScannerResult(object):
     def __init__(self,runConfigFname="runConfig.json"):
@@ -75,12 +79,43 @@ class OptScannerResult(object):
                 if float(result["DpSeperation"]['0']) > 4.4 and float(result["DpSeperation"]['3']) < 4.5:
                     print("{}==>Mean:{}, stdv:{}".format(standDevLib,statistics.mean(standDevLib),statistics.stdev(standDevLib)))
 
+    def _getImageSize(self,imageFile):
+        cover=PIL.Image.open(imageFile)
+        width, height=cover.size
+        return width,height
+    def getReport(self,pdffilename='',txtResultPath=[]):
+        if len(txtResultPath) == 0:
+            txtResultPath=self.OptTemplatedOptmizedFolders
+        
+        bar=Bar("Processing",max=len(txtResultPath))
+        print("Total Processed Template {} / {}\n\n\n".format(len(self.OptTemplatedOptmizedFolders),0))#,float(self.OptTemplatedOptmizedFolders)/self.OptTemplateSubFolders))
+        pdf=FPDF(orientation = 'L', unit = 'mm', format='A4')
+        for item in txtResultPath:
+            #print("Working on file:{}".format(txtResultPath))
+            file1=os.path.join(item,"MomemtumOptCanv.jpg")
+            width, height =self._getImageSize(file1)
+            width, height = float(width * 0.264583), float(height * 0.264583)
+            pdf_size = {'P': {'w': 210, 'h': 297}, 'L': {'w': 297, 'h': 210}}
+            orientation = 'P' if width < height else 'L'
+            width = width if width < pdf_size[orientation]['w'] else pdf_size[orientation]['w']
+            height = height if height < pdf_size[orientation]['h'] else pdf_size[orientation]['h']
+            pdf.add_page(orientation=orientation)
+            pdf.image(file1,0, 0, width, height)
+            pdf.set_font('Arial', 'B', 10)
+            pdf.cell(0, 0, "{}".format(item),link="file:///{}".format(item))
+            bar.next()
+        bar.finish()
+        print("Creating the PDF file")
+        pdf.output("./resultScanReport.pdf","F")
+
+        
     def ReadCheckDpMultiThread(self,maxThread=5):
         threadPool=Pool(maxThread)
         threadPool.map(self.ReadSingleCheckDpResultText, self.OptTemplateSubFolders)
-
+        # self.getReport(txtResultPath=self.OptTemplatedOptmizedFolders)
 
 if __name__ == "__main__":
     test=OptScannerResult(runConfigFname="runConfig_test.json")
     #test.ReadCheckDpMultiThread()
     test.ReadCheckDpResultText()
+    test.getReport()

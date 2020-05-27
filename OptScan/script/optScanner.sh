@@ -55,5 +55,5 @@ echo "Opt script branch name: ${optScriptBranch}"
 
 echo "run start the Optimation process!!"
 analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('true',"delta","'${TemplateFname}'","'${OptimizedDBFname}'")'
-#echo "run start the Optimation Check process!!"
-#analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('false',"delta","'${OptimizedDBFname}'","'${OptimizedDBFname_postrun}'")'
+echo "run start the Optimation Check process!!"
+analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('false',"delta","'${OptimizedDBFname}'","'${OptimizedDBFname_postrun}'")'

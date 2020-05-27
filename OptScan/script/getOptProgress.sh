@@ -16,7 +16,7 @@ do
 	
 	pd=$(( ${CurrentReplayedNumber} * 73 / ${TotalFileNumber} ))
 	printf "\r%3d.%1d%% %.${pd}s"  $(( ${CurrentReplayedNumber} * 100 / ${TotalFileNumber} )) $(( (${CurrentReplayedNumber} * 10000 / ${TotalFileNumber}) % 100 ))  $pstr
-	sleep 20
+	sleep 10
 	CurrentReplayedNumber=$(ls ${FolderPath}/*/CheckDp_test_result.txt | wc -l)
 done 
 

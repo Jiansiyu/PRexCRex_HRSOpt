@@ -11,9 +11,9 @@
 #include "TVirtualFitter.h"
 #include <TSystem.h>
 
-#define th_ph_optimize false
-#define y_optimize false
-#define dp_optimize false
+#define th_ph_optimize true
+#define y_optimize true
+#define dp_optimize true
 
 #include "ROpticsOpt.h"
 //#include "SaveCanvas.C"
@@ -323,9 +323,9 @@ void AutoDoMinDp(TString SourceDataBase, TString DestDataBase="", UInt_t MaxData
 {
 	// extract the base name of the string
 	if (doOptmization){
-			DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_data/Sieve.Full.Mom.f51_reform";
+			DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_data/Sieve.Full.Mom.f51";
 	}else{
-		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_data/Sieve.Full.LargeDataSet.f51";
+		    DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_data/Sieve.full.largeDataset.f51";
 	}
 
 	TString SourceDataBasePath=getFilePath(DestDataBase.Data());

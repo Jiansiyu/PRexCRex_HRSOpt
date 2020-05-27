@@ -102,8 +102,8 @@ class optDatabaseTemplateGenerator():
                 else:
                     self.TemplateDatabase[line[0:7]]=line
                 line=templateFile.readline()
-        for item in self.TemplateDatabase:
-            print(item)
+        #for item in self.TemplateDatabase:
+        #    print(item)
                 
 
     def RequestNewFolder(self):
