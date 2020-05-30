@@ -1,7 +1,7 @@
 {
   "DpOpt": {
     "D 0 0 0": {
-      "startOrder": "6",
+      "startOrder": "3",
       "endOrder": "6"
     },
     "D 0 0 1": {
@@ -10,7 +10,7 @@
     },
     "D 0 0 2": {
       "startOrder": "1",
-      "endOrder": "2"
+      "endOrder": "1"
     },
     "D 0 0 3": {
       "startOrder": "4",
@@ -22,14 +22,14 @@
     },
     "D 0 2 0": {
       "startOrder": "1",
-      "endOrder": "2"
+      "endOrder": "1"
     },
     "D 1 0 0": {
       "startOrder": "2",
       "endOrder": "2"
     },
     "D 1 1 0": {
-      "startOrder": "1",
+      "startOrder": "2",
       "endOrder": "2"
     },
     "D 1 1 1": {
@@ -37,12 +37,12 @@
       "endOrder": "2"
     },
     "D 2 0 0": {
-      "startOrder": "1",
+      "startOrder": "2",
       "endOrder": "2"
     },
     "D 0 1 1": {
       "startOrder": "1",
-      "endOrder": "2"
+      "endOrder": "1"
     },
     "D 2 2 0": {
       "startOrder": "1",
@@ -57,20 +57,20 @@
       "endOrder": "1"
     },
     "D 3 0 0": {
-      "startOrder": "1",
-      "endOrder": "3"
+      "startOrder": "2",
+      "endOrder": "2"
     },
     "D 1 2 0": {
-      "startOrder": "1",
-      "endOrder": "3"
+      "startOrder": "2",
+      "endOrder": "2"
     },
     "D 0 1 3": {
       "startOrder": "1",
       "endOrder": "1"
     },
     "D 4 0 0": {
-      "startOrder": "1",
-      "endOrder": "1"
+      "startOrder": "0",
+      "endOrder": "0"
     }
   }
 }

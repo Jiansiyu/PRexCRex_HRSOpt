@@ -38,7 +38,10 @@ class OptScannerResult(object):
             self.TargetPath=self.runConfig_data["TargetPath"]
             self.OptSourceFolder=self.runConfig_data["OptSourceFolder"]
             self.optScannerBashScript=self.runConfig_data["optScannerBashScript"]
-    
+
+    def SetTargetFolder(self, topFolder=""):
+        self.TargetPath=topFolder
+
     def GetSubFolders(self, topFolder=""):
         #self.TargetPath="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan/result1/"
         if not topFolder:
@@ -46,8 +49,7 @@ class OptScannerResult(object):
         self.OptTemplateSubFolders= [f.path for f in os.scandir(topFolder) if f.is_dir()]
         self.OptTemplatedOptmizedFolders=[item for item in self.OptTemplateSubFolders if os.path.isfile("{}/CheckDp_test_result.txt".format(item))]
         print("Total Processed Template {} / {}\n\n\n".format(len(self.OptTemplatedOptmizedFolders),len(self.OptTemplateSubFolders)))
-        #for item in self.OptTemplateSubFolders:
-        #    print(item)
+
     
     def ReadCheckDpResultText(self):
         bar=Bar("Looking for result:: ", max=len(self.OptTemplatedOptmizedFolders))
@@ -63,9 +65,10 @@ class OptScannerResult(object):
                         if item != '999':
                             #print("{}:{}".format(item,result["DpSeperation"][item]))
                             standDevLib.append(float(result["DpSeperation"][item]))
-                    if float(result["DpSeperation"]['0']) > 4.4 and float(result["DpSeperation"]['3']) < 4.5:
+                    if float(result["DpSeperation"]['0']) > 4.4 and float(result["DpSeperation"]['3']) < 4.5 and float(result["DpSeperation"]['3']) > 4.4:
                         print("\n{}==>Mean:{}, stdv:{}\n{}\n".format(standDevLib,statistics.mean(standDevLib[1:]),statistics.stdev(standDevLib[1:]),path))
         bar.finish()
+    
     def ReadSingleCheckDpResultText(self,txtResultPath=""):
         print("Total Processed Template {} / {}\n\n\n".format(len(self.OptTemplatedOptmizedFolders),0))#,float(self.OptTemplatedOptmizedFolders)/self.OptTemplateSubFolders))
         txtFilename="{}/CheckDp_test_result.txt".format(txtResultPath)
@@ -83,6 +86,7 @@ class OptScannerResult(object):
         cover=PIL.Image.open(imageFile)
         width, height=cover.size
         return width,height
+    
     def addimage(self, pdf=FPDF(),file1=""):
         width, height =self._getImageSize(file1)
         width, height = float(width * 0.264583), float(height * 0.264583)
@@ -92,34 +96,45 @@ class OptScannerResult(object):
         height = height if height < pdf_size[orientation]['h'] else pdf_size[orientation]['h']
         pdf.add_page(orientation=orientation)
         pdf.image(file1,0, 0, width, height)
-        pdf.set_font('Arial', 'B', 10)
+        # pdf.set_font('Arial', 'B', 10)
         #pdf.cell(0, 0, "{}".format(item),link="file:///{}".format(item))
+    
+    def addTxtFile(self, pdf=FPDF(),txtFile=""):
+        if os.path.isfile(txtFile):
+            pdf.add_page()
+            pdf.set_font("Arial", size = 15) 
+            
+            f = open(txtFile, "r")
+            for x in f:
+                pdf.cell(200,10,txt=x,ln=1,align='C')
 
     def getReport(self,pdffilename='',txtResultPath=[]):
         if len(txtResultPath) == 0:
             txtResultPath=self.OptTemplatedOptmizedFolders
-        
+            
         bar=Bar("Processing",max=len(txtResultPath))
         print("Total Processed Template {} / {}\n\n\n".format(len(self.OptTemplatedOptmizedFolders),0))#,float(self.OptTemplatedOptmizedFolders)/self.OptTemplateSubFolders))
         pdf=FPDF(orientation = 'L', unit = 'mm', format='A4')
         for item in txtResultPath:
             #print("Working on file:{}".format(txtResultPath))
-            pdf.add_page();
-            pdf.set_font('Arial', 'B', 10)
-            pdf.cell(0, 0, "Open Folder:{}".format(item),link="file:///{}".format(item))
-            file1=os.path.join(item,"MomemtumOptCanv.jpg")
-            width, height =self._getImageSize(file1)
-            width, height = float(width * 0.264583), float(height * 0.264583)
-            pdf_size = {'P': {'w': 210, 'h': 297}, 'L': {'w': 297, 'h': 210}}
-            orientation = 'P' if width < height else 'L'
-            width = width if width < pdf_size[orientation]['w'] else pdf_size[orientation]['w']
-            height = height if height < pdf_size[orientation]['h'] else pdf_size[orientation]['h']
-            pdf.add_page(orientation=orientation)
-            pdf.image(file1,0, 0, width, height)
+            #pdf.add_page();
+            #pdf.set_font('Arial', 'B', 10)
+            #pdf.cell(0, 0, "Open Folder:{}".format(item),link="file:///{}".format(item))
+            
+            file1=os.path.join(item,"CheckDp_test2_DpKinDiffCanv.jpg")
+            if os.path.isfile(file1):
+                width, height =self._getImageSize(file1)
+                width, height = float(width * 0.264583), float(height * 0.264583)
+                pdf_size = {'P': {'w': 210, 'h': 297}, 'L': {'w': 297, 'h': 210}}
+                orientation = 'P' if width < height else 'L'
+                width = width if width < pdf_size[orientation]['w'] else pdf_size[orientation]['w']
+                height = height if height < pdf_size[orientation]['h'] else pdf_size[orientation]['h']
+                pdf.add_page(orientation=orientation)
+                pdf.image(file1,0, 0, width, height)
             pdf.set_font('Arial', 'B', 10)
             pdf.cell(0, 0, "{}".format(item),link="file:///{}".format(item))
-            self.addimage(pdf=pdf,file1=os.path.join(item,"Check_Dp_Kin_Reconstruction.jpg"))
-            self.addimage(pdf=pdf,file1=os.path.join(item,"centralsievemom.jpg")) 
+            #self.addimage(pdf=pdf,file1=os.path.join(item,"Check_Dp_Kin_Reconstruction.jpg"))
+            #self.addimage(pdf=pdf,file1=os.path.join(item,"centralsievemom.jpg")) 
             bar.next()
         bar.finish()
         print("Creating the PDF file")
