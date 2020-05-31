@@ -41,7 +41,6 @@ UInt_t MaxDataPerGroup = 100;
 TString DataSource =   "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_data/Sieve.Full.thetaphi.f51";
 
 
-
 typedef void (*PTRFCN)(Int_t &, Double_t *, Double_t &, Double_t*, Int_t);
 PTRFCN myfcn = NULL;
 
@@ -155,6 +154,8 @@ void DoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     //    c2->Print(DestDataBase + ".TpAccu.Opt.png", "png");
     //    c2->Print(DestDataBase + ".TpAccu.Opt.eps", "eps");
 
+    std::cout<<"Run summary"<<std::endl;
+    std::cout<<"\t dataset::"<<DataSource.Data()<<std::endl;
 #if th_ph_optimize
     delete fitter;
 #endif    
@@ -324,6 +325,7 @@ void AutoDoMinDp(TString SourceDataBase, TString DestDataBase="", UInt_t MaxData
 	// extract the base name of the string
 	if (doOptmization){
 			DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_data/Sieve.Full.Mom.f51";
+//		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.Mom.f51_reform";
 	}else{
 		    DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_data/Sieve.full.largeDataset.f51";
 	}

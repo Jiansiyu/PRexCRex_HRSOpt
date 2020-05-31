@@ -46,14 +46,15 @@ class optScanner(object):
         if not topFolder:
             topFolder=self.TargetPath
         OptTemplateSubFoldersAll=[f.path for f in os.scandir(topFolder) if f.is_dir()]
-        self.OptTemplateSubFolders=[item for item in OptTemplateSubFoldersAll if not os.path.isfile("{}/CheckDp_test_result.txt1".format(item))]
+        self.OptTemplateSubFolders=[item for item in OptTemplateSubFoldersAll if not os.path.isfile("{}/CheckDp_test_result.txt".format(item))]
     
     def OptimizeSubFolder(self,folderName=""):
-        if os.path.exists(folderName):
-            optBashCommand="{} {} {}".format(self.optScannerBashScript,self.OptSourceFolder,folderName)
-            print(optBashCommand)
-            os.system(optBashCommand)
-            
+        if not os.path.isfile("{}/CheckDp_test_result.txt".format(folderName)):
+            if os.path.exists(folderName):
+                optBashCommand="{} {} {}".format(self.optScannerBashScript,self.OptSourceFolder,folderName)
+                print(optBashCommand)
+                os.system(optBashCommand)
+                
     def MultiThreadOptimization(self, maxThread=10):
         threadPool=Pool(maxThread)
         threadPool.map(self.OptimizeSubFolder,self.OptTemplateSubFolders)
