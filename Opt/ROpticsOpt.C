@@ -80,6 +80,18 @@ using THaString::Split;
 ///////////////////////////////////////////////////////////////////////////////
 
 Bool_t CutcutCut(UInt_t Col, UInt_t Row, UInt_t KineID = -1) {
+
+	//remove the cut on the edge
+	int minSieveHolesID[13]=     {0,0,0,1,1,2,2,1,2,2,1,2,2};
+	int maxSieveHolesID[13]=     {0,0,0,4,4,4,4,4,4,4,4,4,3};
+
+	if(Row>=minSieveHolesID[Col] && Row<= maxSieveHolesID[Col]){
+		return true;
+	}else{
+		return false;
+	}
+
+
 //	if(KineID==1 ||(KineID==5)){
 //		return false;
 //	}
@@ -110,7 +122,7 @@ THaTrackingDetector(name, description, apparatus)
     //for left arm, x misspoint is -MissPointZ*cos(theta), for r-arm, x misspoint is MissPointZ*cos(theta) 
 
 
-    DEBUG_INFO("ROpticsOpt", "Read in configuration " + InputID);
+    DEBUG_INFO("ROpticsOpt", "Read in configuration %d"+ InputID);
     DEBUG_INFO("ROpticsOpt", "HRS @ %f Degree, PointingOffset = (%f,%f,%f), SievePos = (%f,%f,%f)", HRSAngle / TMath::Pi()*180, fPointingOffset.X(), fPointingOffset.Y(), fPointingOffset.Z(), SieveOffX, SieveOffY, ZPos);
 
     fNRawData = 0;
@@ -3277,7 +3289,7 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 				hDpMatrixProjected[KineID][Col][Row]= new TH1F(Form("hDpVDCProjected_KineID%d_Col%d_Row%d", KineID-2,Col,Row),
 						Form("hDpVDCProjected_KineID%d_Col%d_Row%d", KineID-2,Col,Row),
 						1000, -0.03,0.03);
-				hDpMatrixProjected[KineID][Col][Row]->GetYaxis()->SetRangeUser(0,50);
+//				hDpMatrixProjected[KineID][Col][Row]->GetYaxis()->SetRangeUser(0,50);
 
 				hDpKinCalibSieve[KineID][Col][Row]= new TH1F(Form("hDpKinCalibKineID%d_Col%d_Row%d", KineID-2,Col,Row),
 						Form("Dp_KinCalib_%d%%_Col%d_Row%d", (KineID - 2),Col,Row),
@@ -3404,47 +3416,69 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 			hCalcMomRealSieve[KineID][6][3]->GetFunction("gaus")->GetParameters(hCalcMomRealSieveFitPar[KineID][6][3]);
 		}
 	}
+
+
 	for (UInt_t KineID = 0; KineID < NKine; KineID++){
 		centralSieveDpScanCanv->cd(KineID+1);
-		if(hCalcMomRealSieve[KineID][6][3]->GetEntries()){
-			if (KineID < 4) {
-				TLatex *txt =
-						new TLatex(
-								hCalcMomRealSieveFitPar[KineID][6][3][1]
-										- 0.001,
-								hCalcMomRealSieveFitPar[KineID][6][3][1],
-								Form("Mean:%f#DeltaP:%1.2f",
-										hCalcMomRealSieve[KineID][6][3]->GetMean(),
-										1000
-												* (hCalcMomRealSieve[KineID][6][3]->GetMean()
-														- hCalcMomRealSieve[KineID
-																+ 4][6][3]->GetMean())));
-				txt->Draw("same");
-				TLatex *txt1 = new TLatex(
-						hCalcMomRealSieveFitPar[KineID][6][3][1]
-								- 0.001,
-						hCalcMomRealSieveFitPar[KineID][6][3][1] + 3,
-						Form("Fit:%f#DeltaP:%1.2f",
-								hCalcMomRealSieveFitPar[KineID][6][3][1],1000*(hCalcMomRealSieveFitPar[KineID][6][3][1]-hCalcMomRealSieveFitPar[KineID+4][6][3][1])));
-				txt1->Draw("same");
+		if (NKine > 4) {  //working on Ground and first exited states mode
+			if (hCalcMomRealSieve[KineID][6][3]->GetEntries()) {
+				if (KineID < 4) {
+					TLatex *txt =
+							new TLatex(
+									hCalcMomRealSieveFitPar[KineID][6][3][1]
+											- 0.001,
+									hCalcMomRealSieveFitPar[KineID][6][3][1],
+									Form("Mean:%f#DeltaP:%1.2f",
+											hCalcMomRealSieve[KineID][6][3]->GetMean(),
+											1000
+													* (hCalcMomRealSieve[KineID][6][3]->GetMean()
+															- hCalcMomRealSieve[KineID
+																	+ 4][6][3]->GetMean())));
+					txt->Draw("same");
+					TLatex *txt1 =
+							new TLatex(
+									hCalcMomRealSieveFitPar[KineID][6][3][1]
+											- 0.001,
+									hCalcMomRealSieveFitPar[KineID][6][3][1]
+											+ 3,
+									Form("Fit:%f#DeltaP:%1.2f",
+											hCalcMomRealSieveFitPar[KineID][6][3][1],
+											1000
+													* (hCalcMomRealSieveFitPar[KineID][6][3][1]
+															- hCalcMomRealSieveFitPar[KineID
+																	+ 4][6][3][1])));
+					txt1->Draw("same");
 
-			}else{
-				TLatex *txt = new TLatex(
-						hCalcMomRealSieveFitPar[KineID][6][3][1]
-								- 0 * hCalcMomRealSieveFitPar[KineID][6][3][0],
-						hCalcMomRealSieveFitPar[KineID][6][3][1],
-						Form("Mean:%f",
-								hCalcMomRealSieve[KineID][6][3]->GetMean()));
-				txt->Draw("same");
-				TLatex *txt1 = new TLatex(
-						hCalcMomRealSieveFitPar[KineID][6][3][1]
-								- 0 * hCalcMomRealSieveFitPar[KineID][6][3][0],
-						hCalcMomRealSieveFitPar[KineID][6][3][1] + 3,
-						Form("Fit:%f",
-								hCalcMomRealSieveFitPar[KineID][6][3][1]));
-				txt1->Draw("same");
+				} else {
+					TLatex *txt =
+							new TLatex(hCalcMomRealSieveFitPar[KineID][6][3][1]
+											- 0* hCalcMomRealSieveFitPar[KineID][6][3][0],
+									hCalcMomRealSieveFitPar[KineID][6][3][1],
+									Form("Mean:%f",hCalcMomRealSieve[KineID][6][3]->GetMean()));
+					txt->Draw("same");
+					TLatex *txt1 =
+							new TLatex(hCalcMomRealSieveFitPar[KineID][6][3][1]
+											- 0* hCalcMomRealSieveFitPar[KineID][6][3][0],
+									hCalcMomRealSieveFitPar[KineID][6][3][1]+ 3,
+									Form("Fit:%f",hCalcMomRealSieveFitPar[KineID][6][3][1]));
+					txt1->Draw("same");
 
+				}
 			}
+		}else{
+
+			if (hCalcMomRealSieve[KineID][6][3]->GetEntries()){
+				TLatex *txt =
+						new TLatex(hCalcMomRealSieveFitPar[KineID][6][3][1] - 0.001,
+								hCalcMomRealSieveFitPar[KineID][6][3][1],
+								Form("Mean:%f",hCalcMomRealSieve[KineID][6][3]->GetMean()));
+				txt->Draw("same");
+				TLatex *txt1 =new TLatex(hCalcMomRealSieveFitPar[KineID][6][3][1]- 0.001,
+								hCalcMomRealSieveFitPar[KineID][6][3][1]+ 3,
+								Form("Fit:%f",hCalcMomRealSieveFitPar[KineID][6][3][1]));
+				txt1->Draw("same");
+			}
+
 		}
 	}
 	centralSieveDpScanCanv->Update();
@@ -3571,6 +3605,7 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 		ccanvasrms->cd(KineID + 1)->SetGridx(10);
 		ccanvasrms->cd(KineID + 1)->SetGridy(10);
 		if(hDpKinCalibRMS[KineID]->GetEntries()==0) continue;
+
 	hDpKinCalibRMS[KineID]->SetLineColor(41 + KineID * 5);
 	hDpKinCalibRMS[KineID]->Fit("gaus");
 	auto f=hDpKinCalibRMS[KineID]->GetFunction("gaus");
@@ -3587,7 +3622,7 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 		if(hDpKinCalibRMS[KineID]->GetEntries()==0) continue;
 		hDpKinCalibRMS[KineID]->Draw("same");
 	}
-	c1->SaveAs(Form("%s/Check_Dp_Kin_Reconstruction.jpg",resultSavePath.c_str()));
+	c1->SaveAs(Form("%s/%s_Check_Dp_Kin_Reconstruction.jpg",resultSavePath.c_str(),__FUNCTION__));
 	c1->Write();
 
 	TCanvas *sieveThetaphiCanvas_cal= new TCanvas("sieveThetaphiCanvasMatrixProjected", "sieveThetaphiCanvasMatrixProjected", 1800,
@@ -3656,7 +3691,6 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 								hMomRealSieve[KineID + 4][6][3]->GetMean()));
 
 			}
-
 		    }
 		    t0->Draw();
 
@@ -3675,15 +3709,15 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 	line1->SetLineWidth(2);
 
 	TH1F *sievePResidualDistri[NKine];
-	for(int KineID=0; KineID<NKine;KineID++){
+	for(UInt_t KineID=0; KineID<NKine;KineID++){
 		c5->cd(KineID+1);
 		sievePResidualDistri[KineID]=new TH1F(Form("Sieve_P_Residuals_KineID%d",KineID),Form("Sieve_P_Residuals_KineID%d",KineID),NSieveCol*NSieveRow+10,0,NSieveCol*NSieveRow+10);
 		sievePResidualDistri[KineID]->GetYaxis()->SetRangeUser(-0.003,0.003);
 		sievePResidualDistri[KineID]->GetXaxis()->SetTitle("SieveHoleID");
 		sievePResidualDistri[KineID]->GetYaxis()->SetTitle("#deltaP(GeV)");
 
-		for (int col = 0; col < NSieveCol; col++) {
-			for (int row = 0; row < NSieveRow; row++) {
+		for (UInt_t col = 0; col < NSieveCol; col++) {
+			for (unsigned int row = 0; row < NSieveRow; row++) {
 				sievePResidualDistri[KineID]->Fill(col*NSieveRow+row,CorrectedDpResid[KineID][col][row]->GetMean());
 				sievePResidualDistri[KineID]->SetBinError(col*NSieveRow+row+1,CorrectedDpResid[KineID][col][row]->GetRMS());
 				sievePResidualDistri[KineID]->GetYaxis()->SetRangeUser(-0.0015,0.0015);
@@ -3697,16 +3731,8 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 
 		LatexTableGenerator(PErrorTable[KineID],Form("%s/momentumError.tex",resultSavePath.c_str()));
 
-		//std::cout<<"KindID::"<<KineID<<std::endl;
-		//std::cout<<LatexTableGenerator(PErrorTable[KineID]).c_str()<<std::endl;
-
 		// draw the data on the canvas
-		if ((hCalcMomRealSieve.find(KineID) != hCalcMomRealSieve.end())&&(KineID<4)) {
-//			TLatex *t=new TLatex(30,-0.001,Form("%1.3f(ideal:%1.3f)",(hCalcMomRealSieve[KineID][6][3]->GetMean()
-//					- hCalcMomRealSieve[KineID + 4][6][3]->GetMean())
-//					* 1000,(hMomRealSieve[KineID][6][3]->GetMean()
-//							- hMomRealSieve[KineID + 4][6][3]->GetMean())
-//							* 1000));
+		if ((hCalcMomRealSieve.find(KineID) != hCalcMomRealSieve.end())&&(KineID<4) && (KineID==8)) {
 
 			TLatex *t=new TLatex(0,-0.001,Form("#DeltaDp_0 %f,#DeltaDp_1 %f",
 					// matrix projected(measured)              // theoretical calculated
@@ -3893,6 +3919,7 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 			hDpMatrixProjected[KineID][Col][Row]->Fit("gaus","","",binCenter-0.0005,binCenter+0.0005);
 			double FitPars[3];
 			hDpMatrixProjected[KineID][Col][Row]->GetFunction("gaus")->GetParameters(FitPars);
+			hDpMatrixProjected[KineID][Col][Row]->GetYaxis()->SetRangeUser(0,FitPars[0]*2.0);
 
 			if(KineID <4){
 				legend->AddEntry(hDpMatrixProjected[KineID][Col][Row],Form("C_{12} P_{0} Dp%d%%",KineID-2));
@@ -3928,11 +3955,10 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 				txt->SetLineWidth(2);
 				txt->SetTextSize(0.02);
 				txt->Draw("same");
-
 			}
-
 		}
 	}
+
 	KineDpAllCanv->Update();
 	KineDpAllCanv->SaveAs(Form("%s/%s_DpAllCanv.jpg",resultSavePath.c_str(),__FUNCTION__));
 
@@ -3986,13 +4012,13 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 
 	DpKinSieveDistriCanv->Update();
 	DpKinSieveDistriCanv->SaveAs(Form("%s/%s_DpKinDiffCanv.jpg",resultSavePath.c_str(),__FUNCTION__));
-//	sievePDifferenceDistri[KineID]=new TH1F(Form("Sieve_P_Difference_KineID%d",KineID),Form("Sieve_P_Difference_KineID%d",KineID),NSieveCol*NSieveRow+10,0,NSieveCol*NSieveRow+10);
 	DpKinSieveDistriCanv->Write();
 
 	for (auto item=TheoreticalDpArray.begin();item!=TheoreticalDpArray.end();item++){
 		std::cout<<item->second<<",";
 	}
 	std::cout<<std::endl;
+	f1->Close();
 	return c5;
 
 }
@@ -4001,6 +4027,7 @@ TF1 *SpectroCrystalFitDp_C12(TH1F*momentumSpectro){
 
 
 	auto CGroundDp=momentumSpectro->GetXaxis()->GetBinCenter(momentumSpectro->GetMaximumBin());
+
 	//start the fit and get the mean ans sigma
 	momentumSpectro->Fit("gaus","RQ0","ep",CGroundDp-0.0003,CGroundDp+0.0003);
 
@@ -4021,7 +4048,8 @@ TF1 *SpectroCrystalFitDp_C12(TH1F*momentumSpectro){
 
 
 	TH1F *test=(TH1F *)momentumSpectro->Clone("fitTest");
-	test->GetXaxis()->SetRangeUser(momentumSpectro->GetXaxis()->GetXmin(),fgroundCrystalballPar[1]-5*fgroundCrystalballPar[2]);
+//	test->GetXaxis()->SetRangeUser(momentumSpectro->GetXaxis()->GetXmin(),fgroundCrystalballPar[1]-3*fgroundCrystalballPar[2]);
+	test->GetXaxis()->SetRangeUser(fgroundCrystalballPar[1]-0.002,fgroundCrystalballPar[1]-3*fgroundCrystalballPar[2]);
 
 	double_t ffirstGuasPar[3];
 	auto C1stp=test->GetXaxis()->GetBinCenter(test->GetMaximumBin());
@@ -4047,6 +4075,7 @@ TF1 *SpectroCrystalFitDp_C12(TH1F*momentumSpectro){
 
 TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 
+	TFile *f1=new TFile(Form("%s/%s_result.root",resultSavePath.c_str(),__FUNCTION__),"RECREATE");
 	FILE *CheckDpResultIO;
 	CheckDpResultIO=fopen(Form("%s/CheckDp_test_result.txt",resultSavePath.c_str()),"w");
 	fprintf(CheckDpResultIO,"{");
@@ -4113,8 +4142,8 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 
 
 		hRealMomentumCentralSieve[KineID] = new TH1F(Form("hMomentumKin%d_centralSieve", KineID),
-				Form("hMomentumKin%d_centralSieve", (KineID - 2)), 500,
-				2.16, 2.178);
+				Form("hMomentumKin%d_centralSieve", (KineID - 2)), 400,
+				2.168, 2.1755);
 		for (UInt_t Col = 0; Col < NSieveCol; Col++) {
 			for (UInt_t Row = 0; Row < NSieveRow; Row++) {
 				// used for buffer the VDC projected Dp for each individual Sieve holes
@@ -4122,7 +4151,7 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 						Form("hDpVDCProjected_KineID%d_Col%d_Row%d", KineID - 2,
 								Col, Row),
 						Form("hDpVDCProjected_KineID%d_Col%d_Row%d", KineID - 2,
-								Col, Row), 1000, -0.03, 0.03);
+								Col, Row), 1000, -0.02, 0.02);
 
 			}
 
@@ -4234,23 +4263,33 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 	c2->cd(1)->BuildLegend();
 	c2->cd(2)->BuildLegend();
 	c2->Update();
+	c2->Write();
 	 // plot the sacttered angle vs the momentum
 
 	 //create the plot used for buffer the momentum(central sieve)
 	 TCanvas *CentralSieveMomentumCanv = new TCanvas("CentralSieveMomentumCanv", "CentralSieveMomentumCanv", 1800,
 	 			900);
 	 CentralSieveMomentumCanv->Divide(4, 2);
+
+	 CentralSieveMomentumCanv->cd(5)->Divide(2,1);
+	 CentralSieveMomentumCanv->cd(6)->Divide(2,1);
+	 CentralSieveMomentumCanv->cd(7)->Divide(2,1);
+	 CentralSieveMomentumCanv->cd(8)->Divide(2,1);
+
 	 CentralSieveMomentumCanv->Draw();
 	 fprintf(CheckDpResultIO,"\"DpSeperation\":{\n");
 	 // start the fit functions
 	 for (int i = 0; i <NKine; i ++ ){
-		 CentralSieveMomentumCanv->cd(i+1);
-		 CentralSieveMomentumCanv->cd(i+1)->SetLogy();
-		 hRealMomentumCentralSieve[i]->Draw();
-
+		 if(NKine > 4) continue;
 		 TH1F *momentum=(TH1F *)hRealMomentumCentralSieve[i]->Clone("momentum");
 		 // start the fit functions
 		 if (hRealMomentumCentralSieve[i]->GetEntries()>1000){
+			 CentralSieveMomentumCanv->cd(i+1);
+			 CentralSieveMomentumCanv->cd(i+1)->SetLogy();
+			 //hRealMomentumCentralSieve[i]->GetXaxis()->SetRange(2.168,1.1755);
+			 hRealMomentumCentralSieve[i]->Draw();
+
+
 			 auto CGroundp=momentum->GetXaxis()->GetBinCenter(momentum->GetMaximumBin());
 			 auto C1stp=CGroundp-0.00443891;
 			 hRealMomentumCentralSieve[i]->GetXaxis()->SetRangeUser(CGroundp-0.0044*3,CGroundp+0.0044*2);
@@ -4288,31 +4327,53 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 			fCrystalMomentum->Draw("same");
 			fCrystalMomentum->GetParameters(fCrystalMomentumPar);
 
+			double error=TMath::Sqrt((fCrystalMomentum->GetParError(1)*fCrystalMomentum->GetParError(1))+fCrystalMomentum->GetParError(6)*fCrystalMomentum->GetParError(6))*1000*1000;
 			TPaveText *pt = new TPaveText(0.0,0.8,0.4,0.9,"NDC");
-			pt->AddText(Form("%1.3f MeV (%2.2f\%%)",1000.0*(fCrystalMomentumPar[1]-fCrystalMomentumPar[6]),100.0*abs(abs(fCrystalMomentumPar[1]-fCrystalMomentumPar[6])-0.00443891)/0.00443891));
+			pt->AddText(Form("%1.3f MeV#pm %1.3fKeV (%2.2f\%%)",1000.0*(fCrystalMomentumPar[1]-fCrystalMomentumPar[6]),error,100.0*abs(abs(fCrystalMomentumPar[1]-fCrystalMomentumPar[6])-0.00443891)/0.00443891));
 			pt->Draw("same");
 			fprintf(CheckDpResultIO,Form("\"%d\":%f,\n",i,1000.0*(fCrystalMomentumPar[1]-fCrystalMomentumPar[6])));
+
+			{
+				CentralSieveMomentumCanv->cd(i+1+4)->cd(1);
+				CentralSieveMomentumCanv->cd(i+1+4)->cd(1)->SetLogy();
+				TH1F * temp1=(TH1F *)hRealMomentumCentralSieve[i]->Clone(Form("momentum%d_ground",i));
+				temp1->GetXaxis()->SetRange(fCrystalMomentumPar[1]-fCrystalMomentumPar[0],fCrystalMomentumPar[1]+fCrystalMomentumPar[0]);
+				temp1->Draw();
+				fCrystalMomentum->Draw("same");
+
+				CentralSieveMomentumCanv->cd(i+1+4)->cd(2);
+				CentralSieveMomentumCanv->cd(i+1+4)->cd(2)->SetLogy();
+				TH1F * temp2=(TH1F *)hRealMomentumCentralSieve[i]->Clone(Form("momentum%d_first",i));
+				temp2->GetXaxis()->SetRange(fCrystalMomentumPar[1]-fCrystalMomentumPar[0],fCrystalMomentumPar[1]+fCrystalMomentumPar[0]);
+				temp2->Draw();
+				fCrystalMomentum->Draw("same");
+			}
+
 		 }
 	 }
 	 fprintf(CheckDpResultIO,"\"999\":0\n}");
 	 fprintf(CheckDpResultIO,"}");
 	 fclose(CheckDpResultIO);
 	 CentralSieveMomentumCanv->Update();
+	 CentralSieveMomentumCanv->Write();
 	 CentralSieveMomentumCanv->SaveAs(Form("%s/%s_centralsievemom.jpg",resultSavePath.c_str(),__FUNCTION__));
 
+
 		// plot all the Dp plot on a single plot  and the theoretical value, and the bias
-		TCanvas *KineDpAllCanv=new TCanvas("Central Sieve Dp Distribution","Central Sieve Dp Distribution",3840,2160);
-		KineDpAllCanv->Draw();
-		KineDpAllCanv->cd();
-		auto legend = new TLegend(0.1,0.7,0.48,0.9);
+	double Dptheoretical_temp[]={0.013983,0.00389806,-0.00628838,-0.0156925,0.0119146,0.00185035,-0.00831567,-0.0177};
+	TCanvas *KineDpAllCanv = new TCanvas("Central Sieve Dp Distribution","Central Sieve Dp Distribution", 3840, 2160);
+	KineDpAllCanv->Divide(1,2);
+	KineDpAllCanv->cd(2)->Divide(4,1);
+	KineDpAllCanv->Draw();
+	KineDpAllCanv->cd(1);
+	auto legend = new TLegend(0.1, 0.7, 0.48, 0.9);
 		for (UInt_t KineID = 0; KineID < NKine; KineID++) {
 			double_t Col=6;
 			double_t Row=3;
-			std::cout<<"Working on:"<<KineID<<"  entries::"<<hDpMatrixProjected[KineID][Col][Row]->GetEntries()<<std::endl;
 			if(hDpMatrixProjected[KineID][Col][Row]->GetEntries()!=0){
 				double binCenter=(hDpMatrixProjected[KineID][Col][Row])->GetXaxis()->GetBinCenter((hDpMatrixProjected[KineID][Col][Row])->GetMaximumBin());
-				hDpMatrixProjected[KineID][Col][Row]->SetLineColor(KineID+9);
-				hDpMatrixProjected[KineID][Col][Row]->SetLineWidth(2);
+				hDpMatrixProjected[KineID][Col][Row]->SetLineColor(KineID+1);
+				hDpMatrixProjected[KineID][Col][Row]->SetLineWidth(3);
 
 				if (hDpMatrixProjected.find(KineID) == hDpMatrixProjected.begin()) {
 					hDpMatrixProjected[KineID][Col][Row]->Draw();
@@ -4342,20 +4403,11 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 						line->SetLineWidth(2);
 						line->Draw("same");
 					}
-
-//					if(TheoreticalDpArray.find(KineID+4)!=TheoreticalDpArray.end()){
-//						TLine *line = new TLine(TheoreticalDpArray[KineID+4], 0,
-//								TheoreticalDpArray[KineID+4], FitPars[5] * 1.2);
-//						line->SetLineColor(kBlack);
-//						line->SetLineWidth(2);
-//						line->Draw("same");
-//					}
-
 				}
 				//Create the Bias
 				if(KineID <4){
 					TLatex *txt = new TLatex( FitPars[1],FitPars[0],
-							Form("Dp=%1.4f (Bias:%1.2f*10^{-4})", FitPars[1],
+							Form("Dp=%1.3f (Bias:%1.2f)*10^{-4}", 10000*FitPars[1],
 									10000
 											* (FitPars[1]
 													- TheoreticalDpArray[KineID])));
@@ -4369,25 +4421,18 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 									1000
 											* HRSCentralMom[KineID]*(FitPars[1]
 													- FitPars[6])));
+					txt1->SetTextColor(6);
 					txt1->SetLineWidth(2);
 					txt1->SetTextSize(0.02);
 					txt1->Draw("same");
 
-//					TLatex *txt1 = new TLatex(FitPars[6], FitPars[5],
-//							Form("Dp=%1.4f (Bias:%1.2f*10^{-4})", FitPars[6],
-//									10000
-//											* (FitPars[6]
-//													- TheoreticalDpArray[KineID+4])));
-//					txt1->SetLineWidth(2);
-//					txt1->SetTextSize(0.02);
-//					txt1->Draw("same");
 				}
 
 				{
 					// check the first excited states, difference
-					double Dptheoretical_temp[]={0.013983,0.00389806,-0.00628838,-0.0156925,0.0119146,0.00185035,-0.00831567,-0.0177};
+
 					TLatex *txt = new TLatex( FitPars[6],FitPars[5],
-							Form("Dp=%1.4f (Bias:%1.2f*10^{-4})", FitPars[6],
+							Form("Dp=%1.3f (Bias:%1.2f)*10^{-4}", 10000*FitPars[6],
 									10000
 											* (FitPars[6]
 													- Dptheoretical_temp[KineID+4])));
@@ -4397,25 +4442,60 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 
 				}
 
-				{
-					// check the first excited states, difference
-					double Dptheoretical_temp[]={0.013983,0.00389806,-0.00628838,-0.0156925,0.0119146,0.00185035,-0.00831567,-0.0177};
-					TLatex *txt = new TLatex( FitPars[6],FitPars[5]+KineID*FitPars[5]+FitPars[5]/2,
-							Form("Theory:#DeltaP=%1.4f (Bias:%1.2f)", 1000*HRSCentralMom[KineID]*(Dptheoretical_temp[KineID]-Dptheoretical_temp[KineID+4]),
-									1000*HRSCentralMom[KineID]*(FitPars[1]-Dptheoretical_temp[KineID]-(FitPars[6]-Dptheoretical_temp[KineID+4]))));
-					txt->SetLineWidth(2);
-					txt->SetTextSize(0.02);
-					txt->Draw("same");
+//				{
+//					// check the first excited states, difference
+//					double Dptheoretical_temp[]={0.013983,0.00389806,-0.00628838,-0.0156925,0.0119146,0.00185035,-0.00831567,-0.0177};
+//					TLatex *txt = new TLatex( FitPars[6],FitPars[5]+KineID*FitPars[5]+FitPars[5]/2,
+//							Form("Theory:#DeltaP=%1.4f MeV(Bias:%1.2fMeV)", 1000*HRSCentralMom[KineID]*(Dptheoretical_temp[KineID]-Dptheoretical_temp[KineID+4]),
+//									1000*HRSCentralMom[KineID]*(FitPars[1]-Dptheoretical_temp[KineID]-(FitPars[6]-Dptheoretical_temp[KineID+4]))));
+//					txt->SetLineWidth(2);
+//					txt->SetTextSize(0.02);
+//					txt->Draw("same");
+//				}
+			}
+		}
+		// draw the seperate plot on a small scale
+		for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+			assert(KineID <4);
+			KineDpAllCanv->cd(2)->cd(KineID+1);
+			double_t Col=6;
+			double_t Row=3;
+			if(hDpMatrixProjected[KineID][Col][Row]->GetEntries()!=0){
+				double FitPars[10];
+				double binCenter=(hDpMatrixProjected[KineID][Col][Row])->GetXaxis()->GetBinCenter((hDpMatrixProjected[KineID][Col][Row])->GetMaximumBin());
+				auto plot = (TH1F *)hDpMatrixProjected[KineID][Col][Row]->Clone(Form("hDpVDCProjected_dp%d",KineID));
+				hDpMatrixProjected[KineID][Col][Row]->GetFunction("fCrystalMomentum")->GetParameters(FitPars);
 
+				plot->GetXaxis()->SetRangeUser(binCenter-0.004,binCenter+0.001);
+				plot->Draw();
 
+				if (sizeof(Dptheoretical_temp) / sizeof(double) >= KineID) {
+					TLine line(FitPars[1], 0, FitPars[1], FitPars[0] * 1.1);
+					line.SetLineColor(6);
+					line.SetLineWidth(0.02);
+					line.Draw("same");
+					TLine line1(FitPars[6], 0, FitPars[6], FitPars[5] * 1.1);
+					line1.SetLineColor(6);
+					line1.SetLineWidth(0.02);
+					line1.Draw("same");
 
+					// create the bias
+					TLatex *txt1=new TLatex(FitPars[1],FitPars[0],Form("Bias %1.3f *10^{-4}",Dptheoretical_temp[KineID]-FitPars[1]));
+					txt1->Draw("same");
+					TLatex *txt2=new TLatex(FitPars[6],FitPars[5],Form("Bias %1.3f *10^{-4}",Dptheoretical_temp[KineID+4]-FitPars[6]));
+					txt2->Draw("same");
 
+					//get  the gap and
+					TPaveText *pavetxt=new TPaveText(0.0,0.8,0.4,0.99,"NDC");
+					pavetxt->AddText(Form("%fMeV", 1000.0*HRSCentralMom[KineID]*(FitPars[1]-FitPars[6])));
+					pavetxt->Draw("same");
 				}
-
 
 			}
 		}
+
 		KineDpAllCanv->Update();
+		KineDpAllCanv->Write();
 		KineDpAllCanv->SaveAs(Form("%s/%s_DpAllCanv.jpg",resultSavePath.c_str(),__FUNCTION__));
 
 

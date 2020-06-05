@@ -7,12 +7,12 @@ import json
 import time
 import sys
 from collections import OrderedDict
-from progress.bar import Bar
+#from progress.bar import Bar
 from datetime import date
 from random import seed
 from random import random, randint
 from multiprocessing import Pool     # multithread process the single files
-
+from shutil import which
 
 class optScanner(object):
     def __init__(self,runConfigFname="runConfig.json"):
@@ -26,6 +26,7 @@ class optScanner(object):
         self.optScannerBashScript=""
         self.LoadConfig()
         self.GetSubFolders()
+        self.farmJobCounter=0
 
     def LoadConfig(self, runConfigFname=""):
         if not runConfigFname:
@@ -58,7 +59,40 @@ class optScanner(object):
     def MultiThreadOptimization(self, maxThread=10):
         threadPool=Pool(maxThread)
         threadPool.map(self.OptimizeSubFolder,self.OptTemplateSubFolders)
+    
+    def GenerateIfarmJob(self,folderName=""):
+        # create file name
+        JobSaveFolder=os.path.join('./',"Jobs")
+        os.makedirs(JobSaveFolder)
 
+        if not os.path.isfile("{}/CheckDp_test_result.txt".format(folderName)):
+            if os.path.exists(folderName):
+                # create the job and write in the command 
+                with open(os.path.join(JobSaveFolder,"Job_{}.txt".format(self.farmJobCounter))) as txt:
+                    '''
+                    Get the system enviroment
+                    '''
+                    analyzerPath=which('which  analyzer')
+                    OpttemplateDB=os.path.join(folderName,"templateDB.db")
+                    OptimizedDBFname=os.path.join(folderName,"templateDB.db.optimied")
+                    OptimizedDBFname_postrun=os.path.join(folderName,"templateDB.db.optimied_junk")
+                    OptimizationPath='/u/home/siyuj/PRex/CRexOpt/PRexOpt/Opt'
+
+                    txt.write("PROJECT: PRex\n")
+                    txt.write("TRACK: analysis\n")
+                    txt.write("COMMAND:cd {} &&{}\n".format(OptimizationPath,analyzerPath)) #rootlogon.C
+                    txt.write("OPTIONS: -b -q .L {} \'{} (\'true\',\"delta\",\"\'{}\'\",\"\'{}\'\")\'\n".format(os.path.join(OptimizationPath,"rootlogon.C"),os.path.join(OptimizationPath,"ROpticsOptScript.C"),OpttemplateDB,OptimizedDBFname))
+                    #txt.write("OTHER_FILES: /lustre/expphy/work/hallb/prad/xbai/PRadSim/build/database/*\n")
+                    txt.write("JOBNAME: Brem_Simulation\n")
+                    txt.write("MEMORY: 2 GB\n")
+                    txt.write("DISK_SPACE: 10 GB\n")
+                    txt.write("OS: centos7\n")
+                    txt.close()
+
+                # optBashCommand="{} {} {}".format(self.optScannerBashScript,self.OptSourceFolder,folderName)
+                # print(optBashCommand)
+                # os.system(optBashCommand)
+        
 if __name__ == "__main__":
     test=optScanner(runConfigFname="runConfig_test.json")
-    test.MultiThreadOptimization(4)
+    test.MultiThreadOptimization(5)

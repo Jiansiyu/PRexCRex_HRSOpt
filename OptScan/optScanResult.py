@@ -59,14 +59,17 @@ class OptScannerResult(object):
             txtFilename="{}/CheckDp_test_result.txt".format(path)
             if os.path.isfile(txtFilename):
                 with open(txtFilename) as txtFileIO:
-                    result=json.load(txtFileIO)
-                    standDevLib=[]
-                    for item in result["DpSeperation"]:
-                        if item != '999':
-                            #print("{}:{}".format(item,result["DpSeperation"][item]))
-                            standDevLib.append(float(result["DpSeperation"][item]))
-                    if float(result["DpSeperation"]['0']) > 4.4 and float(result["DpSeperation"]['3']) < 4.5 and float(result["DpSeperation"]['3']) > 4.4:
+                    try:
+                        result=json.load(txtFileIO)
+                        standDevLib=[]
+                        for item in result["DpSeperation"]:
+                            if item != '999':
+                                #print("{}:{}".format(item,result["DpSeperation"][item]))
+                                standDevLib.append(float(result["DpSeperation"][item]))
+                        #if float(result["DpSeperation"]['0']) > 4.4 and float(result["DpSeperation"]['3']) < 4.5 and float(result["DpSeperation"]['3']) > 4.4:
                         print("\n{}==>Mean:{}, stdv:{}\n{}\n".format(standDevLib,statistics.mean(standDevLib[1:]),statistics.stdev(standDevLib[1:]),path))
+                    except :
+                        pass
         bar.finish()
     
     def ReadSingleCheckDpResultText(self,txtResultPath=""):

@@ -10,12 +10,13 @@
 #include "TMinuit.h"
 #include "TVirtualFitter.h"
 #include <TSystem.h>
+#include "ROpticsOpt.h"
 
 #define th_ph_optimize true
 #define y_optimize true
 #define dp_optimize true
 
-#include "ROpticsOpt.h"
+
 //#include "SaveCanvas.C"
 
 using namespace std;
@@ -38,6 +39,7 @@ UInt_t MaxDataPerGroup = 100;
 
 //TString DataSource =   "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.Mom.f51_reform";
 //TString DataSource =   "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.ThetaPhiY.f51_reform"; // theta phi optimization dataset
+//TString DataSource =   "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.thetaphi.f51_reform";
 TString DataSource =   "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_data/Sieve.Full.thetaphi.f51";
 
 
@@ -324,10 +326,15 @@ void AutoDoMinDp(TString SourceDataBase, TString DestDataBase="", UInt_t MaxData
 {
 	// extract the base name of the string
 	if (doOptmization){
-			DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_data/Sieve.Full.Mom.f51";
-//		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.Mom.f51_reform";
+		//DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.Mom.f51_reform";
+		//DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_data/Sieve.Full.Mom.f51";
+		//DataSource = "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_large_diff_events/Sieve.Full.Mom.f51";
+		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_GroundOnly/SameEvt/Sieve.Full.Mom.f51_reform";
 	}else{
+//		DataSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/LargeDataSetEndQuanter/Sieve.full.LargetDataset.Top.0.75.f51";
+//		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/LargeDataseTopQauter/Sieve.full.LargetDataset.Top.0.25.f51";
 		    DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_data/Sieve.full.largeDataset.f51";
+//		    DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.full.largeDataset.f51_reform";
 	}
 
 	TString SourceDataBasePath=getFilePath(DestDataBase.Data());
@@ -488,8 +495,6 @@ void ROpticsOptScript(TString select, TString SourceDataBase, TString DestDataBa
 
 void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TString DestDataBase)
 {
-
-
     opt = new ROpticsOpt();
 
     Int_t s = 0;

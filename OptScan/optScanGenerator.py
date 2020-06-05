@@ -7,7 +7,11 @@ import json
 import time
 import sys
 from collections import OrderedDict
-from progress.bar import Bar
+try:
+    from progress.bar import Bar
+except ImportError as e:
+    pass
+
 from datetime import date
 from random import seed
 from random import random, randint
@@ -52,7 +56,6 @@ class optDatabaseTemplateGenerator():
                 endOrder=int(self.optConfig_data["DpOpt"][item]["endOrder"])
                 totalCombinations=totalCombinations*(endOrder+1-startOrder)
                 totalParameters=totalParameters+1
-        
         bar=Bar("Processing",max=totalCombinations)
         loopTemplate=[]
         with open(jsonFname) as json_file:
@@ -188,6 +191,10 @@ class optDatabaseTemplateGenerator():
         pass
 
 if __name__ == "__main__":
-    test=optDatabaseTemplateGenerator(runConfigFname="runConfig_test.json")
+    runConfigFile="runConfig_test.json"
+    if len(sys.argv)>1:
+        runConfigFile=sys.argv[1]
+    
+    test=optDatabaseTemplateGenerator(runConfigFname=runConfigFile)
     test.WriteTemplate()
     

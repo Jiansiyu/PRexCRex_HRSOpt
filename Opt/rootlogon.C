@@ -14,6 +14,6 @@
  //gROOT->LoadMacro("cut_R.C");
  gROOT->LoadMacro("ROpticsOpt.C+");
  gROOT->LoadMacro("ROpticsOptScript.C");
-gErrorIgnoreLevel = kFatal;
+//gErrorIgnoreLevel = kFatal;
 }
 

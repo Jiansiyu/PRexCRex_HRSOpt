@@ -76,7 +76,7 @@ const Double_t targetfoils[] = {0.0};
 
  ///////////////////////////////////////////////////////////////////////// 
  // Excitation State Inputs 
-const UInt_t NKine = 8; //N Delta Scans */
+const UInt_t NKine = 4; //N Delta Scans */
 
 #define DIPOLE_MAG2MOM(Mag) (2.702*(Mag)-1.6e-03*(Mag)*(Mag)*(Mag)) 
 
@@ -90,6 +90,17 @@ const Double_t Ebeam[] = {
 		2.1759877,
 		2.1756448,
 		2.1762876
+
+
+/*		2.1759184, // %-2
+		2.17589509, // %-1
+		2.1756448, // 0%
+		2.1762876, // 1%
+
+		2.1759184,
+		2.17589509,
+		2.1756448,
+		2.1762876*/
   };
 
 
