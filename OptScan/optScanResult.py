@@ -10,6 +10,7 @@ from random import seed
 from random import random, randint
 from multiprocessing import Pool     # multithread process the single files
 import statistics
+import shutil
 from progress.bar import Bar
 
 from fpdf import FPDF
@@ -104,12 +105,15 @@ class OptScannerResult(object):
     
     def addTxtFile(self, pdf=FPDF(),txtFile=""):
         if os.path.isfile(txtFile):
-            pdf.add_page()
-            pdf.set_font("Arial", size = 15) 
-            
+            pdf.add_page(orientation='P')
+            pdf.set_font("Arial", size = 10) 
             f = open(txtFile, "r")
             for x in f:
-                pdf.cell(200,10,txt=x,ln=1,align='C')
+                if x.startswith('D'):
+                    pdf.cell(200,10,txt=x,ln=1,align='L')
+    
+    def addLink(self,pdf=FPDF(), text='', link=''):
+        pass
 
     def getReport(self,pdffilename='',txtResultPath=[]):
         if len(txtResultPath) == 0:
@@ -118,13 +122,17 @@ class OptScannerResult(object):
         bar=Bar("Processing",max=len(txtResultPath))
         print("Total Processed Template {} / {}\n\n\n".format(len(self.OptTemplatedOptmizedFolders),0))#,float(self.OptTemplatedOptmizedFolders)/self.OptTemplateSubFolders))
         pdf=FPDF(orientation = 'L', unit = 'mm', format='A4')
+        id=0
         for item in txtResultPath:
             #print("Working on file:{}".format(txtResultPath))
-            #pdf.add_page();
-            #pdf.set_font('Arial', 'B', 10)
-            #pdf.cell(0, 0, "Open Folder:{}".format(item),link="file:///{}".format(item))
+            pdf.add_page()
+            pdf.set_font('Arial', 'B', 28)
+            pdf.cell(300, 50, "Run {}".format(id),ln=1,align='C')
+            id = id+1
+            pdf.cell(300, 60,"Click me to Open Folder",link="file:///{}".format(item),ln=1,align='C')
             
             file1=os.path.join(item,"CheckDp_test2_DpKinDiffCanv.jpg")
+            self.addTxtFile(pdf=pdf,txtFile=os.path.join(item,"templateDB.db.optimied"))
             if os.path.isfile(file1):
                 width, height =self._getImageSize(file1)
                 width, height = float(width * 0.264583), float(height * 0.264583)
@@ -136,13 +144,17 @@ class OptScannerResult(object):
                 pdf.image(file1,0, 0, width, height)
             pdf.set_font('Arial', 'B', 10)
             pdf.cell(0, 0, "{}".format(item),link="file:///{}".format(item))
-            #self.addimage(pdf=pdf,file1=os.path.join(item,"Check_Dp_Kin_Reconstruction.jpg"))
-            #self.addimage(pdf=pdf,file1=os.path.join(item,"centralsievemom.jpg")) 
+            self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_RealMomemtumDifferenceCanv.png"))
+            self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_DpAllCanv.jpg"))
+            #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test2_DpAllCanv.jpg"))
+            #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test2_MomemtumOptCanv.jpg"))
+            #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_DpAllCanv.jpg"))
+            #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_centralsievemom.jpg")) 
             bar.next()
         bar.finish()
         print("Creating the PDF file")
         pdf.output("./resultScanReport.pdf","F")
-
+        shutil.copyfile("./resultScanReport.pdf",os.path.join(self.TargetPath,"report.pdf"))
         
     def ReadCheckDpMultiThread(self,maxThread=5):
         threadPool=Pool(maxThread)

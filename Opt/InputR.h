@@ -76,7 +76,7 @@ const Double_t targetfoils[] = {0.0};
 
  ///////////////////////////////////////////////////////////////////////// 
  // Excitation State Inputs 
-const UInt_t NKine = 4; //N Delta Scans */
+const UInt_t NKine = 8; //N Delta Scans */
 
 #define DIPOLE_MAG2MOM(Mag) (2.702*(Mag)-1.6e-03*(Mag)*(Mag)*(Mag)) 
 
@@ -130,6 +130,7 @@ const Double_t ExcitationEnergy[] = {
 		0.00443891,
 		0.00443891
 		};//selected excitation states for each kinematics
+
 
 
 const UInt_t NExcitationStates = 1; // C Excitation States

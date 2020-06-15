@@ -26,7 +26,9 @@ class optDatabaseTemplateGenerator():
         self.DBElementPrefix="D "
         self.OptTemplateFname=""
         self.LoadConfig()
-        pass
+        self.OptCombinationCount=0
+        self.OptDBFileCount=0
+        
 
     def LoadConfig(self, runConfigFname=""):
         if not runConfigFname:
@@ -115,7 +117,9 @@ class optDatabaseTemplateGenerator():
     def GenerateRandomNamedFolder(self):
         today=date.today()
         datePreFix=today.strftime("%Y%m%d")
-        randomNumb_surFix=randint(11111111,99999999)
+        # randomNumb_surFix=randint(11111111,99999999)
+        randomNumb_surFix="{:05}".format(self.OptDBFileCount)
+        self.OptDBFileCount=self.OptDBFileCount+1
         pathCandidate=os.path.join(self.TargetPath,'DBScan_{}_{}'.format(datePreFix,randomNumb_surFix))
         while os.path.exists(pathCandidate):
             randomNumb_surFix=randint(111111111,99999999999)
