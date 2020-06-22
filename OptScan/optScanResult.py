@@ -12,7 +12,7 @@ from multiprocessing import Pool     # multithread process the single files
 import statistics
 import shutil
 from progress.bar import Bar
-
+import glob
 from fpdf import FPDF
 import PIL
 
@@ -124,6 +124,7 @@ class OptScannerResult(object):
         pdf=FPDF(orientation = 'L', unit = 'mm', format='A4')
         id=0
         for item in txtResultPath:
+            self.CompileLatex(texpath=item)
             #print("Working on file:{}".format(txtResultPath))
             pdf.add_page()
             pdf.set_font('Arial', 'B', 28)
@@ -160,7 +161,18 @@ class OptScannerResult(object):
         threadPool=Pool(maxThread)
         threadPool.map(self.ReadSingleCheckDpResultText, self.OptTemplateSubFolders)
         # self.getReport(txtResultPath=self.OptTemplatedOptmizedFolders)
-
+    
+    def CompileLatex(self, texpath):
+        for item in glob.glob("{}/*tex".format(texpath)):
+            os.system("cd {}; pdflatex {}".format(texpath, item))
+            # os.system("mv {}/*tex {}/texpdf".format(texpath, texpath))
+            # os.system("mv {}/*pdf {}/texpdf".format(texpath, texpath))
+            # os.system("mv {}/*log {}/texpdf".format(texpath, texpath))
+            # os.system("mv {}/*aux {}/texpdf".format(texpath, texpath))
+        for item in glob.glob("{}/texpdf/*tex".format(texpath)):
+            os.system("cd {}/texpdf; pdflatex {}".format(texpath, item))
+            
+        
 if __name__ == "__main__":
     test=OptScannerResult(runConfigFname="runConfig_test.json")
     #test.ReadCheckDpMultiThread()

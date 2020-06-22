@@ -64,7 +64,7 @@
 
 #include <iostream>
 #include "InputR.h"
-
+#include <sys/stat.h>
 #define tgy_hole_info false
 
 using namespace std;
@@ -1309,11 +1309,11 @@ inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>conten
 	std::cout << "====> Generating latex" << std::endl;
 	std::string latexStr;
 	latexStr += "\\documentclass[preview]{standalone}\n";
-	latexStr += "\\usepackage{booktabs}\n";
+	latexStr += "\\usepackage{graphicx}\n";
 	latexStr += "\\begin{document}\n";
 	latexStr += "\\begin{table}[]\n";
-	latexStr += "\\begin{tabular}{";
-	for (int i = 0; i < content.size(); i++) {
+	latexStr += "\\resizebox{\\textwidth}{!}{\\begin{tabular}{";
+	for (int i = 0; i <= content.size(); i++) {
 		latexStr += "|l|";
 	}
 	latexStr += "} \n \\hline\n";
@@ -1335,11 +1335,13 @@ inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>conten
 					&& content[col].find(row) != content[col].end()) {
 				error = content[col][row];
 			}
-			latexStr += Form(" & %1.2f \t", 1000 * error);
+			latexStr += Form(" & %1.4f \t", error);
 		}
 		latexStr += " \\\\ \\hline \n";
 	}
-	latexStr += "\\end{tabular} \n\\end{table}\n";
+	latexStr += "\\end{tabular}} \n";
+	latexStr += Form("\\caption{Table}");
+	latexStr +="\\end{table}\n";
 //std::cout<<latexStr.c_str()<<std::endl;
 	latexStr += "\\end{document}\n";
 
@@ -3321,6 +3323,7 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 	}
 
 	std::map<int, double> TheoreticalDpArray;
+	std::map<int, std::map<int,std::map<int, double>>> TheoreticalDpAlArray;
 	for (UInt_t idx = 0; idx < fNRawData; idx++) {
 		const EventData &eventdata = fRawData[idx];
 		const UInt_t KineID = HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
@@ -3336,6 +3339,15 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 			std::cout<<"\n\n\n\n===> KineID "<<KineID<<"   valueDp::"<<eventdata.Data[kRealDpKinMatrix]<<std::endl;
 		}
 
+		// get the theoretical Dp Array
+		if ((TheoreticalDpAlArray.find(KineID) == TheoreticalDpAlArray.end())
+				|| (TheoreticalDpAlArray[KineID].find(Col)
+						== TheoreticalDpAlArray[KineID].end())
+				|| (TheoreticalDpAlArray[KineID][Col].find(Row)
+						== TheoreticalDpAlArray[KineID][Col].end())) {
+			TheoreticalDpAlArray[KineID][Col][Row]=eventdata.Data[kRealDpKinMatrix]+eventdata.Data[kDpKinOffsets];
+
+		}
 
 
 		const UInt_t ExtraDataFlag = (UInt_t) (eventdata.Data[kExtraDataFlag]);
@@ -3755,7 +3767,9 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 		for (UInt_t col = 0; col < NSieveCol; col++) {
 			for (unsigned int row = 0; row < NSieveRow; row++) {
 				sievePResidualDistri[KineID]->Fill(col*NSieveRow+row,CorrectedDpResid[KineID][col][row]->GetMean());
-				sievePResidualDistri[KineID]->SetBinError(col*NSieveRow+row+1,CorrectedDpResid[KineID][col][row]->GetRMS());
+//				sievePResidualDistri[KineID]->SetBinError(col*NSieveRow+row+1,CorrectedDpResid[KineID][col][row]->GetRMS());
+				sievePResidualDistri[KineID]->SetBinError(col*NSieveRow+row+1,0.00001);
+
 				sievePResidualDistri[KineID]->GetYaxis()->SetRangeUser(-0.0015,0.0015);
 				PErrorTable[KineID][col][row]=CorrectedDpResid[KineID][col][row]->GetMean();
 			}
@@ -3763,9 +3777,10 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 		sievePResidualDistri[KineID]->SetLineWidth(2);
 		sievePResidualDistri[KineID]->SetMarkerStyle(20);
 		sievePResidualDistri[KineID]->Draw("E1");
+		sievePResidualDistri[KineID]->Write();
 		line1->Draw("same");
 
-		LatexTableGenerator(PErrorTable[KineID],Form("%s/momentumError.tex",resultSavePath.c_str()));
+		LatexTableGenerator(PErrorTable[KineID],Form("%s/%s_momentumErrorKineID%d.tex",resultSavePath.c_str(),__FUNCTION__,KineID));
 
 		// draw the data on the canvas
 		if ((hCalcMomRealSieve.find(KineID) != hCalcMomRealSieve.end())&&(KineID<4) && (KineID==8)) {
@@ -3795,6 +3810,40 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 	c5->Update();
 	c5->SaveAs(Form("%s/%s_MomemtumOptCanv.jpg",resultSavePath.c_str(),__FUNCTION__));
 	c5->Write();
+
+
+	// generate the theoretical and read Dp values
+	{
+		// get the theoretical Dp value and the real Dp values
+
+		std::map<int, std::map<int, std::map<int, double>>>hDpTheoreticalValue;
+		std::map<int, std::map<int, std::map<int, double>>>hDpMeasuredValue;
+		std::map<int, std::map<int, std::map<int, double>>>hDpResidualValue;
+
+		for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+			for (UInt_t col = 0; col < NSieveCol; col++) {
+				for (unsigned int row = 0; row < NSieveRow; row++) {
+					hDpTheoreticalValue[KineID][col][row]=hDpKinRealSieve[KineID][col][row]->GetMean();
+					hDpMeasuredValue[KineID][col][row]=hDpMatrixProjected[KineID][col][row]->GetMean();
+					hDpResidualValue[KineID][col][row]=hDpTheoreticalValue[KineID][col][row]-hDpMeasuredValue[KineID][col][row];
+				}
+			}
+		}
+
+		// create the theoretical Value Map
+		for (UInt_t KineID = 0; KineID < NKine; KineID++) {
+			std::string saveFolder=Form("%s/texpdf",resultSavePath.c_str());
+			mkdir(saveFolder.c_str(),S_IRWXU);
+
+			LatexTableGenerator(hDpTheoreticalValue[KineID],Form("%s/%s_TheoreticalDpTableKineID%d.tex",saveFolder.c_str(),__FUNCTION__,KineID));
+			LatexTableGenerator(hDpMeasuredValue[KineID],Form("%s/%s_MeasuredDpTableKineID%d.tex",saveFolder.c_str(),__FUNCTION__,KineID));
+			LatexTableGenerator(hDpResidualValue[KineID],Form("%s/%s_ResidualDpTableKineID%d.tex",saveFolder.c_str(),__FUNCTION__,KineID));
+		}
+
+	}
+
+
+
 
 	// add the first gaus and second gaus difference for each individual holes
 	// gaus fit probably is not a good choise for those kind of small fraction of data set
@@ -4055,6 +4104,24 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 	}
 	std::cout<<std::endl;
 	f1->Close();
+
+
+	// print all the theoretical Dp values
+	// create fileIO and write the data into the dataArray
+	for (auto kineid_iter = TheoreticalDpAlArray.begin(); kineid_iter!=TheoreticalDpAlArray.end(); kineid_iter++){
+		//create the Dp theroetical List
+		FILE *dpfileio=fopen(Form("./Result/theoreticalDp/%s_DpKine%d.txt",__FUNCTION__,kineid_iter->first),"w");
+		for (auto col_iter=(kineid_iter->second).begin(); col_iter!=(kineid_iter->second).end(); col_iter++){
+			for(auto row_iter=(col_iter->second).begin(); row_iter!=(col_iter->second).end(); row_iter++){
+				// write the data
+				fprintf(dpfileio,Form("%d %d %d %f\n",kineid_iter->first,col_iter->first, row_iter->first,row_iter->second));
+				//std::cout<<"KineID:: "<<kineid_iter->first<<"	Col:"<<col_iter->first<<"	Row:"<<row_iter->first<<"	Value::"<<row_iter->second<<std::endl;
+			}
+		}
+
+	fclose(dpfileio);
+	}
+
 	return c5;
 
 }
@@ -4198,6 +4265,7 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 		assert(hDpKinCalib[KineID]); //pointer check
 	}
 	std::map<int, double> TheoreticalDpArray;
+	std::map<int, std::map<int,std::map<int, double>>> TheoreticalDpAlArray;
 	// start fill the histgram with the data
 	// check how the data are calculated , the most important part is the Dp since Dp is directly related to the data
 	for (UInt_t idx = 0; idx < fNRawData; idx++) {
@@ -4210,10 +4278,20 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 
 		if(!CutcutCut(Col,Row,KineID))continue;
 
+		// write all the theoretical Dp informatio
 		if ((Row==3)&&(Col==6)){
 				if(TheoreticalDpArray.find(KineID)==TheoreticalDpArray.end())
 					TheoreticalDpArray[KineID]=eventdata.Data[kRealDpKinMatrix];  // this is the central sieve angle AKA. HRS angle theoretical Dp
 			}
+		// get the theoretical Dp Array
+		if ((TheoreticalDpAlArray.find(KineID) == TheoreticalDpAlArray.end())
+				|| (TheoreticalDpAlArray[KineID].find(Col)
+						== TheoreticalDpAlArray[KineID].end())
+				|| (TheoreticalDpAlArray[KineID][Col].find(Row)
+						== TheoreticalDpAlArray[KineID][Col].end())) {
+			TheoreticalDpAlArray[KineID][Col][Row]=eventdata.Data[kRealDpKinMatrix]+eventdata.Data[kDpKinOffsets];
+
+		}
 
 		const UInt_t ExtraDataFlag = (UInt_t) (eventdata.Data[kExtraDataFlag]);
 		assert(ExtraDataFlag == 0 || ExtraDataFlag == 1); //flag definition consistency check
@@ -4594,9 +4672,22 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 		RealMomemtumDifferenceCanv->Update();
 		RealMomemtumDifferenceCanv->SaveAs(Form("%s/%s_RealMomemtumDifferenceCanv.png",resultSavePath.data(),__FUNCTION__));
 
-		// get first excited states Dp
+		// print all the theoretical Dp values
+		// create fileIO and write the data into the dataArray
+		for (auto kineid_iter = TheoreticalDpAlArray.begin(); kineid_iter!=TheoreticalDpAlArray.end(); kineid_iter++){
+			//create the Dp theroetical List
+			FILE *dpfileio=fopen(Form("./Result/theoreticalDp/DpKine%d.txt",kineid_iter->first),"w");
+			for (auto col_iter=(kineid_iter->second).begin(); col_iter!=(kineid_iter->second).end(); col_iter++){
+				for(auto row_iter=(col_iter->second).begin(); row_iter!=(col_iter->second).end(); row_iter++){
+					// write the data
+					fprintf(dpfileio,Form("%d %d %d %f\n",kineid_iter->first,col_iter->first, row_iter->first,row_iter->second));
+					//std::cout<<"KineID:: "<<kineid_iter->first<<"	Col:"<<col_iter->first<<"	Row:"<<row_iter->first<<"	Value::"<<row_iter->second<<std::endl;
+				}
+			}
 
-	 std::cout<<"File Save as ::"<< resultSavePath.c_str()<<std::endl;
+		fclose(dpfileio);
+		}
+		std::cout<<"File Save as ::"<< resultSavePath.c_str()<<std::endl;
 }
 
 
