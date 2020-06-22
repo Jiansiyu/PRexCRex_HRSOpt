@@ -64,6 +64,25 @@ int main(int argc, char* argv[])
 					d[5]=0.711;
 					d[6]=1.46993;
 				}
+				
+				
+				if(inputFilename.find("20826")!=std::string::npos){
+					//std::cout<<" run 21642 detected"<<std::endl;
+					d[5]=4.59238e-01;
+					d[6]=8.29202e-01;
+				}
+
+				if(inputFilename.find("20827")!=std::string::npos){
+					//std::cout<<" run 21642 detected"<<std::endl;
+					d[5]=4.39358e-01;
+					d[6]=8.45393e-01;
+				}
+
+				if(inputFilename.find("20825")!=std::string::npos){
+					//std::cout<<" run 21642 detected"<<std::endl;
+					d[5]=5.59511e-01;
+					d[6]=7.22360e-01;
+				}
 			}
 
 			//for test, change to position to the central bpm 
