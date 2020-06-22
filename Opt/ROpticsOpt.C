@@ -3766,12 +3766,14 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 
 		for (UInt_t col = 0; col < NSieveCol; col++) {
 			for (unsigned int row = 0; row < NSieveRow; row++) {
+				PErrorTable[KineID][col][row]=CorrectedDpResid[KineID][col][row]->GetMean();
+				if(CorrectedDpResid[KineID][col][row]->GetEntries()==0) continue;
 				sievePResidualDistri[KineID]->Fill(col*NSieveRow+row,CorrectedDpResid[KineID][col][row]->GetMean());
 //				sievePResidualDistri[KineID]->SetBinError(col*NSieveRow+row+1,CorrectedDpResid[KineID][col][row]->GetRMS());
 				sievePResidualDistri[KineID]->SetBinError(col*NSieveRow+row+1,0.00001);
 
 				sievePResidualDistri[KineID]->GetYaxis()->SetRangeUser(-0.0015,0.0015);
-				PErrorTable[KineID][col][row]=CorrectedDpResid[KineID][col][row]->GetMean();
+
 			}
 		}
 		sievePResidualDistri[KineID]->SetLineWidth(2);
