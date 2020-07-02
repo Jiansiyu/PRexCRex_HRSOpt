@@ -98,6 +98,18 @@ void myfcn4(Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t)
     return;
 }
 
+inline std::string getFilePath(const std::string & s){
+	char sep = '/';
+#ifdef _WIN32
+        sep = '\\';
+#endif
+	size_t i = s.rfind(sep, s.length());
+	if(i != std::string::npos){
+	    return(s.substr(0, i+1));
+	}
+        return("");
+}
+
 void DoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGroup = 200)
 {
     // minimize with root
@@ -140,7 +152,8 @@ void DoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     fitter->ExecuteCommand("MIGRAD", arglist, 0);
     
 #endif                   
-                 
+    TString SourceDataBasePath=getFilePath(DestDataBase.Data());
+
     opt->Print();
     opt->SaveDataBase(DestDataBase); 
     opt->SaveNewDataBase(Form("%s",DestDataBase.Data()));
@@ -148,7 +161,7 @@ void DoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     opt->SumSquareDTh();
     opt->SumSquareDPhi();
     
-    TCanvas * c1 = opt->CheckSieve(-1);
+    TCanvas * c1 = opt->CheckSieve(-1,SourceDataBasePath.Data());
     c1->Print(DestDataBase+".Sieve.Opt.png", "png");
     c1->Print(DestDataBase+".Sieve.Opt.eps", "eps");
     
@@ -311,17 +324,7 @@ inline std::string getFileName(const std::string & s){
         return("");
 }
 
-inline std::string getFilePath(const std::string & s){
-	char sep = '/';
-#ifdef _WIN32
-        sep = '\\';
-#endif
-	size_t i = s.rfind(sep, s.length());
-	if(i != std::string::npos){
-	    return(s.substr(0, i+1));
-	}
-        return("");
-}
+
 void AutoDoMinDp(TString SourceDataBase, TString DestDataBase="", UInt_t MaxDataPerGroup = 200, Bool_t doOptmization=true)
 {
 	// extract the base name of the string

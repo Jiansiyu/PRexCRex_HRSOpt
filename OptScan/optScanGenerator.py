@@ -7,6 +7,7 @@ import json
 import time
 import sys
 from collections import OrderedDict
+
 try:
     from progress.bar import Bar
 except ImportError as e:
@@ -28,7 +29,6 @@ class optDatabaseTemplateGenerator():
         self.LoadConfig()
         self.OptCombinationCount=0
         self.OptDBFileCount=0
-        
 
     def LoadConfig(self, runConfigFname=""):
         if not runConfigFname:
