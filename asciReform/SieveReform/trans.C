@@ -19,10 +19,12 @@ inline std::string getFileName(const std::string & s){
 
 int main(int argc, char* argv[])
 {
-	FILE *fp1,*fp2;
+	FILE *fp2;
 	char newname[200];
 	sprintf(newname,"%s_reform",getFileName(argv[1]).c_str());
 	
+	std::string inputFilename(argv[1]);
+
 	fp2=fopen(newname,"w");
     	std::ifstream file(argv[1]);
     	std::string line;
@@ -35,9 +37,61 @@ int main(int argc, char* argv[])
 
                               //kx  kth      ky     kphi    kurb_e  kbeamx  kbeamy   kbeam_z
         	linestream >> index >> d[0] >> d[1] >> d[2] >> d[3] >> d[4] >> d[5] >> d[6];
-        									         //kx     kth      ky     kphi    kurb_e  kbeamx  kbeamy   kbeam_z
+        	
+			// macth the runs and fill the average bpm on target 
+			if(true){
+				//std::cout<<"Working on file"<< inputFilename.c_str()<<std::endl;
+				if(inputFilename.find("21626")!=std::string::npos){
+					//std::cout<<" run 21626 detected"<<std::endl;
+					d[5]=0.690403;
+					d[6]=1.45309;
+				}
+
+				if(inputFilename.find("21632")!=std::string::npos){
+					//std::cout<<" run 21632 detected"<<std::endl;
+					d[5]=0.707264;
+					d[6]=1.4647;
+				}
+
+				if(inputFilename.find("21641")!=std::string::npos){
+					//std::cout<<" run 21641 detected"<<std::endl;
+					d[5]=0.72701;
+					d[6]=1.46784;
+				}
+
+				if(inputFilename.find("21642")!=std::string::npos){
+					//std::cout<<" run 21642 detected"<<std::endl;
+					d[5]=0.711;
+					d[6]=1.46993;
+				}
+				
+				
+				if(inputFilename.find("20826")!=std::string::npos){
+					//std::cout<<" run 21642 detected"<<std::endl;
+					d[5]=4.59238e-01;
+					d[6]=8.29202e-01;
+				}
+
+				if(inputFilename.find("20827")!=std::string::npos){
+					//std::cout<<" run 21642 detected"<<std::endl;
+					d[5]=4.39358e-01;
+					d[6]=8.45393e-01;
+				}
+
+				if(inputFilename.find("20825")!=std::string::npos){
+					//std::cout<<" run 21642 detected"<<std::endl;
+					d[5]=5.59511e-01;
+					d[6]=7.22360e-01;
+				}
+			}
+
+			//for test, change to position to the central bpm 
+			//d[5]=0.0;
+			//d[6]=0.0;
+
+        									//kx     kth      ky     kphi    kurb_e  kbeamx  kbeamy   kbeam_z
         	fprintf(fp2,"%d\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\n",index,d[0],d[1],d[2],d[3],2.17615,d[5]/1000.0,d[6]/1000.0,0.0);
-		//fprintf(fp2,"%d\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\n",index,d[0],d[1],d[2],d[3],0.0,0.0,0.0,0.0);
+			//fprintf(fp2,"%d\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\t%1.8e\n",index,d[0],d[1],d[2],d[3],0.0,0.0,0.0,0.0);
 
     	}
 

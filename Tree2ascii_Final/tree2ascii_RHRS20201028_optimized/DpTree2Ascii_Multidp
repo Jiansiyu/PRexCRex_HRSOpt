@@ -31,7 +31,7 @@ echo "************************************************************"
 
 Id=0
 # run 21642, -2% dp scan
-keyrun=21642
+keyrun=20826
 $PROG -pv -d DpVars.def -O $Id\
         -s $DIR/prexRHRS_${keyrun}.SieveCut.ncut \
         -c $DIR/prexRHRS_${keyrun}.SieveCut.cut \
@@ -47,7 +47,7 @@ echo "************************************************************"
 
 Id=98
 #21641 -1% dp scan
-keyrun=21641    
+keyrun=20827    
 $PROG -pv -d DpVars.def -O $Id\
         -s $DIR/prexRHRS_${keyrun}.SieveCut.ncut \
         -c $DIR/prexRHRS_${keyrun}.SieveCut.cut \
@@ -62,7 +62,7 @@ echo "************************************************************"
 
 Id=196
 #21627 0% dp scan
-keyrun=21627    
+keyrun=20825    
 $PROG -pv -d DpVars.def -O $Id\
         -s $DIR/prexRHRS_${keyrun}.SieveCut.ncut \
         -c $DIR/prexRHRS_${keyrun}.SieveCut.cut \
