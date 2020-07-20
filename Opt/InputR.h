@@ -74,10 +74,36 @@ const Double_t targetfoils[] = {0.0,0.0,0.0,0.0};
 
  ///////////////////////////////////////////////////////////////////////// 
  // Excitation State Inputs 
-const UInt_t NKine = 8; //N Delta Scans */
+const UInt_t NKine = 4; //N Delta Scans */
 
 #define DIPOLE_MAG2MOM(Mag) (2.702*(Mag)-1.6e-03*(Mag)*(Mag)*(Mag)) 
 
+
+const Double_t Ebeam[] = {
+	2.175918588,  //2566 -2%
+	2.175984498,  //2565 -1%
+	2.17560073,   //2550 0%
+	2.1762867,      //2556 1%
+
+	2.175918588,  //2566 -2%
+	2.175984498,  //2565 -1%
+	2.17560073,   //2550 0%
+	2.1762867      //2556 1%
+};
+
+// this is readed from the database and convert with equation
+const Double_t HRSCentralMom[] = {
+		2.139089,   //2566 -2%
+		2.160427,   //2565 -1%
+		2.182923,   //2550 0%
+		2.194834,    //2556 +1%
+
+		2.139089,   //2566 -2%
+		2.160427,   //2565 -1%
+		2.182923,   //2550 0%
+		2.194834    //2556 +1%
+  };
+/*
 const Double_t Ebeam[] = { 
 //  2.17596, //21642   -2%
 //  2.17591, //21641   -1%
@@ -111,6 +137,7 @@ const Double_t HRSCentralMom[] = {
 		2.185155798, //21626    0%
 		2.197131257  //21632   +1%
   }; 
+*/
 
 const Double_t GroundNuclearMass = 12*.931494028-.511e-3*6;// -.511e-3*6; //GeV/c^2  //c Target
 const Double_t ExcitationEnergy[] = {0.0,0.0,0.0,0.0,0.00443891,0.00443891,0.00443891,0.00443891};//selected excitation states for each kinematics

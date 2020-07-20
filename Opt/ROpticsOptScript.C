@@ -22,8 +22,8 @@
 //#define CHECKFLAG false   // used for the Dp optimization
 
 
-#define th_ph_optimize false
-#define y_optimize false
+#define th_ph_optimize true
+#define y_optimize true
 
 #if CHECKFLAG
 	#define dp_optimize false
@@ -47,14 +47,15 @@ Bool_t freepara[10000] = {kFALSE}; //NPara
 UInt_t MaxDataPerGroup = 100;
 
 
-
-#if dp_optimize
-TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveMom.test_reform";
-#else
-TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.LargeDataSetNotPcut.test_reform";
-#endif
+//
+//#if dp_optimize
+//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveMom.test_reform";
+//#else
+//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.LargeDataSetNotPcut.test_reform";
+//#endif
 
 //TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveThetaPhi.test_reform";
+TString DataSource = "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/LHRS_mean/thetaphi/sieve.thetaphi_c12.f51";
 
 //TString DataSource = "/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200322/Test/LHRS_EventNewNewRun/LargeDataSetVersion/WithOutMomCut/Sieve.Full.test";
 
@@ -351,9 +352,11 @@ void AutoDoMinDp(TString SourceDataBase, TString DestDataBase="", UInt_t MaxData
 {
 	// extract the base name of the string
 	if (doOptmization){
-			DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveMom.test_reform";
+		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/LHRS_mean/Dp/Sieve.Dp.full.f51";
+//			DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveMom.test_reform";
 	}else{
-		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.LargeDataSetNotPcut.test_reform";
+		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/LHRS_mean/largeDataset/sieve.large_dataset.f51";
+//		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.LargeDataSetNotPcut.test_reform";
 	}
 
 	TString SourceDataBasePath=getFilePath(DestDataBase.Data());
