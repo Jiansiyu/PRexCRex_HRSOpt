@@ -22,8 +22,8 @@
 //#define CHECKFLAG false   // used for the Dp optimization
 
 
-#define th_ph_optimize true
-#define y_optimize true
+#define th_ph_optimize false
+#define y_optimize false
 
 #if CHECKFLAG
 	#define dp_optimize false
@@ -47,17 +47,9 @@ Bool_t freepara[10000] = {kFALSE}; //NPara
 UInt_t MaxDataPerGroup = 100;
 
 
-//
-//#if dp_optimize
-//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveMom.test_reform";
-//#else
-//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.LargeDataSetNotPcut.test_reform";
-//#endif
 
-//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveThetaPhi.test_reform";
-TString DataSource = "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/LHRS_mean/thetaphi/sieve.thetaphi_c12.f51";
+TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/thetaphi/Sieve.Full_thetaphi.f51";
 
-//TString DataSource = "/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200322/Test/LHRS_EventNewNewRun/LargeDataSetVersion/WithOutMomCut/Sieve.Full.test";
 
 typedef void (*PTRFCN)(Int_t &, Double_t *, Double_t &, Double_t*, Int_t);
 PTRFCN myfcn = NULL;
@@ -114,6 +106,33 @@ void myfcn4(Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t)
     return;
 }
 
+
+//automatically generate the minimization
+// the source file, the destination database , , do the optimzation or not
+inline std::string getFileName(const std::string & s){
+	char sep = '/';
+#ifdef _WIN32
+        sep = '\\';
+#endif
+	size_t i = s.rfind(sep, s.length());
+	if(i != std::string::npos){
+	    return(s.substr(i+1, s.length()-i));
+	}
+        return("");
+}
+
+inline std::string getFilePath(const std::string & s){
+	char sep = '/';
+#ifdef _WIN32
+        sep = '\\';
+#endif
+	size_t i = s.rfind(sep, s.length());
+	if(i != std::string::npos){
+	    return(s.substr(0, i+1));
+	}
+        return("");
+}
+
 void DoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGroup = 200)
 {
     // minimize with root
@@ -127,6 +146,8 @@ void DoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     opt->PrepareSieve();
     opt->Print();
     
+    TString SourceDataBasePath=getFilePath(DestDataBase.Data());
+
 #if th_ph_optimize  
                                           
     TVirtualFitter::SetDefaultFitter("Minuit"); //default is Minuit
@@ -164,7 +185,7 @@ void DoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     opt->SumSquareDTh();
     opt->SumSquareDPhi();
     
-    TCanvas * c1 = opt->CheckSieve(-1);
+    TCanvas * c1 = opt->CheckSieve(-1,SourceDataBasePath.Data());
     c1->Print(DestDataBase+".Sieve.Opt.png", "png");
     c1->Print(DestDataBase+".Sieve.Opt.eps", "eps");
     
@@ -323,40 +344,14 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
 }
 
 
-//automatically generate the minimization
-// the source file, the destination database , , do the optimzation or not
-inline std::string getFileName(const std::string & s){
-	char sep = '/';
-#ifdef _WIN32
-        sep = '\\';
-#endif
-	size_t i = s.rfind(sep, s.length());
-	if(i != std::string::npos){
-	    return(s.substr(i+1, s.length()-i));
-	}
-        return("");
-}
 
-inline std::string getFilePath(const std::string & s){
-	char sep = '/';
-#ifdef _WIN32
-        sep = '\\';
-#endif
-	size_t i = s.rfind(sep, s.length());
-	if(i != std::string::npos){
-	    return(s.substr(0, i+1));
-	}
-        return("");
-}
 void AutoDoMinDp(TString SourceDataBase, TString DestDataBase="", UInt_t MaxDataPerGroup = 200, Bool_t doOptmization=true)
 {
 	// extract the base name of the string
 	if (doOptmization){
-		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/LHRS_mean/Dp/Sieve.Dp.full.f51";
-//			DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveMom.test_reform";
+		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/dp/Sieve.Full.mom.f51";
 	}else{
-		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/LHRS_mean/largeDataset/sieve.large_dataset.f51";
-//		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.LargeDataSetNotPcut.test_reform";
+		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/largeDataset/Sieve.Full_LargeDataSet.f51";
 	}
 
 	TString SourceDataBasePath=getFilePath(DestDataBase.Data());

@@ -15,6 +15,7 @@ from progress.bar import Bar
 import glob
 from fpdf import FPDF
 import PIL
+import sys
 
 class OptScannerResult(object):
     def __init__(self,runConfigFname="runConfig.json"):
@@ -48,7 +49,8 @@ class OptScannerResult(object):
         if not topFolder:
             topFolder=self.TargetPath
         self.OptTemplateSubFolders= [f.path for f in os.scandir(topFolder) if f.is_dir()]
-        self.OptTemplatedOptmizedFolders=[item for item in self.OptTemplateSubFolders if os.path.isfile("{}/CheckDp_test_result.txt".format(item))]
+        self.OptTemplatedOptmizedFolders=[item for item in self.OptTemplateSubFolders]
+        # self.OptTemplatedOptmizedFolders=[item for item in self.OptTemplateSubFolders if os.path.isfile("{}/CheckDp_test_result.txt".format(item))]
         print("Total Processed Template {} / {}\n\n\n".format(len(self.OptTemplatedOptmizedFolders),len(self.OptTemplateSubFolders)))
 
     
@@ -124,29 +126,31 @@ class OptScannerResult(object):
         pdf=FPDF(orientation = 'L', unit = 'mm', format='A4')
         id=0
         for item in txtResultPath:
-            self.CompileLatex(texpath=item)
-            #print("Working on file:{}".format(txtResultPath))
+            #self.CompileLatex(texpath=item)
+            print("Working on file:{}".format(txtResultPath))
             pdf.add_page()
             pdf.set_font('Arial', 'B', 28)
             pdf.cell(300, 50, "Run {}".format(id),ln=1,align='C')
             id = id+1
             pdf.cell(300, 60,"Click me to Open Folder",link="file:///{}".format(item),ln=1,align='C')
             
-            file1=os.path.join(item,"CheckDp_test2_DpKinDiffCanv.jpg")
-            self.addTxtFile(pdf=pdf,txtFile=os.path.join(item,"templateDB.db.optimied"))
-            if os.path.isfile(file1):
-                width, height =self._getImageSize(file1)
-                width, height = float(width * 0.264583), float(height * 0.264583)
-                pdf_size = {'P': {'w': 210, 'h': 297}, 'L': {'w': 297, 'h': 210}}
-                orientation = 'P' if width < height else 'L'
-                width = width if width < pdf_size[orientation]['w'] else pdf_size[orientation]['w']
-                height = height if height < pdf_size[orientation]['h'] else pdf_size[orientation]['h']
-                pdf.add_page(orientation=orientation)
-                pdf.image(file1,0, 0, width, height)
-            pdf.set_font('Arial', 'B', 10)
-            pdf.cell(0, 0, "{}".format(item),link="file:///{}".format(item))
-            self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_RealMomemtumDifferenceCanv.png"))
-            self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_DpAllCanv.jpg"))
+            # file1=os.path.join(item,"CheckDp_test2_DpKinDiffCanv.jpg")
+            # self.addTxtFile(pdf=pdf,txtFile=os.path.join(item,"templateDB.db.optimied"))
+            # if os.path.isfile(file1):
+            #     width, height =self._getImageSize(file1)
+            #     width, height = float(width * 0.264583), float(height * 0.264583)
+            #     pdf_size = {'P': {'w': 210, 'h': 297}, 'L': {'w': 297, 'h': 210}}
+            #     orientation = 'P' if width < height else 'L'
+            #     width = width if width < pdf_size[orientation]['w'] else pdf_size[orientation]['w']
+            #     height = height if height < pdf_size[orientation]['h'] else pdf_size[orientation]['h']
+            #     pdf.add_page(orientation=orientation)
+            #     pdf.image(file1,0, 0, width, height)
+            # pdf.set_font('Arial', 'B', 10)
+            # pdf.cell(0, 0, "{}".format(item),link="file:///{}".format(item))
+            
+            self.addimage(pdf=pdf,file1=os.path.join(item,"CheckSieve_CThetaCorrectionError.jpg"))
+            #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_RealMomemtumDifferenceCanv.png"))
+            #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_DpAllCanv.jpg"))
             #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test2_DpAllCanv.jpg"))
             #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test2_MomemtumOptCanv.jpg"))
             #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_DpAllCanv.jpg"))
@@ -176,7 +180,10 @@ class OptScannerResult(object):
             
         
 if __name__ == "__main__":
-    test=OptScannerResult(runConfigFname="runConfig_test.json")
+    runConfigFile="runConfig_test.json"
+    if len(sys.argv)>1:
+        runConfigFile=sys.argv[1]
+    test=OptScannerResult(runConfigFname=runConfigFile)
     #test.ReadCheckDpMultiThread()
     test.ReadCheckDpResultText()
     test.getReport()

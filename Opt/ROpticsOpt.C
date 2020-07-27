@@ -1342,7 +1342,7 @@ return latexStr;
 
 
 
-TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
+TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath="./")
 {
 	//TODO
 	//adape shujie's solution, used the current optimized matrix to get the Sieve Pattern on the Target
@@ -1667,6 +1667,8 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 	sievePhiResidualDistri->Draw("E1");
 	line1->Draw("same");
 	c4->Update();
+
+	c4->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.data(),__FUNCTION__,c4->GetName()));
 
 	std::cout<<LatexTableGenerator(thetaErrorTable).c_str();
 

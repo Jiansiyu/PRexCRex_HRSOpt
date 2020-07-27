@@ -170,7 +170,7 @@ public:
     Double_t ElossTargetBefore(TVector3 ReactionVertex, TVector3 MomDirectionHCS);
     Double_t ElossTargetAfter(TVector3 ReactionVertex, TVector3 MomDirectionHCS);
     void PrepareSieve(void);
-    TCanvas* CheckSieve(Int_t PlotFoilID = 0);
+    TCanvas* CheckSieve(Int_t PlotFoilID ,std::string resultSavePath);
     TCanvas* CheckSieveAccu(Int_t PlotFoilID = 0);
     Double_t SumSquareDTh(void);
     Double_t SumSquareDPhi(void);

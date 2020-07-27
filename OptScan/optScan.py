@@ -94,5 +94,9 @@ class optScanner(object):
                 # os.system(optBashCommand)
         
 if __name__ == "__main__":
-    test=optScanner(runConfigFname="runConfig_test.json")
-    test.MultiThreadOptimization(5)
+    runConfigFile="runConfig_test.json"
+    if len(sys.argv)>1:
+        runConfigFile=sys.argv[1]
+    
+    test=optScanner(runConfigFname=runConfigFile)
+    test.MultiThreadOptimization(7)

@@ -62,9 +62,6 @@ const UInt_t NSieveRow = 7;
 const Double_t SieveOffY = 0.0;
 const Double_t SieveOffX = 0.0;
 const Double_t ZPos      = (99.4478) * 1e-2;
-//const Double_t SieveOffY = 0.8e-3;// -(3.314-0.8)*1.e-3;
-//const Double_t SieveOffX = -1.07*1.e-3;//-(1.07+1.42)*1.e-3;
-//const Double_t ZPos =1059.61e-3+3.314e-3/TMath::Tan(-HRSAngle);//1059.61 * 1e-3;
 
 /////////////////////////////////////////////////////////////////////////
 // Vertex Position Inputs
@@ -74,74 +71,28 @@ const Double_t targetfoils[] = {0.0,0.0,0.0,0.0};
 
  ///////////////////////////////////////////////////////////////////////// 
  // Excitation State Inputs 
-const UInt_t NKine = 4; //N Delta Scans */
+const UInt_t NKine = 3; //N Delta Scans */
 
 #define DIPOLE_MAG2MOM(Mag) (2.702*(Mag)-1.6e-03*(Mag)*(Mag)*(Mag)) 
 
-
+// beam E in GeV
 const Double_t Ebeam[] = {
-	2.175918588,  //2566 -2%
-	2.175984498,  //2565 -1%
-	2.17560073,   //2550 0%
-	2.1762867,      //2556 1%
-
-	2.175918588,  //2566 -2%
-	2.175984498,  //2565 -1%
-	2.17560073,   //2550 0%
-	2.1762867      //2556 1%
+		0.95051495, // run 1695   id= 0
+		0.95038202, // run 1696   id= 1
+		0.95052156 // run 1694   id= 2
 };
 
 // this is readed from the database and convert with equation
 const Double_t HRSCentralMom[] = {
-		2.139089,   //2566 -2%
-		2.160427,   //2565 -1%
-		2.182923,   //2550 0%
-		2.194834,    //2556 +1%
-
-		2.139089,   //2566 -2%
-		2.160427,   //2565 -1%
-		2.182923,   //2550 0%
-		2.194834    //2556 +1%
+		0.943624, // run 1695 id = 0
+		0.953171, // run 1696 id = 1
+		0.962697  // run 1694 id = 2
   };
-/*
-const Double_t Ebeam[] = { 
-//  2.17596, //21642   -2%
-//  2.17591, //21641   -1%
-//  2.17575, //21627    0%
-//  2.17605,  //21636   +1%
-//  	  	  	  	  	  	  // prepare for the P1 application
-//  2.17596, //21642   -2%
-//  2.17591, //21641   -1%
-//  2.17575, //21627    0%
-//  2.17605  //21636   +1%
-	2.1759184,
-	2.1759877,
-	2.1756448,
-	2.1762876,
 
-	2.1759184,
-	2.1759877,
-	2.1756448,
-	2.1762876
-};
-
-// this need to read from the database and convert with the equation
-const Double_t HRSCentralMom[] = { 
-		2.141358228, //21642   -2%
-		2.162722897, //21641   -1%
-		2.185155798, //21626    0%
-		2.197131257,  //21632   +1%
-
-		2.141358228, //21642   -2%
-		2.162722897, //21641   -1%
-		2.185155798, //21626    0%
-		2.197131257  //21632   +1%
-  }; 
-*/
 
 const Double_t GroundNuclearMass = 12*.931494028-.511e-3*6;// -.511e-3*6; //GeV/c^2  //c Target
 const Double_t ExcitationEnergy[] = {0.0,0.0,0.0,0.0,0.00443891,0.00443891,0.00443891,0.00443891};//selected excitation states for each kinematics
-//{0.,0.00443891,0.00443891,0.00443891,0.00443891};
+
 
 const UInt_t NExcitationStates = 1; // C Excitation States
 const Double_t ExcitationEnergyList[] = {0};
