@@ -18,8 +18,8 @@
 #include <sstream>
 #include <string>
 
-#define CHECKFLAG true    //used for check only, only do the plot, no optimization
-//#define CHECKFLAG false   // used for the Dp optimization
+//#define CHECKFLAG true    //used for check only, only do the plot, no optimization
+#define CHECKFLAG false   // used for the Dp optimization
 
 
 #define th_ph_optimize false

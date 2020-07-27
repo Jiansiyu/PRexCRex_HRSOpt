@@ -4135,13 +4135,13 @@ TF1 *SpectroCrystalFitDp_C12(TH1F*momentumSpectro){
 	auto CGroundDp=momentumSpectro->GetXaxis()->GetBinCenter(momentumSpectro->GetMaximumBin());
 
 	//start the fit and get the mean ans sigma
-	momentumSpectro->Fit("gaus","RQ0","ep",CGroundDp-0.0003,CGroundDp+0.0003);
+	momentumSpectro->Fit("gaus","RQ0","ep",CGroundDp-0.002,CGroundDp+0.002);
 
 	double_t fgroundCrystalballPar[5];
 
 	TF1 *fgroundCrystalball = new TF1("fgroundCrystal", "crystalball",
 			momentumSpectro->GetFunction("gaus")->GetParameter(1)
-					- 5 * momentumSpectro->GetFunction("gaus")->GetParameter(2),
+					- 10 * momentumSpectro->GetFunction("gaus")->GetParameter(2),
 			momentumSpectro->GetFunction("gaus")->GetParameter(1)
 					+ 5 * momentumSpectro->GetFunction("gaus")->GetParameter(2));
 	fgroundCrystalball->SetParameters(
@@ -4176,7 +4176,7 @@ TF1 *SpectroCrystalFitDp_C12(TH1F*momentumSpectro){
 	std::copy(ffirstCrystalPar,ffirstCrystalPar+5,fCrystalMomentumPar+5);
 	fCrystalMomentum->SetParameters(fCrystalMomentumPar);
 	momentumSpectro->Fit("fCrystalMomentum","","",fCrystalMomentum->GetXmin(),fCrystalMomentum->GetXmax());
-	return fCrystalMomentum;
+	return fgroundCrystalball;
 }
 
 TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
@@ -4512,7 +4512,7 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 					}
 				legend->Draw("same");
 
-				double FitPars[10];
+				double FitPars[5];
 				auto fitFunction=SpectroCrystalFitDp_C12(hDpMatrixProjected[KineID][Col][Row]);
 				fitFunction->Draw("same");
 				fitFunction->GetParameters(FitPars);
@@ -4536,43 +4536,11 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 					txt->SetTextSize(0.02);
 					txt->Draw("same");
 
-
-					TLatex *txt1 = new TLatex( FitPars[1],FitPars[0]/2,
-							Form("#DeltaDp=%1.4f, #DeltaP=%1.4f", (FitPars[1]-FitPars[6])*1000,
-									1000
-											* HRSCentralMom[KineID]*(FitPars[1]
-													- FitPars[6])));
-					txt1->SetTextColor(6);
-					txt1->SetLineWidth(2);
-					txt1->SetTextSize(0.02);
-					txt1->Draw("same");
-
 				}
 
-				{
-					// check the first excited states, difference
 
-					TLatex *txt = new TLatex( FitPars[6],FitPars[5],
-							Form("Dp=%1.3f (Bias:%1.2f)*10^{-4}", 10000*FitPars[6],
-									10000
-											* (FitPars[6]
-													- Dptheoretical_temp[KineID+4])));
-					txt->SetLineWidth(2);
-					txt->SetTextSize(0.02);
-					txt->Draw("same");
 
-				}
 
-//				{
-//					// check the first excited states, difference
-//					double Dptheoretical_temp[]={0.013983,0.00389806,-0.00628838,-0.0156925,0.0119146,0.00185035,-0.00831567,-0.0177};
-//					TLatex *txt = new TLatex( FitPars[6],FitPars[5]+KineID*FitPars[5]+FitPars[5]/2,
-//							Form("Theory:#DeltaP=%1.4f MeV(Bias:%1.2fMeV)", 1000*HRSCentralMom[KineID]*(Dptheoretical_temp[KineID]-Dptheoretical_temp[KineID+4]),
-//									1000*HRSCentralMom[KineID]*(FitPars[1]-Dptheoretical_temp[KineID]-(FitPars[6]-Dptheoretical_temp[KineID+4]))));
-//					txt->SetLineWidth(2);
-//					txt->SetTextSize(0.02);
-//					txt->Draw("same");
-//				}
 			}
 		}
 		// draw the seperate plot on a small scale
@@ -4582,34 +4550,29 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 			double_t Col=6;
 			double_t Row=3;
 			if(hDpMatrixProjected[KineID][Col][Row]->GetEntries()!=0){
-				double FitPars[10];
+				double FitPars[5];
 				double binCenter=(hDpMatrixProjected[KineID][Col][Row])->GetXaxis()->GetBinCenter((hDpMatrixProjected[KineID][Col][Row])->GetMaximumBin());
 				auto plot = (TH1F *)hDpMatrixProjected[KineID][Col][Row]->Clone(Form("hDpVDCProjected_dp%d",KineID));
-				hDpMatrixProjected[KineID][Col][Row]->GetFunction("fCrystalMomentum")->GetParameters(FitPars);
+				auto fitFunction=SpectroCrystalFitDp_C12(hDpMatrixProjected[KineID][Col][Row]);
+				fitFunction->Draw("same");
+				fitFunction->GetParameters(FitPars);
 
 				plot->GetXaxis()->SetRangeUser(binCenter-0.004,binCenter+0.001);
 				plot->Draw();
-
+				fitFunction->Draw("same");
 				if (sizeof(Dptheoretical_temp) / sizeof(double) >= KineID) {
 					TLine line(FitPars[1], 0, FitPars[1], FitPars[0] * 1.1);
 					line.SetLineColor(6);
 //					line.SetLineWidth(0.02);
 					line.Draw("same");
-					TLine line1(FitPars[6], 0, FitPars[6], FitPars[5] * 1.1);
-					line1.SetLineColor(6);
-//					line1.SetLineWidth(0.02);
-					line1.Draw("same");
 
 					// create the bias
-					TLatex *txt1=new TLatex(FitPars[1],FitPars[0],Form("Bias %1.3f *10^{-4}",10000.0*(Dptheoretical_temp[KineID]-FitPars[1])+26.761333));
+					double DeltaDp_temp=10000.0*(FitPars[1]-TheoreticalDpArray[KineID])+2.4293333;
+					double DeletE_diff_temp=100.0*((FitPars[1]-TheoreticalDpArray[KineID])+2.4293333/10000.0)*Ebeam[KineID]/(Ebeam[KineID]);
+					TLatex *txt1=new TLatex(FitPars[1],FitPars[0],Form("Bias %1.3f *10^{-4}  %1.3f%%",10000.0*(FitPars[1]-TheoreticalDpArray[KineID])+2.4293333,DeletE_diff_temp));
 					txt1->Draw("same");
-					TLatex *txt2=new TLatex(FitPars[6],FitPars[5],Form("Bias %1.3f *10^{-4}",10000.0*(Dptheoretical_temp[KineID+4]-FitPars[6])+26.761333));
-					txt2->Draw("same");
 
 					//get  the gap and
-					TPaveText *pavetxt=new TPaveText(0.0,0.8,0.4,0.99,"NDC");
-					pavetxt->AddText(Form("%fMeV", 1000.0*HRSCentralMom[KineID]*(FitPars[1]-FitPars[6])));
-					pavetxt->Draw("same");
 				}
 
 			}
@@ -4621,59 +4584,59 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 
 
 		// get the seperations
-		TCanvas *RealMomemtumDifferenceCanv=new TCanvas("RealMomemtumDifferenceCanv","RealMomemtumDifferenceCanv",1960,1080);
-		RealMomemtumDifferenceCanv->Divide(NKine/2,2);
-		RealMomemtumDifferenceCanv->Draw();
-
-		TLine *line2=new TLine(0,4.43982,100,4.43982);
-		line2->SetLineColor(kGreen);
-		line2->SetLineWidth(2);
-
-		TLine *line_p1=new TLine(0,4.43982*1.01,100,4.43982*1.01);
-		line_p1->SetLineColor(kBlue);
-		line_p1->SetLineWidth(2);
-
-		TLine *line_np1=new TLine(0,4.43982*0.99,100,4.43982*0.99);
-		line_np1->SetLineColor(kBlue);
-		line_np1->SetLineWidth(2);
-
-		TH1F *sievePRealDifferenceDistri[NKine];
-		for (auto KineID=0; KineID<NKine; KineID++){
-
-			RealMomemtumDifferenceCanv->cd(KineID+1);
-			sievePRealDifferenceDistri[KineID]=new TH1F(Form("Sieve_P_Difference_KineID%d",KineID),Form("Sieve_P_Difference_KineID%d",KineID),NSieveCol*NSieveRow+10,0,NSieveCol*NSieveRow+10);
-			sievePRealDifferenceDistri[KineID]->GetXaxis()->SetTitle("SieveHoleID");
-			sievePRealDifferenceDistri[KineID]->GetYaxis()->SetTitle("#Delta(P_0-P_1)");
-			sievePRealDifferenceDistri[KineID]->GetYaxis()->SetRangeUser(3.7,5.0);
-			sievePRealDifferenceDistri[KineID]->SetLineWidth(2);
-			sievePRealDifferenceDistri[KineID]->SetMarkerStyle(20);
-
-			for (int col = 0; col < NSieveCol; col++) {
-				for (int row = 0; row < NSieveRow; row++) {
-					if(hDpMatrixProjected[KineID][col][row]->GetEntries()!=0){
-						double FitPars[10];
-						auto fitFunction=SpectroCrystalFitDp_C12(hDpMatrixProjected[KineID][col][row]);
-						fitFunction->GetParameters(FitPars);
-						// get the value
-						double momSeperation=1000* HRSCentralMom[KineID]*(FitPars[1] - FitPars[6]);
-						sievePRealDifferenceDistri[KineID]->Fill(col*NSieveRow+row,momSeperation);
-						sievePRealDifferenceDistri[KineID]->SetBinError(col*NSieveRow+row,1000.0*sqrt((fitFunction->GetParError(1)*fitFunction->GetParError(1))+(fitFunction->GetParError(6)*fitFunction->GetParError(6))));
-
-
-						//get th peak information, subtract the shif
-					}
-				}
-			}
-
-
-			sievePRealDifferenceDistri[KineID]->Draw();
-			line2->Draw("same");
-			line_p1->Draw("same");
-			line_np1->Draw("same");
-
-		}
-		RealMomemtumDifferenceCanv->Update();
-		RealMomemtumDifferenceCanv->SaveAs(Form("%s/%s_RealMomemtumDifferenceCanv.png",resultSavePath.data(),__FUNCTION__));
+//		TCanvas *RealMomemtumDifferenceCanv=new TCanvas("RealMomemtumDifferenceCanv","RealMomemtumDifferenceCanv",1960,1080);
+//		RealMomemtumDifferenceCanv->Divide(NKine/2,2);
+//		RealMomemtumDifferenceCanv->Draw();
+//
+//		TLine *line2=new TLine(0,4.43982,100,4.43982);
+//		line2->SetLineColor(kGreen);
+//		line2->SetLineWidth(2);
+//
+//		TLine *line_p1=new TLine(0,4.43982*1.01,100,4.43982*1.01);
+//		line_p1->SetLineColor(kBlue);
+//		line_p1->SetLineWidth(2);
+//
+//		TLine *line_np1=new TLine(0,4.43982*0.99,100,4.43982*0.99);
+//		line_np1->SetLineColor(kBlue);
+//		line_np1->SetLineWidth(2);
+//
+//		TH1F *sievePRealDifferenceDistri[NKine];
+//		for (auto KineID=0; KineID<NKine; KineID++){
+//
+//			RealMomemtumDifferenceCanv->cd(KineID+1);
+//			sievePRealDifferenceDistri[KineID]=new TH1F(Form("Sieve_P_Difference_KineID%d",KineID),Form("Sieve_P_Difference_KineID%d",KineID),NSieveCol*NSieveRow+10,0,NSieveCol*NSieveRow+10);
+//			sievePRealDifferenceDistri[KineID]->GetXaxis()->SetTitle("SieveHoleID");
+//			sievePRealDifferenceDistri[KineID]->GetYaxis()->SetTitle("#Delta(P_0-P_1)");
+//			sievePRealDifferenceDistri[KineID]->GetYaxis()->SetRangeUser(3.7,5.0);
+//			sievePRealDifferenceDistri[KineID]->SetLineWidth(2);
+//			sievePRealDifferenceDistri[KineID]->SetMarkerStyle(20);
+//
+//			for (int col = 0; col < NSieveCol; col++) {
+//				for (int row = 0; row < NSieveRow; row++) {
+//					if(hDpMatrixProjected[KineID][col][row]->GetEntries()!=0){
+//						double FitPars[10];
+//						auto fitFunction=SpectroCrystalFitDp_C12(hDpMatrixProjected[KineID][col][row]);
+//						fitFunction->GetParameters(FitPars);
+//						// get the value
+//						double momSeperation=1000* HRSCentralMom[KineID]*(FitPars[1] - FitPars[6]);
+//						sievePRealDifferenceDistri[KineID]->Fill(col*NSieveRow+row,momSeperation);
+//						sievePRealDifferenceDistri[KineID]->SetBinError(col*NSieveRow+row,1000.0*sqrt((fitFunction->GetParError(1)*fitFunction->GetParError(1))+(fitFunction->GetParError(6)*fitFunction->GetParError(6))));
+//
+//
+//						//get th peak information, subtract the shif
+//					}
+//				}
+//			}
+//
+//
+//			sievePRealDifferenceDistri[KineID]->Draw();
+//			line2->Draw("same");
+//			line_p1->Draw("same");
+//			line_np1->Draw("same");
+//
+//		}
+//		RealMomemtumDifferenceCanv->Update();
+//		RealMomemtumDifferenceCanv->SaveAs(Form("%s/%s_RealMomemtumDifferenceCanv.png",resultSavePath.data(),__FUNCTION__));
 
 		// print all the theoretical Dp values
 		// create fileIO and write the data into the dataArray
