@@ -4564,10 +4564,10 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 				//Create the Bias
 				if(KineID <4){
 					TLatex *txt = new TLatex( FitPars[1],FitPars[0],
-							Form("Dp=%1.3f (Bias:%1.2f)*10^{-4}", 10000*FitPars[1],
+							Form("Dp=%1.3f Bias:%1.2f*10^{-4}", 10000*FitPars[1],
 									10000
 											* (FitPars[1]
-													- TheoreticalDpArray[KineID])));
+													- TheoreticalDpArray[KineID])+2.4293333));
 					txt->SetLineWidth(2);
 					txt->SetTextSize(0.02);
 					txt->Draw("same");
