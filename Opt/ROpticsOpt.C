@@ -83,14 +83,14 @@ using THaString::Split;
 Bool_t CutcutCut(UInt_t Col, UInt_t Row, UInt_t KineID = -1) {
 
 	//remove the cut on the edge
-	int minSieveHolesID[13]=     {0,0,0,1,1,2,2,1,2,2,1,2,2};
-	int maxSieveHolesID[13]=     {0,0,0,4,4,4,4,4,4,4,4,4,3};
-
-	if(Row>=minSieveHolesID[Col] && Row<= maxSieveHolesID[Col]){
-		return true;
-	}else{
-		return false;
-	}
+//	int minSieveHolesID[13]=     {0,0,0,1,1,2,2,1,2,2,1,2,2};
+//	int maxSieveHolesID[13]=     {0,0,0,4,4,4,4,4,4,4,4,4,3};
+//
+//	if(Row>=minSieveHolesID[Col] && Row<= maxSieveHolesID[Col]){
+//		return true;
+//	}else{
+//		return false;
+//	}
 
 
 /*	if (Row == 3 && Col==6)
@@ -1329,11 +1329,14 @@ inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>conten
 	for (int row = 0; row < NSieveRow; row++) {
 		latexStr += Form("Row %d \t", row);
 		for (int col = 0; col < NSieveCol; col++) {
-			if (content.find(col) != content.end()
-					&& content[col].find(row) != content[col].end()) {
-				error = content[col][row];
+			if (content.find(col) != content.end()) {
+				if (content[col].find(row) != content[col].end()) {
+					error = content[col][row];
+					latexStr += Form(" & %1.4f \t", error);
+				} else {
+					latexStr += Form(" & %1.4f \t", 0.0);
+				}
 			}
-			latexStr += Form(" & %1.4f \t", error);
 		}
 		latexStr += " \\\\ \\hline \n";
 	}
