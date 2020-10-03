@@ -1,0 +1,7 @@
+{
+  "optConfigFname": "optConfig_LHRS_scanPhidb_test.json",
+  "optTemplateFname":"PRex_LHRS_template_test.db",
+  "TargetPath":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan_Prex/result1/LHRS_scan_phi",
+  "OptSourceFolder":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/Opt",
+  "optScannerBashScript":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan_Prex/script/optScanner_thetaphi.sh"
+}
