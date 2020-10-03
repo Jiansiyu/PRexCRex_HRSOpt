@@ -1283,11 +1283,14 @@ inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>conten
 	for (int row = 0; row < NSieveRow; row++) {
 		latexStr += Form("Row %d \t", row);
 		for (int col = 0; col < NSieveCol; col++) {
-			if (content.find(col) != content.end()
-					&& content[col].find(row) != content[col].end()) {
+			if (content.find(col) != content.end()) {
+				if(content[col].find(row) != content[col].end()){
 				error = content[col][row];
+				latexStr += Form(" & %1.3f \t", error*1000.);
+				}else{
+					latexStr += Form(" & %1.4f \t", 0.0);
+				}
 			}
-			latexStr += Form(" & %1.2f \t", 1000 * error);
 		}
 		latexStr += " \\\\ \\hline \n";
 	}
@@ -1337,8 +1340,9 @@ inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>conten
 	  for(int col=0; col<NSieveCol; col++){
 		  if(content.find(col)!=content.end()&& content[col].find(row)!=content[col].end()){
 			  error=content[col][row];
+			  latexStr+=Form(" & %1.2f \\pm %1.2f \t",1000*error, 1000*errorArray[col][row]);
 		  }
-		  latexStr+=Form(" & %1.2f \\pm %1.2f \t",1000*error, 1000*errorArray[col][row]);
+
 	  }
 	  latexStr+=" \\\\ \\hline \n";
   }
@@ -1706,23 +1710,24 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 
 	c4->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.data(),__FUNCTION__,c4->GetName()));
 
+	std::cout<<"\nTheta\n"<<std::endl;
 	std::cout<<LatexTableGenerator(thetaErrorTable).c_str();
 
-	std::cout<<"\n\n Residual Mean with Sigma"<<std::endl;
-	std::cout<<LatexTableGenerator(thetaErrorTable,thetaErrorSigmaTable).c_str();
+//	std::cout<<"\n\n Residual Mean with Sigma"<<std::endl;
+//	std::cout<<LatexTableGenerator(thetaErrorTable,thetaErrorSigmaTable).c_str();
 
-	std::cout<<"\n\n"<<std::endl;
+	std::cout<<"\nPhi\n"<<std::endl;
 	std::cout<<LatexTableGenerator(PhiErrorTable).c_str();
-	std::cout<<"\n\n Residual Mean with Sigma"<<std::endl;
-	std::cout<<LatexTableGenerator(PhiErrorTable,PhiErrorSigmaTable).c_str();
+//	std::cout<<"\n\n Residual Mean with Sigma"<<std::endl;
+//	std::cout<<LatexTableGenerator(PhiErrorTable,PhiErrorSigmaTable).c_str();
 
-	std::cout<<"\n\n theta sigma table"<<std::endl;
-
-	std::cout<<LatexTableGenerator(thetaErrorSigmaTable).c_str();
-
-	std::cout<<"\n\n theta sigma table"<<std::endl;
-
-	std::cout<<LatexTableGenerator(PhiErrorSigmaTable).c_str();
+//	std::cout<<"\n\n theta sigma table"<<std::endl;
+//
+//	std::cout<<LatexTableGenerator(thetaErrorSigmaTable).c_str();
+//
+//	std::cout<<"\n\n theta sigma table"<<std::endl;
+//
+//	std::cout<<LatexTableGenerator(PhiErrorSigmaTable).c_str();
 
 
 	return c2;
