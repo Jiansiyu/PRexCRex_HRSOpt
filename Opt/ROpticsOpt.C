@@ -1332,7 +1332,7 @@ inline std::string LatexTableGenerator(std::map<int,std::map<int, double>>conten
 			if (content.find(col) != content.end()) {
 				if (content[col].find(row) != content[col].end()) {
 					error = content[col][row];
-					latexStr += Form(" & %1.4f \t", error);
+					latexStr += Form(" & %1.3f \t", error*1000.0);
 				} else {
 					latexStr += Form(" & %1.4f \t", 0.0);
 				}
@@ -1668,7 +1668,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID,std::string resultSavePath)
 					if (error_temp < 0.00001) error_temp = 0.0003;
 					sieveThetaResidualDistri->SetBinError(col*NSieveRow+row+1,error_temp);
 
-					double errortheta_temp=TMath::ATan(CorrectedThetaResid[col][row]->GetRMS());
+					double errortheta_temp=TMath::ATan(CorrectedThetaResid[col][row]->GetMean());
 					thetaErrorTable[col][row]=errortheta_temp;//;TMath::ATan(CorrectedThetaResid[col][row]->GetRMS())*1000.0/180.0;
 
 				}
@@ -1718,7 +1718,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID,std::string resultSavePath)
 					double error_temp = CorrectedPhiResid[col][row]->GetRMS()*0.5;
 					if (error_temp < 0.0001) error_temp = 0.0003;
 					sievePhiResidualDistri->SetBinError(col*NSieveRow+row+1,error_temp);
-					double errorphi_temp=TMath::ATan(CorrectedPhiResid[col][row]->GetRMS());
+					double errorphi_temp=TMath::ATan(CorrectedPhiResid[col][row]->GetMean());
 					PhiErrorTable[col][row]=errorphi_temp;
 
 				}
@@ -1733,7 +1733,11 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID,std::string resultSavePath)
 	line3->Draw("same");
 	c4->Update();
 	c4->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.c_str(),__FUNCTION__,c4->GetName()));
+
+	std::cout<<"\nTheta\n"<<std::endl;
 	std::cout<<LatexTableGenerator(thetaErrorTable).c_str();
+
+	std::cout<<"\nPhi\n"<<std::endl;
 	std::cout<<LatexTableGenerator(PhiErrorTable).c_str();
 	return c2;
 
