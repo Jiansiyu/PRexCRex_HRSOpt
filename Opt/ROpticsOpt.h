@@ -183,8 +183,8 @@ public:
     Double_t fArbitaryDpKinShift[100]; // compensate bias due to dp event selections, array of [KineID]
     void PrepareDp(void);
     TCanvas* CheckDp(void);
-    TCanvas* CheckDp_test(void);
-    TCanvas* CheckDp_test2(void);
+    TCanvas* CheckDp_test(std::string resultSavePath);
+    TCanvas* CheckDp_test2(std::string resultSavePath);
 
     TCanvas* CheckDpGlobal(void);
     Double_t SumSquareDp(Bool_t IncludeExtraData = kFALSE);
