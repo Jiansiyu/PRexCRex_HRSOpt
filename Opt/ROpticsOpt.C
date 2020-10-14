@@ -83,16 +83,16 @@ using THaString::Split;
 Bool_t CutcutCut(UInt_t Col, UInt_t Row, UInt_t KineID = -1) {
 
 	//remove the cut on the edge
-	int minSieveHolesID[13]=     {0,0,0,1,1,2,2,1,2,2,1,2,2};
-	int maxSieveHolesID[13]=     {0,0,0,4,4,4,4,4,4,4,4,4,3};
-
-
-
-	if(Row>=minSieveHolesID[Col] && Row<= maxSieveHolesID[Col]){
-		return true;
-	}else{
-		return false;
-	}
+//	int minSieveHolesID[13]=     {0,0,0,1,1,2,2,1,2,2,1,2,2};
+//	int maxSieveHolesID[13]=     {0,0,0,4,4,4,4,4,4,4,4,4,3};
+//
+//
+//
+//	if(Row>=minSieveHolesID[Col] && Row<= maxSieveHolesID[Col]){
+//		return true;
+//	}else{
+//		return false;
+//	}
 
 
 /*	if (Row == 3 && Col==6)
