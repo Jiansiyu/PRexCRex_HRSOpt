@@ -50,9 +50,13 @@ UInt_t MaxDataPerGroup = 100;
 
 TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/thetaphi/Sieve.Full_thetaphi.f51";
 
+
 // theta phi Y data set Sieve.test.average.thetaphi.f51
-TString thetaPhiOptSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/thetaphi_mean/Sieve.full.prexLHRS.average.thetaphi.f51";
-TString thetaPhiTestSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/largeDataset/Sieve.Full_LargeDataSet.f51";
+//TString thetaPhiOptSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/thetaphi_mean/Sieve.full.prexLHRS.average.thetaphi.f51";
+//TString thetaPhiTestSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/largeDataset/Sieve.Full_LargeDataSet.f51";
+// change the bpm to the strip chart version
+TString thetaPhiOptSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average/Sieve.average.f51";
+TString thetaPhiTestSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average_thetaphi_largeDataset/sieve.average.large.f51";
 
 
 
@@ -440,7 +444,9 @@ void AutoDoMinDp(TString SourceDataBase, TString DestDataBase="", UInt_t MaxData
 {
 	// extract the base name of the string
 	if (doOptmization){
-		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/dp/Sieve.Full.mom.f51";
+
+//		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/dp/Sieve.Full.mom.f51";
+		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average/Sieve.average.f51";
 	}else{
 		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/largeDataset/Sieve.Full_LargeDataSet.f51";
 	}
