@@ -55,9 +55,11 @@ UInt_t MaxDataPerGroup = 100;
 //#endif
 
 //TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveThetaPhi.test_reform";
-TString DataSource = "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/LHRS_mean/thetaphi/sieve.thetaphi_c12.f51";
+//TString DataSource = "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/LHRS_mean/thetaphi/sieve.thetaphi_c12.f51";
+// On 10-13-2020 change the bpm to the new strip chart version
+TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/CRex_LHRS/averageVersion/average/Sieve.average.f51";
 
-//TString DataSource = "/home/newdriver/Storage/Research/PRex_Workspace/PREX-MPDGEM/PRexScripts/Tools/PlotCut/Result/Cut20200322/Test/LHRS_EventNewNewRun/LargeDataSetVersion/WithOutMomCut/Sieve.Full.test";
+
 
 typedef void (*PTRFCN)(Int_t &, Double_t *, Double_t &, Double_t*, Int_t);
 PTRFCN myfcn = NULL;
@@ -348,11 +350,13 @@ inline std::string getFilePath(const std::string & s){
 	}
         return("");
 }
+
 void AutoDoMinDp(TString SourceDataBase, TString DestDataBase="", UInt_t MaxDataPerGroup = 200, Bool_t doOptmization=true)
 {
 	// extract the base name of the string
 	if (doOptmization){
-		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/LHRS_mean/Dp/Sieve.Dp.full.f51";
+//		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/LHRS_mean/Dp/Sieve.Dp.full.f51";
+		DataSource = "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/CRex_LHRS/averageVersion/average/Sieve.average.f51";
 //			DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveMom.test_reform";
 	}else{
 		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/LHRS_mean/largeDataset/sieve.large_dataset.f51";
@@ -510,6 +514,7 @@ void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TStri
     gSystem->Exec(Form("cp -vf %s %s.source", SourceDataBase.Data(), DestDataBase.Data()));
     //    gSystem->Exec(Form("cp -vf log %s.log", DestDataBase.Data()));
     delete opt;
+    std::cout<<"DataSource:"<<DataSource.Data()<<std::endl;
     return;
 
 }

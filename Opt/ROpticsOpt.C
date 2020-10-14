@@ -4153,7 +4153,7 @@ TF1 *SpectroCrystalFitDp_C12(TH1F*momentumSpectro){
 
 	TH1F *test=(TH1F *)momentumSpectro->Clone("fitTest");
 //	test->GetXaxis()->SetRangeUser(momentumSpectro->GetXaxis()->GetXmin(),fgroundCrystalballPar[1]-3*fgroundCrystalballPar[2]);
-	test->GetXaxis()->SetRangeUser(fgroundCrystalballPar[1]-0.002,fgroundCrystalballPar[1]-3*fgroundCrystalballPar[2]);
+	test->GetXaxis()->SetRangeUser(fgroundCrystalballPar[1]-0.002,fgroundCrystalballPar[1]-5*fgroundCrystalballPar[2]);
 
 	double_t ffirstGuasPar[3];
 	auto C1stp=test->GetXaxis()->GetBinCenter(test->GetMaximumBin());
