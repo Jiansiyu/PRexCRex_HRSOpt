@@ -444,7 +444,6 @@ void AutoDoMinDp(TString SourceDataBase, TString DestDataBase="", UInt_t MaxData
 {
 	// extract the base name of the string
 	if (doOptmization){
-
 //		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/dp/Sieve.Full.mom.f51";
 		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average/Sieve.average.f51";
 	}else{

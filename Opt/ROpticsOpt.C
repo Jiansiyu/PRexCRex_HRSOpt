@@ -4572,7 +4572,7 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 							Form("Dp=%1.3f Bias:%1.2f*10^{-4}", 10000*FitPars[1],
 									10000
 											* (FitPars[1]
-													- TheoreticalDpArray[KineID])+2.4293333));
+													- TheoreticalDpArray[KineID])));
 					txt->SetLineWidth(2);
 					txt->SetTextSize(0.02);
 					txt->Draw("same");
@@ -4610,7 +4610,7 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 					// create the bias
 					double DeltaDp_temp=10000.0*(FitPars[1]-TheoreticalDpArray[KineID])+2.4293333;
 					double DeletE_diff_temp=100.0*((FitPars[1]-TheoreticalDpArray[KineID])+2.4293333/10000.0)*Ebeam[KineID]/(Ebeam[KineID]);
-					TLatex *txt1=new TLatex(FitPars[1],FitPars[0],Form("Bias %1.3f *10^{-4}  %1.3f%%",10000.0*(FitPars[1]-TheoreticalDpArray[KineID])+2.4293333,DeletE_diff_temp));
+					TLatex *txt1=new TLatex(FitPars[1],FitPars[0],Form("Bias %1.3f *10^{-4}  %1.3f%%",10000.0*(FitPars[1]-TheoreticalDpArray[KineID]),DeletE_diff_temp));
 					txt1->Draw("same");
 
 					//get  the gap and
