@@ -4548,7 +4548,7 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 
 				TLine *centerline=new TLine(FitPars[1],0,FitPars[1],FitPars[0]*1.1);
 				centerline->Draw("same");
-				TLatex *txt=new TLatex(FitPars[1],FitPars[0],Form("Dp=%1.4f bias=%1.4f #times 10^{-3}",FitPars[1]*1000.0,(FitPars[1]-TheoreticalDpArray[KineID])*1000.0-2.1226333));
+				TLatex *txt=new TLatex(FitPars[1],FitPars[0],Form("Dp=%1.4f bias=%1.4f #times 10^{-3}",FitPars[1]*1000.0,(FitPars[1]-TheoreticalDpArray[KineID])*1000.0));
 				txt->Draw("same");
 
 			}

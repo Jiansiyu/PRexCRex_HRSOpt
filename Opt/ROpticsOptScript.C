@@ -39,8 +39,8 @@ TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photo
 
 
 // theta phi Y data set Sieve.test.average.thetaphi.f51
-TString thetaPhiOptSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_RHRS_mean/thetaphi_mean/Sieve.full.average.thetaphi.f51";
-TString thetaPhiTestSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_RHRS_mean/largeDataset/Sieve.Full_LargeDataSet.f51";
+TString thetaPhiOptSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_RHRS/averageVersion/average/Sieve.average.f51";
+TString thetaPhiTestSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_RHRS/averageVersion/largeDatasetThetaCheck/sieve.thetaphi.largetdataset";
 
 // Dp optimization dataset
 TString DpOptSource="";
@@ -422,7 +422,7 @@ void AutoDoMinDp(TString SourceDataBase, TString DestDataBase="", UInt_t MaxData
 		//DataSource = "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_large_diff_events/Sieve.Full.Mom.f51";
 //		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_GroundOnly/SameEvt/Sieve.Full.Mom.f51_reform";
 //		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_mean/Sieve.Full.Mom.f51";
-		DataSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_RHRS_mean/Sieve.Full.mom.f51";
+		DataSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_RHRS/averageVersion/average/Sieve.average.f51";
 	}else{
 //		DataSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/LargeDataSetEndQuanter/Sieve.full.LargetDataset.Top.0.75.f51";
 //		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/LargeDataseTopQauter/Sieve.full.LargetDataset.Top.0.25.f51";
