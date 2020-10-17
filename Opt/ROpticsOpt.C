@@ -4571,16 +4571,6 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 
 				}
 
-//				{
-//					// check the first excited states, difference
-//					double Dptheoretical_temp[]={0.013983,0.00389806,-0.00628838,-0.0156925,0.0119146,0.00185035,-0.00831567,-0.0177};
-//					TLatex *txt = new TLatex( FitPars[6],FitPars[5]+KineID*FitPars[5]+FitPars[5]/2,
-//							Form("Theory:#DeltaP=%1.4f MeV(Bias:%1.2fMeV)", 1000*HRSCentralMom[KineID]*(Dptheoretical_temp[KineID]-Dptheoretical_temp[KineID+4]),
-//									1000*HRSCentralMom[KineID]*(FitPars[1]-Dptheoretical_temp[KineID]-(FitPars[6]-Dptheoretical_temp[KineID+4]))));
-//					txt->SetLineWidth(2);
-//					txt->SetTextSize(0.02);
-//					txt->Draw("same");
-//				}
 			}
 		}
 		// draw the seperate plot on a small scale
