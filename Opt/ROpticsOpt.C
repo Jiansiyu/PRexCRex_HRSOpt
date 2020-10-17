@@ -4259,7 +4259,7 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 
 		hRealMomentumCentralSieve[KineID] = new TH1F(Form("hMomentumKin%d_centralSieve", KineID),
 				Form("hMomentumKin%d_centralSieve", (KineID - 2)), 400,
-				2.168, 2.1755);
+				2.168, 2.1768);
 		for (UInt_t Col = 0; Col < NSieveCol; Col++) {
 			for (UInt_t Row = 0; Row < NSieveRow; Row++) {
 				// used for buffer the VDC projected Dp for each individual Sieve holes
@@ -4609,9 +4609,9 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 					line1.Draw("same");
 
 					// create the bias
-					TLatex *txt1=new TLatex(FitPars[1],FitPars[0],Form("Bias %1.3f *10^{-4}",10000.0*(Dptheoretical_temp[KineID]-FitPars[1])+26.761333));
+					TLatex *txt1=new TLatex(FitPars[1],FitPars[0],Form("Bias %1.3f *10^{-4}",10000.0*(Dptheoretical_temp[KineID]-FitPars[1]) ));
 					txt1->Draw("same");
-					TLatex *txt2=new TLatex(FitPars[6],FitPars[5],Form("Bias %1.3f *10^{-4}",10000.0*(Dptheoretical_temp[KineID+4]-FitPars[6])+26.761333));
+					TLatex *txt2=new TLatex(FitPars[6],FitPars[5],Form("Bias %1.3f *10^{-4}",10000.0*(Dptheoretical_temp[KineID+4]-FitPars[6])));
 					txt2->Draw("same");
 
 					//get  the gap and
