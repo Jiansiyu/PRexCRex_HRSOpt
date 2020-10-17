@@ -18,7 +18,7 @@ const TString InputID = "prexLHRS";
 // HRS Position Inputs
 const Double_t D2R = TMath::Pi() / 180.;
 //set as central sieve hole angle for LHRS
-const Double_t HRSAngle = 4.7469 * D2R;
+const Double_t HRSAngle = 4.818 * D2R;
 
 
 //------------------------------------------------------------------------
@@ -61,7 +61,8 @@ const UInt_t NSieveRow = 7;
 // SieveOff* are in TCS
 const Double_t SieveOffY = 0.0;
 const Double_t SieveOffX = 0.0;
-const Double_t ZPos      = (99.4478) * 1e-2;
+
+const Double_t ZPos      = (98.213) * 1e-2;
 
 /////////////////////////////////////////////////////////////////////////
 // Vertex Position Inputs
@@ -77,9 +78,9 @@ const UInt_t NKine = 3; //N Delta Scans */
 
 // beam E in GeV
 const Double_t Ebeam[] = {
-		0.95051495, // run 1695   id= 0
-		0.95038202, // run 1696   id= 1
-		0.95052156 // run 1694   id= 2
+		0.95051495*953.4/951.1, // run 1695   id= 0
+		0.95038202*953.4/951.1, // run 1696   id= 1
+		0.95052156*953.4/951.1 // run 1694   id= 2
 };
 
 // this is readed from the database and convert with equation
