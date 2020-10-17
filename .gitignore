@@ -5,3 +5,11 @@
 *.o
 Opt/Result/*
 /Debug/
+asciReform/*
+OptScan_Prex/*
+OptScan/*
+CRex_DB/*
+PRex_DB/*
+*pdf
+Tree2*
+backup*
