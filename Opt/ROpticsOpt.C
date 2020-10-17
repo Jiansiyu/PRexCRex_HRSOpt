@@ -4250,7 +4250,7 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 
 		hRealMomentumCentralSieve[KineID] = new TH1F(Form("hMomentumKin%d_centralSieve", KineID),
 				Form("hMomentumKin%d_centralSieve", (KineID - 2)), 400,
-				2.168, 2.1755);
+				2.168, 2.1775);
 		for (UInt_t Col = 0; Col < NSieveCol; Col++) {
 			for (UInt_t Row = 0; Row < NSieveRow; Row++) {
 				// used for buffer the VDC projected Dp for each individual Sieve holes

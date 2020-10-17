@@ -20,7 +20,7 @@ const TString InputID = "prexRHRS";
 // HRS Position Inputs
 const Double_t D2R = TMath::Pi() / 180.;
 //set as central sieve hole angle
-const Double_t HRSAngle = -4.7572 * D2R;
+const Double_t HRSAngle = -4.822 * D2R;
 
 
 //------------------------------------------------------------------------
@@ -63,7 +63,7 @@ const UInt_t NSieveRow = 7;
 // SieveOff* are in TCS
 const Double_t SieveOffY = 0.0;
 const Double_t SieveOffX = 0.0;
-const Double_t ZPos      = (99.669) * 1e-2;
+const Double_t ZPos      = (97.923) * 1e-2;
 //const Double_t SieveOffY = 0.8e-3;// -(3.314-0.8)*1.e-3;
 //const Double_t SieveOffX = -1.07*1.e-3;//-(1.07+1.42)*1.e-3;
 //const Double_t ZPos =1059.61e-3+3.314e-3/TMath::Tan(-HRSAngle);//1059.61 * 1e-3;
@@ -81,15 +81,15 @@ const UInt_t NKine = 8; //N Delta Scans */
 #define DIPOLE_MAG2MOM(Mag) (2.702*(Mag)-1.6e-03*(Mag)*(Mag)*(Mag)) 
 
 const Double_t Ebeam[] = {
-		2.17591739, // %-2 21642
-		2.1759877, // %-1 21641
-		2.1756448, // 0%  21626
-		2.17609177, // 1% 21636
+		2.17591739*953.4/951.1, // %-2 21642
+		2.1759877*953.4/951.1, // %-1 21641
+		2.1756448*953.4/951.1, // 0%  21626
+		2.17609177*953.4/951.1, // 1% 21636
 
-		2.17591739, // %-2 21642
-		2.1759877, // %-1 21641
-		2.1756448, // 0%  21626
-		2.17609177 // 1% 21636
+		2.17591739*953.4/951.1, // %-2 21642
+		2.1759877*953.4/951.1, // %-1 21641
+		2.1756448*953.4/951.1, // 0%  21626
+		2.17609177*953.4/951.1 // 1% 21636
 
   };
 
