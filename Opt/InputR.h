@@ -18,7 +18,7 @@ const TString InputID = "prexLHRS";
 // HRS Position Inputs
 const Double_t D2R = TMath::Pi() / 180.;
 //set as central sieve hole angle for LHRS
-const Double_t HRSAngle = 4.7469 * D2R;
+const Double_t HRSAngle = 4.818 * D2R;
 
 
 //------------------------------------------------------------------------
@@ -61,7 +61,7 @@ const UInt_t NSieveRow = 7;
 // SieveOff* are in TCS
 const Double_t SieveOffY = 0.0;
 const Double_t SieveOffX = 0.0;
-const Double_t ZPos      = (99.4478) * 1e-2;
+const Double_t ZPos      = (97.9) * 1e-2;
 //const Double_t SieveOffY = 0.8e-3;// -(3.314-0.8)*1.e-3;
 //const Double_t SieveOffX = -1.07*1.e-3;//-(1.07+1.42)*1.e-3;
 //const Double_t ZPos =1059.61e-3+3.314e-3/TMath::Tan(-HRSAngle);//1059.61 * 1e-3;
@@ -80,15 +80,15 @@ const UInt_t NKine = 4; //N Delta Scans */
 
 
 const Double_t Ebeam[] = {
-	2.175918588,  //2566 -2%
-	2.175984498,  //2565 -1%
-	2.17560073,   //2550 0%
-	2.1762867,      //2556 1%
+	2.175918588*953.4/951.1,  //2566 -2%
+	2.175984498*953.4/951.1,  //2565 -1%
+	2.17560073*953.4/951.1,   //2550 0%
+	2.1762867*953.4/951.1,      //2556 1%
 
-	2.175918588,  //2566 -2%
-	2.175984498,  //2565 -1%
-	2.17560073,   //2550 0%
-	2.1762867      //2556 1%
+	2.175918588*953.4/951.1,  //2566 -2%
+	2.175984498*953.4/951.1,  //2565 -1%
+	2.17560073*953.4/951.1,   //2550 0%
+	2.1762867*953.4/951.1      //2556 1%
 };
 
 // this is readed from the database and convert with equation
