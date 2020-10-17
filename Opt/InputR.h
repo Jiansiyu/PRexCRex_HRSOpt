@@ -62,7 +62,7 @@ const UInt_t NSieveRow = 7;
 const Double_t SieveOffY = 0.0;
 const Double_t SieveOffX = 0.0;
 
-const Double_t ZPos      = (98.213) * 1e-2;
+const Double_t ZPos      = (97.900) * 1e-2;
 
 /////////////////////////////////////////////////////////////////////////
 // Vertex Position Inputs
