@@ -78,12 +78,12 @@ const UInt_t NKine = 3; //N Delta Scans */
 
 // beam E in GeV
 const Double_t Ebeam[] = {
-		0.95051495*953.4/951.1, // run 1695   id= 0
-		0.95038202*953.4/951.1, // run 1696   id= 1
-		0.95052156*953.4/951.1 // run 1694   id= 2
+		0.9505139*953.4/951.1, // run 1695   id= 0
+		0.9503936*953.4/951.1, // run 1696   id= 1
+		0.9505216*953.4/951.1 // run 1694   id= 2
 };
 
-// this is readed from the database and convert with equation
+// this is read from the database and convert with equation
 const Double_t HRSCentralMom[] = {
 		0.943624, // run 1695 id = 0
 		0.953171, // run 1696 id = 1
