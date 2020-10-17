@@ -1687,6 +1687,16 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 	std::cout<<LatexTableGenerator(PhiErrorSigmaTable).c_str();
 
 
+	{
+		UInt_t counter= sizeof(Ebeam)/sizeof(Double_t);
+		std::cout<<"Beam E = {";
+		for (int i = 0; i < counter; i ++){
+			std::cout<<Ebeam[i]<<",  ";
+		}
+		std::cout<<"}"<<std::endl;
+
+	}
+
 	return c2;
 
 
