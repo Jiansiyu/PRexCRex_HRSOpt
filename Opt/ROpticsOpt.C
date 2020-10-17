@@ -4250,7 +4250,7 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 
 		hRealMomentumCentralSieve[KineID] = new TH1F(Form("hMomentumKin%d_centralSieve", KineID),
 				Form("hMomentumKin%d_centralSieve", (KineID - 2)), 400,
-				2.168, 2.1775);
+				2.168, 2.1785);
 		for (UInt_t Col = 0; Col < NSieveCol; Col++) {
 			for (UInt_t Row = 0; Row < NSieveRow; Row++) {
 				// used for buffer the VDC projected Dp for each individual Sieve holes
@@ -4552,7 +4552,7 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 					// check the first excited states, difference
 
 					TLatex *txt = new TLatex( FitPars[6],FitPars[5],
-							Form("Dp=%1.3f (Bias:%1.2f)*10^{-4}", 10000*FitPars[6],
+							Form("Dp=%1.3f -> (Bias:%1.2f)*10^{-4}", 10000*FitPars[6],
 									10000
 											* (FitPars[6]
 													- Dptheoretical_temp[KineID+4])));
@@ -4562,16 +4562,6 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 
 				}
 
-//				{
-//					// check the first excited states, difference
-//					double Dptheoretical_temp[]={0.013983,0.00389806,-0.00628838,-0.0156925,0.0119146,0.00185035,-0.00831567,-0.0177};
-//					TLatex *txt = new TLatex( FitPars[6],FitPars[5]+KineID*FitPars[5]+FitPars[5]/2,
-//							Form("Theory:#DeltaP=%1.4f MeV(Bias:%1.2fMeV)", 1000*HRSCentralMom[KineID]*(Dptheoretical_temp[KineID]-Dptheoretical_temp[KineID+4]),
-//									1000*HRSCentralMom[KineID]*(FitPars[1]-Dptheoretical_temp[KineID]-(FitPars[6]-Dptheoretical_temp[KineID+4]))));
-//					txt->SetLineWidth(2);
-//					txt->SetTextSize(0.02);
-//					txt->Draw("same");
-//				}
 			}
 		}
 		// draw the seperate plot on a small scale
@@ -4600,7 +4590,7 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 					line1.Draw("same");
 
 					// create the bias
-					TLatex *txt1=new TLatex(FitPars[1],FitPars[0],Form("Bias %1.3f *10^{-4}",10000.0*(Dptheoretical_temp[KineID]-FitPars[1])));
+					TLatex *txt1=new TLatex(FitPars[1],FitPars[0],Form("Bias %1.3f *10^{-4}",10000.0*(TheoreticalDpArray[KineID]-FitPars[1])));
 					txt1->Draw("same");
 					TLatex *txt2=new TLatex(FitPars[6],FitPars[5],Form("Bias %1.3f *10^{-4}",10000.0*(Dptheoretical_temp[KineID+4]-FitPars[6])));
 					txt2->Draw("same");
