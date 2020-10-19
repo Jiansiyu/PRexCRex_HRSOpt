@@ -1613,6 +1613,8 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 	std::map<int,std::map<int,double>> PhiErrorSigmaTable;
 
 
+	double thetaSum=0;
+	int thetaCounter=0;
 	for(int col=0; col< NSieveCol ; col++){
 			for(int row=0; row<NSieveRow; row++){
 				if (CorrectedThetaResid[col][row]->GetEntries()!=0){
@@ -1632,6 +1634,9 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 	//				   double fwhm = CorrectedThetaResid[col][row]->GetBinCenter(bin2) - CorrectedThetaResid[col][row]->GetBinCenter(bin1);
 					double errortheta_temp=TMath::ATan(CorrectedThetaResid[col][row]->GetMean());
 					thetaErrorTable[col][row]=errortheta_temp;//;TMath::ATan(CorrectedThetaResid[col][row]->GetRMS())*1000.0/180.0;
+
+					thetaSum += errortheta_temp;
+					thetaCounter +=1;
 
 					double errorthetaRMS_temp=TMath::ATan(CorrectedThetaResid[col][row]->GetRMS());
 					thetaErrorSigmaTable[col][row]=errorthetaRMS_temp;//;TMath::ATan(CorrectedThetaResid[col][row]->GetRMS())*1000.0/180.0;
@@ -1665,7 +1670,9 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 	line3->SetLineWidth(2);
 	line3->Draw("same");
 
-
+	TPaveText *Thetatext=new TPaveText(0.2,0.15,0.8,0.23,"NDC");
+	Thetatext->AddText(Form("Sum Residual %f, dataPoint:%d, Aver: %f", thetaSum,thetaCounter,thetaSum/thetaCounter));
+	Thetatext->Draw("same");
 	c4->Update();
 
 //	TCanvas *c5=new TCanvas("CPhiCorrectionError","CPhiCorrectionError",1800,1100);
@@ -1675,6 +1682,9 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 	sievePhiResidualDistri->GetYaxis()->SetRangeUser(-0.003,0.003);
 	sievePhiResidualDistri->GetXaxis()->SetTitle("SieveHoleID");
 	sievePhiResidualDistri->GetYaxis()->SetTitle("#Phi' Residuals");
+
+	double PhiSum=0;
+	int PhiCounter=0;
 
 	for(int col=0; col< NSieveCol; col++){
 			for(int row=0; row<NSieveRow; row++){
@@ -1692,6 +1702,9 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 					double errorphi_temp=TMath::ATan(CorrectedPhiResid[col][row]->GetMean());
 					PhiErrorTable[col][row]=errorphi_temp;
 
+					PhiSum +=errorphi_temp;
+					PhiCounter +=1;
+
 					double errorphiSigma_temp=TMath::ATan(CorrectedPhiResid[col][row]->GetRMS());
 					PhiErrorSigmaTable[col][row]=errorphiSigma_temp;
 
@@ -1706,6 +1719,9 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 	line2->Draw("same");
 	line3->Draw("same");
 
+	TPaveText *Phitext=new TPaveText(0.2,0.15,0.8,0.23,"NDC");
+	Phitext->AddText(Form("Sum Residual %f, dataPoint:%d, Aver: %f", PhiSum,PhiCounter,PhiSum/PhiCounter));
+	Phitext->Draw("same");
 	c4->Update();
 
 	c4->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.data(),__FUNCTION__,c4->GetName()));
@@ -4576,12 +4592,7 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 					txt->SetLineWidth(2);
 					txt->SetTextSize(0.02);
 					txt->Draw("same");
-
 				}
-
-
-
-
 			}
 		}
 		// draw the seperate plot on a small scale
