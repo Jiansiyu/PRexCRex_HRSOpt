@@ -1385,9 +1385,9 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 		auto id=i;
 		if(i>3){
 			id=i-4;
-			HSieveMomRealThetaPhi[i]=new TH2F(Form("dpID_%d\%_Target_th.vs.ph",-2+id),Form("dpID_%d\%_1st_state_Target_th.vs.ph",-2+id),500, -0.03, 0.03, 500, -0.045, 0.04);
+			HSieveMomRealThetaPhi[i]=new TH2F(Form("dpID_%d\%_Target_th.vs.ph",-1+id),Form("dpID_%d\%_1st_state_Target_th.vs.ph",-1+id),500, -0.03, 0.03, 500, -0.045, 0.04);
 		}else{
-			HSieveMomRealThetaPhi[i]=new TH2F(Form("dpID_%d\%_Target_th.vs.ph",-2+id),Form("dpID_%d\%_Ground_state_Target_th.vs.ph",-2+id),500, -0.03, 0.03, 500, -0.045, 0.04);
+			HSieveMomRealThetaPhi[i]=new TH2F(Form("dpID_%d\%_Target_th.vs.ph",-1+id),Form("dpID_%d\%_Ground_state_Target_th.vs.ph",-1+id),500, -0.03, 0.03, 500, -0.045, 0.04);
 		}
 		HSieveMomRealThetaPhi[i]->GetXaxis()->SetTitle("Phi");
 		HSieveMomRealThetaPhi[i]->GetYaxis()->SetTitle("theta");
@@ -1506,14 +1506,14 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 		CalcMatrix(x_fp, fPMatrixElems);
 		CalcMatrix(x_fp, fPTAMatrixElems);
 		// calculate the coordinates at the target
-		Double_t phi = CalcTargetVar(fPMatrixElems, powers)
-				+ CalcTargetVar(fPTAMatrixElems, powers);
+		Double_t phi = CalcTargetVar(fPMatrixElems, powers) + CalcTargetVar(fPTAMatrixElems, powers);
 
 		HSieveCorrectedThetaPhi[FoilID]->Fill(phi, theta);
 		HSieveMomRealThetaPhi[DpkineID]->Fill(phi, theta); //
-		if(DpkineID==2){
+		if(DpkineID==1){
 		CorrectedThetaResid[Col][Row]->Fill(theta-RealTheta);
-		CorrectedPhiResid[Col][Row]->Fill(phi-RealPhi);
+//		CorrectedPhiResid[Col][Row]->Fill(phi-RealPhi);//phi - eventdata.Data[kRealPhi]
+		CorrectedPhiResid[Col][Row]->Fill(phi - eventdata.Data[kRealPhi]);
 		}
 
 //        dX += ProjectionX - SieveHoleCorrectionTCS.X();
@@ -1571,8 +1571,8 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 			if(HRSOpt::GetMomID((UInt_t)eventdata.Data[kCutID])!=i) continue;
 
 			TLine *line3 = new TLine((c2->cd(i+1)->GetUxmin()),
-					eventdata.Data[kRealTh], (c2->cd(i+1)->GetUxmax()),
-					eventdata.Data[kRealTh]);
+					eventdata.Data[kRealThMatrix], (c2->cd(i+1)->GetUxmax()),
+					eventdata.Data[kRealThMatrix]);
 			line3->SetLineWidth(2);
 			line3->SetLineColor(3);
 			line3->Draw("same");
