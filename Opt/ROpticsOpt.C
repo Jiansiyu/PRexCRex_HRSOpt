@@ -1429,9 +1429,9 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID,std::string resultSavePath)
 		auto id=i;
 		if(i>3){
 			id=i-4;
-			HSieveMomRealThetaPhi[i]=new TH2F(Form("dpID_%d\%_Target_th.vs.ph",-2+id),Form("dpID_%d\%_1st_state_Target_th.vs.ph",-2+id),500, -0.03, 0.03, 500, -0.045, 0.04);
+			HSieveMomRealThetaPhi[i]=new TH2F(Form("dpID_%d\%_Target_th.vs.ph",-1+id),Form("dpID_%d\%_1st_state_Target_th.vs.ph",-1+id),500, -0.03, 0.03, 500, -0.045, 0.04);
 		}else{
-			HSieveMomRealThetaPhi[i]=new TH2F(Form("dpID_%d\%_Target_th.vs.ph",-2+id),Form("dpID_%d\%_Ground_state_Target_th.vs.ph",-2+id),500, -0.03, 0.03, 500, -0.045, 0.04);
+			HSieveMomRealThetaPhi[i]=new TH2F(Form("dpID_%d\%_Target_th.vs.ph",-1+id),Form("dpID_%d\%_Ground_state_Target_th.vs.ph",-1+id),500, -0.03, 0.03, 500, -0.045, 0.04);
 		}
 		HSieveMomRealThetaPhi[i]->GetXaxis()->SetTitle("Phi");
 		HSieveMomRealThetaPhi[i]->GetYaxis()->SetTitle("theta");
@@ -1555,7 +1555,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID,std::string resultSavePath)
 
 		HSieveCorrectedThetaPhi[FoilID]->Fill(phi, theta);
 		HSieveMomRealThetaPhi[DpkineID]->Fill(phi, theta); //
-		if(DpkineID==2){
+		if(DpkineID==1){
 		CorrectedThetaResid[Col][Row]->Fill(theta-RealTheta);
 		CorrectedPhiResid[Col][Row]->Fill(phi-RealPhi);
 		}
