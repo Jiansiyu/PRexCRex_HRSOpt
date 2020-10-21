@@ -95,4 +95,4 @@ class optScanner(object):
         
 if __name__ == "__main__":
     test=optScanner(runConfigFname="runConfig_test.json")
-    test.MultiThreadOptimization(5)
+    test.MultiThreadOptimization(10)

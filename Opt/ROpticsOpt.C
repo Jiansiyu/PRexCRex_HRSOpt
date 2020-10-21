@@ -1342,7 +1342,7 @@ return latexStr;
 
 
 
-TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
+TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID,std::string resultSavePath)
 {
 	//TODO
 	//adape shujie's solution, used the current optimized matrix to get the Sieve Pattern on the Target
@@ -1542,6 +1542,8 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 		line1->Draw("same");
 	}
 
+	c1->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.c_str(),__FUNCTION__,c1->GetName()));
+
 	TCanvas *c2 = new TCanvas("SieveCheck2", "SieveCheck2", 1800, 1100);
 	c2->Divide(3, 3);
 	for (uint i = 0; i < NKine; i++) {
@@ -1568,7 +1570,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 			line4->Draw("same");
 		}
 	}
-	c2->SaveAs("/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/Opt/Result/temp/checkSieve2.jpg");
+	c2->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.c_str(),__FUNCTION__,c2->GetName()));
 
 	// used for get the optimize error
 	TCanvas *c3=new TCanvas("sieveResd","sieveResd",1800,1100);
@@ -1582,6 +1584,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 	}
 
 	c3->Update();
+	c3->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.c_str(),__FUNCTION__,c3->GetName()));
 
 	// generate the fit error
 	TCanvas *c4=new TCanvas("CThetaCorrectionError","CThetaCorrectionError",1800,1100);
@@ -1595,27 +1598,32 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 	std::map<int,std::map<int,double>> thetaErrorSigmaTable;
 	std::map<int,std::map<int,double>> PhiErrorSigmaTable;
 
-
+	double thetaSum=0;
+	double thetaAbsSum=0;
+	int thetaCounter=0;
 	for(int col=0; col< NSieveCol ; col++){
 			for(int row=0; row<NSieveRow; row++){
-				//c3->cd(col*NSieveRow+row+1);
-				std::cout<<"("<<col<<","<<row<<") :::  Mean:"<<CorrectedThetaResid[col][row]->GetMean()<<" Error"<<TMath::ATan(CorrectedThetaResid[col][row]->GetRMS()*1000.0/180.0)<<"  , phi:"<<
-				CorrectedThetaResid[col][row]->GetRMS()<<" Error:"<<TMath::ATan(CorrectedPhiResid[col][row]->GetRMS()*1000.0/180.0) <<std::endl;
-				sieveThetaResidualDistri->Fill(col*NSieveRow+row,CorrectedThetaResid[col][row]->GetMean());
-				sieveThetaResidualDistri->SetBinError(col*NSieveRow+row+1,CorrectedThetaResid[col][row]->GetRMS());
-
-//				   int bin1 = CorrectedThetaResid[col][row]->FindFirstBinAbove(CorrectedThetaResid[col][row]->GetMaximum()/2);
-//				   int bin2 = CorrectedThetaResid[col][row]->FindLastBinAbove(CorrectedThetaResid[col][row]->GetMaximum()/2);
-//				   double fwhm = CorrectedThetaResid[col][row]->GetBinCenter(bin2) - CorrectedThetaResid[col][row]->GetBinCenter(bin1);
+				if (CorrectedPhiResid[col][row]->GetEntries()!=0){
+					std::cout<<"("<<col<<","<<row<<") :::  Mean:"<<CorrectedThetaResid[col][row]->GetMean()<<" Error"<<TMath::ATan(CorrectedThetaResid[col][row]->GetRMS()*1000.0/180.0)<<"  , phi:"<<
+					CorrectedThetaResid[col][row]->GetRMS()<<" Error:"<<TMath::ATan(CorrectedPhiResid[col][row]->GetRMS()*1000.0/180.0) <<std::endl;
+					sieveThetaResidualDistri->Fill(col*NSieveRow+row,CorrectedThetaResid[col][row]->GetMean());
 
 
-				double errortheta_temp=TMath::ATan(CorrectedThetaResid[col][row]->GetMean());
-				thetaErrorTable[col][row]=errortheta_temp;//;TMath::ATan(CorrectedThetaResid[col][row]->GetRMS())*1000.0/180.0;
+					gStyle->SetErrorX(0.);
+					double error_temp = CorrectedThetaResid[col][row]->GetRMS()*0.5;
+					if (error_temp < 0.00001) error_temp = 0.0003;
+					sieveThetaResidualDistri->SetBinError(col*NSieveRow+row+1,error_temp);
 
-				double errorthetaRMS_temp=TMath::ATan(CorrectedThetaResid[col][row]->GetRMS());
-				thetaErrorSigmaTable[col][row]=errorthetaRMS_temp;//;TMath::ATan(CorrectedThetaResid[col][row]->GetRMS())*1000.0/180.0;
+					double errortheta_temp=TMath::ATan(CorrectedThetaResid[col][row]->GetMean());
+					thetaErrorTable[col][row]=errortheta_temp;//;TMath::ATan(CorrectedThetaResid[col][row]->GetRMS())*1000.0/180.0;
 
+					double errorthetaRMS_temp=TMath::ATan(CorrectedThetaResid[col][row]->GetRMS());
+					thetaErrorSigmaTable[col][row]=errorthetaRMS_temp;//;TMath::ATan(CorrectedThetaResid[col][row]->GetRMS())*1000.0/180.0;
 
+					thetaSum += errortheta_temp;
+					thetaAbsSum +=TMath::Abs(errortheta_temp);
+					thetaCounter +=1;
+				}
 			}
 		}
 	c4->cd(1);
@@ -1626,13 +1634,28 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 
 	sieveThetaResidualDistri->SetLineWidth(2);
 	sieveThetaResidualDistri->SetMarkerStyle(20);
-//	sieveThetaResidualDistri->SetMarkerSize(2);
+
 	TLine *line1=new TLine(0,0,100,0);
 	line1->SetLineColor(3);
 	line1->SetLineWidth(2);
-
 	sieveThetaResidualDistri->Draw("E1");
     line1->Draw("same");
+
+	TLine *line2=new TLine(0,0.001,100,0.001);
+	line2->SetLineColor(46);
+	line2->SetLineWidth(2);
+    line2->Draw("same");
+
+	TLine *line3=new TLine(0,-0.001,100,-0.001);
+	line3->SetLineColor(46);
+	line3->SetLineWidth(2);
+    line3->Draw("same");
+
+
+    TPaveText *Thetatext=new TPaveText(0.2,0.15,0.8,0.23,"NDC");
+    Thetatext->AddText(Form("Sum Residual %f, dataPoint:%d, Aver: %f, absSum:%f", thetaSum,thetaCounter,thetaSum/thetaCounter,thetaAbsSum));
+    Thetatext->Draw("same");
+
 	c4->Update();
 
 //	TCanvas *c5=new TCanvas("CPhiCorrectionError","CPhiCorrectionError",1800,1100);
@@ -1643,22 +1666,30 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 	sievePhiResidualDistri->GetXaxis()->SetTitle("SieveHoleID");
 	sievePhiResidualDistri->GetYaxis()->SetTitle("#Phi' Residuals");
 
+	double PhiSum=0;
+	double PhiAbsSum=0;
+	int PhiCounter=0;
 	for(int col=0; col< NSieveCol; col++){
 			for(int row=0; row<NSieveRow; row++){
-				//c3->cd(col*NSieveRow+row+1);
-				CorrectedPhiResid[col][row]->GetMean();
-				CorrectedPhiResid[col][row]->GetRMS();
-				sievePhiResidualDistri->Fill(col*NSieveRow+row,CorrectedPhiResid[col][row]->GetMean());
-				sievePhiResidualDistri->SetBinError(col*NSieveRow+row+1,CorrectedPhiResid[col][row]->GetRMS());
+				if (CorrectedPhiResid[col][row]->GetEntries() != 0){
+					CorrectedPhiResid[col][row]->GetMean();
+					CorrectedPhiResid[col][row]->GetRMS();
+					sievePhiResidualDistri->Fill(col*NSieveRow+row,CorrectedPhiResid[col][row]->GetMean());
 
-				double errorphi_temp=TMath::ATan(CorrectedPhiResid[col][row]->GetMean());
-				PhiErrorTable[col][row]=errorphi_temp;
+					double error_temp = CorrectedPhiResid[col][row]->GetRMS()*0.5;
+					if (error_temp < 0.0001) error_temp = 0.0003;
+					sievePhiResidualDistri->SetBinError(col*NSieveRow+row+1,error_temp);
 
-				double errorphiSigma_temp=TMath::ATan(CorrectedPhiResid[col][row]->GetRMS());
-				PhiErrorSigmaTable[col][row]=errorphiSigma_temp;
+					double errorphi_temp=TMath::ATan(CorrectedPhiResid[col][row]->GetMean());
+					PhiErrorTable[col][row]=errorphi_temp;
 
+					double errorphiSigma_temp=TMath::ATan(CorrectedPhiResid[col][row]->GetRMS());
+					PhiErrorSigmaTable[col][row]=errorphiSigma_temp;
 
-
+					PhiSum +=errorphi_temp;
+					PhiAbsSum+=TMath::Abs(errorphi_temp);
+					PhiCounter +=1;
+				}
 			}
 		}
 	c4->cd(2);
@@ -1666,7 +1697,16 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 	sievePhiResidualDistri->SetMarkerStyle(20);
 	sievePhiResidualDistri->Draw("E1");
 	line1->Draw("same");
+	line2->Draw("same");
+	line3->Draw("same");
+
+	TPaveText *Phitext=new TPaveText(0.2,0.15,0.8,0.23,"NDC");
+	Phitext->AddText(Form("Sum Residual %f, dataPoint:%d, Aver: %f, absSum:%f", PhiSum,PhiCounter,PhiSum/PhiCounter,PhiAbsSum));
+	Phitext->Draw("same");
 	c4->Update();
+
+	c4->Update();
+	c4->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.c_str(),__FUNCTION__,c4->GetName()));
 
 	std::cout<<LatexTableGenerator(thetaErrorTable).c_str();
 
@@ -1698,8 +1738,6 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID)
 	}
 
 	return c2;
-
-
 	// latex table generator
 
 }
@@ -2398,7 +2436,7 @@ void ROpticsOpt::PrepareVertex(void)
         eventdata.Data[kSieveY] = SieveHoleCorrectionTCS.Y();
         eventdata.Data[kSieveZ] = SieveHoleCorrectionTCS.Z();
 
-	TVector3 BeamSpotHCS(eventdata.Data[kBeamX], eventdata.Data[kBeamY], targetfoils[FoilID]);
+        TVector3 BeamSpotHCS(eventdata.Data[kBeamX], eventdata.Data[kBeamY], targetfoils[FoilID]);
 	//	TVector3 BeamSpotHCS(BeamX_average, BeamY_average , targetfoils[FoilID]);
         eventdata.Data[kBeamZ] = targetfoils[FoilID];
         TVector3 BeamSpotTCS = fTCSInHCS.Inverse()*(BeamSpotHCS - fPointingOffset);
@@ -3771,15 +3809,25 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 		sievePResidualDistri[KineID]->GetXaxis()->SetTitle("SieveHoleID");
 		sievePResidualDistri[KineID]->GetYaxis()->SetTitle("#deltaP(GeV)");
 
+		double dpSum=0;
+		double dpAbsSum=0;
+
+		int dpCounter=0;
+
 		for (UInt_t col = 0; col < NSieveCol; col++) {
 			for (unsigned int row = 0; row < NSieveRow; row++) {
 				PErrorTable[KineID][col][row]=CorrectedDpResid[KineID][col][row]->GetMean();
 				if(CorrectedDpResid[KineID][col][row]->GetEntries()==0) continue;
 				sievePResidualDistri[KineID]->Fill(col*NSieveRow+row,CorrectedDpResid[KineID][col][row]->GetMean());
 //				sievePResidualDistri[KineID]->SetBinError(col*NSieveRow+row+1,CorrectedDpResid[KineID][col][row]->GetRMS());
-				sievePResidualDistri[KineID]->SetBinError(col*NSieveRow+row+1,0.00001);
+				sievePResidualDistri[KineID]->SetBinError(col*NSieveRow+row+1,0.0001);
 
 				sievePResidualDistri[KineID]->GetYaxis()->SetRangeUser(-0.0015,0.0015);
+
+				dpSum +=CorrectedDpResid[KineID][col][row]->GetMean();
+				dpAbsSum +=TMath::Abs(CorrectedDpResid[KineID][col][row]->GetMean());
+				dpCounter +=1;
+
 
 			}
 		}
@@ -3788,6 +3836,11 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 		sievePResidualDistri[KineID]->Draw("E1");
 		sievePResidualDistri[KineID]->Write();
 		line1->Draw("same");
+
+		TPaveText *dptext=new TPaveText(0.2,0.15,0.8,0.23,"NDC");
+		dptext->AddText(Form("Sum Residual %f, dataPoint:%d, Aver: %f, AbsSum: %f", dpSum,dpCounter,dpSum/dpCounter,dpAbsSum));
+		dptext->Draw("same");
+
 
 		LatexTableGenerator(PErrorTable[KineID],Form("%s/%s_momentumErrorKineID%d.tex",resultSavePath.c_str(),__FUNCTION__,KineID));
 
@@ -4259,7 +4312,7 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 
 		hRealMomentumCentralSieve[KineID] = new TH1F(Form("hMomentumKin%d_centralSieve", KineID),
 				Form("hMomentumKin%d_centralSieve", (KineID - 2)), 400,
-				2.168, 2.1768);
+				2.17, 2.185);
 		for (UInt_t Col = 0; Col < NSieveCol; Col++) {
 			for (UInt_t Row = 0; Row < NSieveRow; Row++) {
 				// used for buffer the VDC projected Dp for each individual Sieve holes

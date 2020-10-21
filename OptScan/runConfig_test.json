@@ -1,7 +1,7 @@
 {
-  "optConfigFname": "optConfig_test.json",
-  "optTemplateFname":"CRex_LHRS_template.db",
-  "TargetPath":"/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan/result_LHRS/scan_6",
+  "optConfigFname": "OptConfig_CRex_LHRS_dp.json",
+  "optTemplateFname":"CRex_LHRS_template_new.db",
+  "TargetPath":"/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan/CRex_LHRS/Dp",
   "OptSourceFolder":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/Opt",
   "optScannerBashScript":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan/script/optScanner.sh"
 }
