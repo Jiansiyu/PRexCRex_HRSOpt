@@ -1,7 +1,7 @@
 {
   "optConfigFname": "optConfig_LHRS_scanPhidb_test.json",
   "optTemplateFname":"PRex_LHRS_template_test_updatetheta.db",
-  "TargetPath":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan_Prex/PRex_LHRS_result/LHRS_scan_phi_rescan",
+  "TargetPath":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan_Prex/PRex_LHRS_result/LHRS_scan_phi_allrun_rescan_refine_lower",
   "OptSourceFolder":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/Opt",
   "optScannerBashScript":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan_Prex/script/optScanner_thetaphi.sh"
 }

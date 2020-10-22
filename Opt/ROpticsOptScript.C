@@ -17,19 +17,21 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <map>
+
 
 //#define CHECKFLAG true    //used for check only, only do the plot, no optimization
-#define CHECKFLAG false   // used for the Dp optimization
+//#define CHECKFLAG false   // used for the Dp optimization
 
 
-#define th_ph_optimize false
-#define y_optimize false
+#define th_ph_optimize true
+#define y_optimize true
 
-#if CHECKFLAG
-	#define dp_optimize false
-#else
-	#define dp_optimize true
-#endif
+//#if CHECKFLAG
+//	#define dp_optimize false
+//#else
+#define dp_optimize true
+//#endif
 
 
 #include "ROpticsOpt.h"
@@ -57,8 +59,6 @@ TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/P
 // change the bpm to the strip chart version
 TString thetaPhiOptSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average/Sieve.average.f51";
 TString thetaPhiTestSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average_thetaphi_largeDataset/sieve.average.large.f51";
-
-
 
 typedef void (*PTRFCN)(Int_t &, Double_t *, Double_t &, Double_t*, Int_t);
 PTRFCN myfcn = NULL;
@@ -285,7 +285,14 @@ void AutoDoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPer
         opt->SumSquareDTh();
         opt->SumSquareDPhi();
 
-        TCanvas * c1 = opt->CheckSieve(-1,SourceDataBasePath.Data());
+        TCanvas *c1;
+        if(doFit){
+        	c1 = opt->CheckSieve(-1,SourceDataBasePath.Data());
+        }else{
+        	TString savefolder=Form("%s/%s",SourceDataBasePath.Data(),basename(DataSource.Data()));
+        	mkdir(savefolder.Data(),0777);
+        	c1 = opt->CheckSieve(-1,savefolder.Data());
+        }
         c1->Print(DestDataBase+".Sieve.Opt.png", "png");
         c1->Print(DestDataBase+".Sieve.Opt.eps", "eps");
         std::cout<<"\t dataset::"<<DataSource.Data()<<std::endl;
@@ -551,8 +558,6 @@ void PlotDataBase(TString DatabaseFileName, UInt_t MaxDataPerGroup = 1000)
 
 void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TString DestDataBase="")
 {
-
-
     opt = new ROpticsOpt();
 
     Int_t s = 0;
@@ -579,11 +584,30 @@ void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TStri
         AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
         break;
     case 2:
-        cout << "Optimizing for Phi\n";
-        myfcn = myfcn2;
-        opt->fCurrentMatrixElems = &(opt->fPMatrixElems);
-//        DoMinTP(SourceDataBase, DestDataBase, 500);
-        AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
+        {
+        	cout << "Optimizing for Phi\n";
+
+			myfcn = myfcn2;
+			opt->fCurrentMatrixElems = &(opt->fPMatrixElems);
+	//      DoMinTP(SourceDataBase, DestDataBase, 500);
+			AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
+	        if(doFit){
+	        	AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
+	        }else{
+				std::map<UInt_t,TString> thetaPhiTestList;
+				UInt_t runDp0List[]={2240,2257,2256};//
+				for(int i =0; i < (sizeof(runDp0List)/sizeof(UInt_t)); i ++){
+					TString testfilename=Form("/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average_thetaphi_largeDataset/Sieve._%d_p4.f51_reform",runDp0List[i]);
+//					TString testfilename=Form("/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average/Sieve._%d_cut.f51_reform",runDp0List[i]);
+					if (!gSystem->AccessPathName(testfilename.Data()))
+					{
+							thetaPhiTestSource=testfilename.Data();
+							AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
+						    std::cout<<thetaPhiTestSource.Data()<<std::endl;
+					}
+				}
+	        }
+        }
         break;
     case 3:
         cout << "Optimizing for Y\n";
@@ -592,6 +616,7 @@ void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TStri
         DoMinY(SourceDataBase, DestDataBase, 200000);
         break;
     case 4:
+
         cout << "Optimizing for Delta\n";
         myfcn = myfcn4;
         opt->fCurrentMatrixElems = &(opt->fDMatrixElems);

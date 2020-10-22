@@ -1456,6 +1456,10 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 	}
 
 
+
+	FILE *checkSieveResidTxtio;
+	checkSieveResidTxtio=fopen(Form("%s/%s_SieveResidual.txt",resultSavePath.c_str(),__FUNCTION__),"w");
+	fprintf(checkSieveResidTxtio,Form("Col	Row	Measured_th	Read_th	Diff_th	Measured_ph	Read_ph	Diff_ph	focal_x	focal_th	focal_y	focal_ph\n"));
 	for (UInt_t idx = 0; idx < fNRawData; idx++) {
 		const EventData &eventdata = fRawData[idx];
 
@@ -1524,6 +1528,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 //        SieveEventID[FoilID][Col][Row][kRealSieveY] = SieveHoleCorrectionTCS.Y();
 //        SieveEventID[FoilID][Col][Row][kCalcSieveX] = ProjectionX;
 //        SieveEventID[FoilID][Col][Row][kCalcSieveY] = ProjectionY;
+		fprintf(checkSieveResidTxtio,Form("%d	%d	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f\n",Col,Row,CalcTheta,RealTheta,CalcTheta-RealTheta,CalcPhi,RealPhi,CalcPhi-RealPhi,eventdata.Data[kX],eventdata.Data[kTh],eventdata.Data[kY],eventdata.Data[kPhi]));
 	}
 
 	DEBUG_INFO("CheckSieve", "Average : D_X = %f,\t D_Y = %f", dX / fNRawData,
@@ -1585,7 +1590,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 			line4->Draw("same");
 		}
 	}
-	c2->SaveAs("/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/Opt/Result/temp/checkSieve2.jpg");
+	c2->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.c_str(),__FUNCTION__,c2->GetName()));
 
 	// used for get the optimize error
 	TCanvas *c3=new TCanvas("sieveResd","sieveResd",1800,1100);
@@ -1723,6 +1728,11 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 	Phitext->AddText(Form("Sum Residual %f, dataPoint:%d, Aver: %f", PhiSum,PhiCounter,PhiSum/PhiCounter));
 	Phitext->Draw("same");
 	c4->Update();
+	{
+		TLine *averLine=new TLine(10,PhiSum/PhiCounter,80,PhiSum/PhiCounter);
+		averLine->SetLineColor(6);
+		averLine->Draw("same");
+	}
 
 	c4->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.data(),__FUNCTION__,c4->GetName()));
 
