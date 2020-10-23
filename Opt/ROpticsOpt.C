@@ -1439,6 +1439,10 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID,std::string resultSavePath)
 	}
 
 
+	FILE *checkSieveResidTxtio;
+	checkSieveResidTxtio=fopen(Form("%s/%s_SieveResidual.txt",resultSavePath.c_str(),__FUNCTION__),"w");
+	fprintf(checkSieveResidTxtio,Form("Col	Row	Measured_th	Read_th	Diff_th	Measured_ph	Read_ph	Diff_ph	focal_x	focal_th	focal_y	focal_ph\n"));
+
 	for (UInt_t idx = 0; idx < fNRawData; idx++) {
 		const EventData &eventdata = fRawData[idx];
 
@@ -1507,6 +1511,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID,std::string resultSavePath)
 //        SieveEventID[FoilID][Col][Row][kRealSieveY] = SieveHoleCorrectionTCS.Y();
 //        SieveEventID[FoilID][Col][Row][kCalcSieveX] = ProjectionX;
 //        SieveEventID[FoilID][Col][Row][kCalcSieveY] = ProjectionY;
+		fprintf(checkSieveResidTxtio,Form("%d	%d	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f\n",Col,Row,CalcTheta,RealTheta,CalcTheta-RealTheta,CalcPhi,RealPhi,CalcPhi-RealPhi,eventdata.Data[kX],eventdata.Data[kTh],eventdata.Data[kY],eventdata.Data[kPhi]));
 	}
 
 	DEBUG_INFO("CheckSieve", "Average : D_X = %f,\t D_Y = %f", dX / fNRawData,
