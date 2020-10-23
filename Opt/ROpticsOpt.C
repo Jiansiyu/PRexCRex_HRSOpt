@@ -4168,10 +4168,13 @@ TCanvas* ROpticsOpt::CheckDp_test2(std::string resultSavePath="./") {
 	DpKinSieveDistriCanv->SaveAs(Form("%s/%s_DpKinDiffCanv.jpg",resultSavePath.c_str(),__FUNCTION__));
 	DpKinSieveDistriCanv->Write();
 
+
+	std::cout<<"************* Theoretical Dp Array*************"<<std::endl;
 	for (auto item=TheoreticalDpArray.begin();item!=TheoreticalDpArray.end();item++){
 		std::cout<<item->second<<",";
 	}
-	std::cout<<std::endl;
+
+	std::cout<<std::endl<<std::endl;
 	f1->Close();
 
 
