@@ -1603,6 +1603,8 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID,std::string resultSavePath)
 		line1->Draw("same");
 	}
 
+	c1->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.c_str(),__FUNCTION__,c1->GetName()));
+
 	TCanvas *c2 = new TCanvas("SieveCheck2", "SieveCheck2", 1800, 1100);
 	c2->Divide(3, 3);
 	for (uint i = 0; i < NKine; i++) {
@@ -1629,7 +1631,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID,std::string resultSavePath)
 			line4->Draw("same");
 		}
 	}
-	c2->SaveAs("/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/Opt/Result/temp/checkSieve2.jpg");
+	c2->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.c_str(),__FUNCTION__,c2->GetName()));
 
 	// used for get the optimize error
 	TCanvas *c3=new TCanvas("sieveResd","sieveResd",1800,1100);

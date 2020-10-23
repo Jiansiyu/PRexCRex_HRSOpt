@@ -63,7 +63,7 @@ analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('true',"theta","'${TemplateFna
 # analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('false',"theta","'${OptimizedThetaDBFname}'","'${OptimizedThetaDBFname}'")'
 
 analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('true',"phi","'${OptimizedThetaDBFname}'","'${OptimizedPhiDBFname}'")'
-analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('false',"phi","'${OptimizedThetaDBFname}'","'${OptimizedPhiDBFname}'")'
+analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('false',"phi","'${OptimizedPhiDBFname}'","'${OptimizedDBFname}'")'
 
 #echo "run start the Optimation process!!"
 #analyzer -b -q .L rootlogon.C 'ROpticsOptScript.C('true',"delta","'${TemplateFname}'","'${OptimizedDBFname}'")'
