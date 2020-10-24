@@ -4679,6 +4679,14 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 
 		fclose(dpfileio);
 		}
+
+
+		std::cout<<"************* Theoretical Dp Array*************"<<std::endl;
+		for (auto item=TheoreticalDpArray.begin();item!=TheoreticalDpArray.end();item++){
+			std::cout<<item->second<<",";
+		}
+		std::cout<<std::endl<<std::endl;
+
 		std::cout<<"File Save as ::"<< resultSavePath.c_str()<<std::endl;
 }
 
