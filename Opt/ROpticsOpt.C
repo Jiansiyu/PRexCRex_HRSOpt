@@ -4597,7 +4597,7 @@ TCanvas* ROpticsOpt::CheckDp_test(std::string resultSavePath="./") {
 
 					//get  the gap and
 					TPaveText *pavetxt=new TPaveText(0.0,0.8,0.4,0.99,"NDC");
-					pavetxt->AddText(Form("%fMeV", 1000.0*HRSCentralMom[KineID]*(FitPars[1]-FitPars[6])));
+					pavetxt->AddText(Form("%1.3fMeV / %1.2f %%", 1000.0*HRSCentralMom[KineID]*(FitPars[1]-FitPars[6]),100*(1000.0*HRSCentralMom[KineID]*(FitPars[1]-FitPars[6])-4.43891)/4.43891)); //100*(1000.0*HRSCentralMom[KineID]*(FitPars[1]-FitPars[6])-4.43891)/4.43891
 					pavetxt->Draw("same");
 				}
 
