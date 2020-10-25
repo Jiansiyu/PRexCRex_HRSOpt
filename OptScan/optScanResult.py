@@ -130,9 +130,9 @@ class OptScannerResult(object):
         id=0
         for item in txtResultPath:
 
-            getRes, res=self.ReadSingleCheckDpResultText(txtResultPath=item)
-            if getRes:
-                self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test2_MomemtumOptCanv.jpg"),item=item)
+            # getRes, res=self.ReadSingleCheckDpResultText(txtResultPath=item)
+            # if getRes:
+            #     self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test2_MomemtumOptCanv.jpg"),item=item)
             #self.CompileLatex(texpath=item)
             # #print("Working on file:{}".format(txtResultPath))
             # pdf.add_page()
@@ -158,8 +158,12 @@ class OptScannerResult(object):
             # self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_DpAllCanv.jpg"))
             #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test2_DpAllCanv.jpg"))
             #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test2_MomemtumOptCanv.jpg"))
-            #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_DpAllCanv.jpg"))
-            #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_centralsievemom.jpg")) 
+            self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_DpAllCanv.jpg"))
+            self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test2_MomemtumOptCanv.jpg"))
+            pdf.set_font('Arial', 'B', 10)
+            pdf.cell(100, 0, "Click me to Open Folder {}".format(self.ReadSingleCheckDpResultText(item)),
+                     link="file:///{}".format(item), ln=1, align='C')
+
             # self.addimage(pdf=pdf,file1=os.path.join(item,"CheckSieve_CThetaCorrectionError.jpg")) 
             #
             
