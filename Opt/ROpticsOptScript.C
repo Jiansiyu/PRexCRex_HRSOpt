@@ -591,7 +591,7 @@ void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TStri
 			opt->fCurrentMatrixElems = &(opt->fPMatrixElems);
 	//      DoMinTP(SourceDataBase, DestDataBase, 500);
 			AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
-	        if(doFit){
+	      /*  if(doFit){
 	        	AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
 	        }else{
 				std::map<UInt_t,TString> thetaPhiTestList;
@@ -606,7 +606,7 @@ void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TStri
 						    std::cout<<thetaPhiTestSource.Data()<<std::endl;
 					}
 				}
-	        }
+	        }*/
         }
         break;
     case 3:
