@@ -56,9 +56,15 @@ TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/P
 // theta phi Y data set Sieve.test.average.thetaphi.f51
 //TString thetaPhiOptSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/thetaphi_mean/Sieve.full.prexLHRS.average.thetaphi.f51";
 //TString thetaPhiTestSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/largeDataset/Sieve.Full_LargeDataSet.f51";
+
 // change the bpm to the strip chart version
-TString thetaPhiOptSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average/Sieve.average.f51";
-TString thetaPhiTestSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average_thetaphi_largeDataset/sieve.average.large.f51";
+//TString thetaPhiOptSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average/Sieve.average.f51";
+//TString thetaPhiTestSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average_thetaphi_largeDataset/sieve.average.large.f51";
+
+//vdc constant correction round 1
+TString thetaPhiOptSource= "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/vdcConstant_round1/average/Sieve.average.f51";
+TString thetaPhiTestSource="/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/vdcConstant_round1/average_thetaphi_largeDataset/Sieve.Full_LargeDataSet.f51";
+
 
 typedef void (*PTRFCN)(Int_t &, Double_t *, Double_t &, Double_t*, Int_t);
 PTRFCN myfcn = NULL;
@@ -452,9 +458,11 @@ void AutoDoMinDp(TString SourceDataBase, TString DestDataBase="", UInt_t MaxData
 	// extract the base name of the string
 	if (doOptmization){
 //		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/dp/Sieve.Full.mom.f51";
-		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average/Sieve.average.f51";
+//		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average/Sieve.average.f51";
+		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/vdcConstant_round1/average/Sieve.average.f51";
 	}else{
-		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/largeDataset/Sieve.Full_LargeDataSet.f51";
+//		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/largeDataset/Sieve.Full_LargeDataSet.f51";
+		DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/vdcConstant_round1/average_thetaphi_largeDataset/Sieve.Full_LargeDataSet.f51";
 	}
 
 	TString SourceDataBasePath=getFilePath(DestDataBase.Data());
@@ -591,13 +599,14 @@ void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TStri
 			opt->fCurrentMatrixElems = &(opt->fPMatrixElems);
 	//      DoMinTP(SourceDataBase, DestDataBase, 500);
 			AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
-	      /*  if(doFit){
+	        if(doFit){
 	        	AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
 	        }else{
 				std::map<UInt_t,TString> thetaPhiTestList;
 				UInt_t runDp0List[]={2240,2257,2256};//
 				for(int i =0; i < (sizeof(runDp0List)/sizeof(UInt_t)); i ++){
-					TString testfilename=Form("/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average_thetaphi_largeDataset/Sieve._%d_p4.f51_reform",runDp0List[i]);
+					TString testfilename=Form("/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/vdcConstant_round1/average_thetaphi_largeDataset/Sieve._%d_p4.f51",runDp0List[i]);
+//					TString testfilename=Form("/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average_thetaphi_largeDataset/Sieve._%d_p4.f51_reform",runDp0List[i]);
 //					TString testfilename=Form("/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average/Sieve._%d_cut.f51_reform",runDp0List[i]);
 					if (!gSystem->AccessPathName(testfilename.Data()))
 					{
@@ -606,7 +615,7 @@ void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TStri
 						    std::cout<<thetaPhiTestSource.Data()<<std::endl;
 					}
 				}
-	        }*/
+	        }
         }
         break;
     case 3:
