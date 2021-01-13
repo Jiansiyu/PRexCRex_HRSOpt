@@ -1,0 +1,8 @@
+{
+    "optConfigFname": "PRex_LHRS_scanTheta.json",
+    "optTemplateFname":"PRex_LHRS_template.db",
+    "TargetPath":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan_PRex_2021/result/LHRS/scan_thetaphi",
+    "OptSourceFolder":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/Opt",
+    "optScannerBashScript":"/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptScan_PRex_2021/script/optScanner_thetaphi.sh"
+  }
+  
