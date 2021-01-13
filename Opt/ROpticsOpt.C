@@ -504,7 +504,10 @@ Int_t ROpticsOpt::LoadDataBase(TString DataBaseName)
     }
 
     CalcMatrix(1., fRMatrixElems); // tensor without explicit polynomial in x_fp
-
+	
+    for(auto element : fFPMatrixElems){
+    element.print();
+    }
     fIsInit = true;
     fclose(file);
     return kOK;
