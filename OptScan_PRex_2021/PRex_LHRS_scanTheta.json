@@ -2,13 +2,49 @@
     "DpOpt": {
       "T 0 0 0": {
         "startOrder": "3",
-        "endOrder": "5"
+        "endOrder": "3"
       },
-      "T 0 0 1": {
+      "T 1 0 0": {
+        "startOrder": "1",
+        "endOrder": "1"
+      },
+      "T 2 0 0": {
+        "startOrder": "3",
+        "endOrder": "3"
+      },
+      "T 0 2 0": {
+        "startOrder": "3",
+        "endOrder": "3"
+      },
+       "T 0 0 2": {
+        "startOrder": "3",
+        "endOrder": "3"
+      },
+      "T 1 2 0": {
         "startOrder": "2",
         "endOrder": "2"
       },
-      "T 0 0 2": {
+      "T 1 0 2": {
+        "startOrder": "2",
+        "endOrder": "2"
+      },
+      "T 2 2 0": {
+        "startOrder": "2",
+        "endOrder": "2"
+      },
+      "T 2 0 2": {
+        "startOrder": "2",
+        "endOrder": "2"
+      },
+      "T 0 2 2": {
+        "startOrder": "2",
+        "endOrder": "2"
+      },
+      "T 3 2 0": {
+        "startOrder": "1",
+        "endOrder": "1"
+      },
+      "T 3 0 2": {
         "startOrder": "1",
         "endOrder": "1"
       },
@@ -16,33 +52,45 @@
         "startOrder": "2",
         "endOrder": "2"
       },
-      "T 0 1 1": {
-        "startOrder": "1",
-        "endOrder": "1"
-      },
-      "T 0 2 0": {
-        "startOrder": "1",
-        "endOrder": "1"
-      },
-      "T 1 0 0": {
-        "startOrder": "1",
-        "endOrder": "2"
-      },
-      "T 1 0 1": {
-        "startOrder": "1",
-        "endOrder": "1"
+      "T 0 0 1": {
+        "startOrder": "3",
+        "endOrder": "3"
       },
       "T 1 1 0": {
-        "startOrder": "1",
-        "endOrder": "1"
+        "startOrder": "3",
+        "endOrder": "3"
+      },
+      "T 1 0 1": {
+        "startOrder": "3",
+        "endOrder": "3"
+      },
+      "T 0 1 1": {
+        "startOrder": "3",
+        "endOrder": "3"
+      },
+      "T 2 1 0": {
+        "startOrder": "3",
+        "endOrder": "3"
+      },
+      "T 2 0 1": {
+        "startOrder": "3",
+        "endOrder": "3"
       },
       "T 1 1 1": {
+        "startOrder": "3",
+        "endOrder": "3"
+      },
+      "T 2 1 1": {
         "startOrder": "2",
         "endOrder": "2"
       },
-      "T 2 0 0": {
-        "startOrder": "1",
-        "endOrder": "1"
+      "T 3 1 0": {
+        "startOrder": "2",
+        "endOrder": "2"
+      },
+      "T 3 0 1": {
+        "startOrder": "2",
+        "endOrder": "2"
       }
     }
   }

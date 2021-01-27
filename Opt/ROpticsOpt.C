@@ -506,7 +506,7 @@ Int_t ROpticsOpt::LoadDataBase(TString DataBaseName)
     CalcMatrix(1., fRMatrixElems); // tensor without explicit polynomial in x_fp
 	
     for(auto element : fFPMatrixElems){
-    element.print();
+//    element.print();
     }
     fIsInit = true;
     fclose(file);
@@ -1517,7 +1517,8 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 
 		HSieveCorrectedThetaPhi[FoilID]->Fill(phi, theta);
 		HSieveMomRealThetaPhi[DpkineID]->Fill(phi, theta); //
-		if(DpkineID==1){
+		//if(DpkineID==1)
+		{
 		CorrectedThetaResid[Col][Row]->Fill(theta-RealTheta);
 //		CorrectedPhiResid[Col][Row]->Fill(phi-RealPhi);//phi - eventdata.Data[kRealPhi]
 		CorrectedPhiResid[Col][Row]->Fill(phi - eventdata.Data[kRealPhi]);

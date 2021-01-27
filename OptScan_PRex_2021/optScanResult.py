@@ -147,12 +147,12 @@ class OptScannerResult(object):
         id=0
         for item in txtResultPath:
             self.CompileLatex(texpath=item)
-            # print("Working on file:{}".format(txtResultPath))
-            # pdf.add_page()
-            # pdf.set_font('Arial', 'B', 28)
-            # pdf.cell(300, 50, "Run {}".format(id),ln=1,align='C')
-            # id = id+1
-            # pdf.cell(300, 60,"Click me to Open Folder",link="file:///{}".format(item),ln=1,align='C')
+            print("Working on file:{}".format(txtResultPath))
+            pdf.add_page()
+            pdf.set_font('Arial', 'B', 28)
+            pdf.cell(300, 50, "Run {}".format(id),ln=1,align='C')
+            id = id+1
+            pdf.cell(300, 60,"Click me to Open Folder",link="file:///{}".format(item),ln=1,align='C')
             
             # file1=os.path.join(item,"CheckDp_test2_DpKinDiffCanv.jpg")
             # self.addTxtFile(pdf=pdf,txtFile=os.path.join(item,"templateDB.db.optimied"))
@@ -172,15 +172,35 @@ class OptScannerResult(object):
             #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test2_DpAllCanv.jpg"))
             #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test2_MomemtumOptCanv.jpg"))
             #self.addimage(pdf=pdf,file1=os.path.join(item,"CheckDp_test_DpAllCanv.jpg"))
-            self.addimage(pdf=pdf,file1=os.path.join(item,"CheckSieve_CThetaCorrectionError.jpg"),item=item)
+            # self.addimage(pdf=pdf,file1=os.path.join(item,"CheckSieve_CThetaCorrectionError.jpg"),item=item)
             # fileList=[
+            #     os.path.join(item,"Sieve._2241_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
             #     os.path.join(item,"Sieve._2245_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
-            #     os.path.join(item,"Sieve._2239_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
-            #     os.path.join(item,"Sieve._2244_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
-            #     os.path.join(item,"Sieve._2241_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg")
+            #     os.path.join(item,"Sieve._2240_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+            #     os.path.join(item,"Sieve._2239_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg")
             # ]
+            #
+            fileList = [
+                os.path.join(item, "Sieve._2257_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+                os.path.join(item, "Sieve._2240_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+                os.path.join(item, "Sieve._2256_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+                os.path.join(item, "Sieve._2239_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg")
+            ]
+            self.addimages(pdf=pdf,fileList=fileList,item=item)
+
+            fileList = [
+                os.path.join(item, "Sieve._2241_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+                # os.path.join(item, "Sieve._2239_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+                os.path.join(item, "Sieve._2245_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
+                os.path.join(item, "Sieve._2244_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg")
+            ]
+            self.addimages(pdf=pdf,fileList=fileList,item=item)
+            
+
+
+
             # # self.addimage(pdf=pdf,file1=os.path.join(item,"Sieve._1696_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),item=item)
-            # self.addimages(pdf=pdf,fileList=fileList,item=item)
+            # self.addimages(pdf=pdf, fileList=fileList, item=item)
 
 
             bar.next()
