@@ -56,7 +56,7 @@ class optScanner(object):
                 print(optBashCommand)
                 os.system(optBashCommand)
                 
-    def MultiThreadOptimization(self, maxThread=10):
+    def MultiThreadOptimization(self, maxThread=15):
         threadPool=Pool(maxThread)
         threadPool.map(self.OptimizeSubFolder,self.OptTemplateSubFolders)
     
@@ -95,4 +95,4 @@ class optScanner(object):
         
 if __name__ == "__main__":
     test=optScanner(runConfigFname="runConfig_run.json")
-    test.MultiThreadOptimization(5)
+    test.MultiThreadOptimization()

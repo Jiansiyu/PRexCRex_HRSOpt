@@ -83,6 +83,11 @@ using THaString::Split;
 
 
 Bool_t CutcutCut(UInt_t Col, UInt_t Row, UInt_t KineID = -1) {
+	if((Row == 3)&(Col == 3)){
+		return false;
+	}else{
+		return true;
+	}
 /*	if((Row<4)&&(Row>2)){
 		return true;
 	}else{

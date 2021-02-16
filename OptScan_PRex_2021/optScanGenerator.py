@@ -23,7 +23,7 @@ class optDatabaseTemplateGenerator():
         self.OptConfigFname=""
         self.TargetPath=""
         self.CurrentWorkFolder=""
-        self.DBElementPrefix="T "
+        self.DBElementPrefix="P "
         self.OptTemplateFname=""
         self.LoadConfig()
         self.OptCombinationCount=0

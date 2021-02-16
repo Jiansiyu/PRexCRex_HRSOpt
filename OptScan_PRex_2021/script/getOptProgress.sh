@@ -59,7 +59,7 @@ do
 	fi
 
 	printf "\r%3d.%1d%% %s/%s %.${pd}s "  $(( ${CurrentReplayedNumber} * 100 / ${TotalFileNumber} )) $(( (${CurrentReplayedNumber} * 10000 / ${TotalFileNumber}) % 100 )) ${timeUsedTimeStamp} ${timeRemainTimeStamp} $pstr 
-	sleep 10
+	sleep 1
 	CurrentReplayedNumber=$(ls ${FolderPath}/*/templateDB.db.Theta.Phi.optimied | wc -l)
 done 
 
