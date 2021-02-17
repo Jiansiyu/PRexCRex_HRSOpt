@@ -609,8 +609,6 @@ void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TStri
 				UInt_t runDp0List[]={2239,2240,2241,2244,2245,2257,2256};//
 				for(int i =0; i < (sizeof(runDp0List)/sizeof(UInt_t)); i ++){
 					TString testfilename=Form("/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_LHRS/OptData/largeDataset/Sieve._%d_p4.f51_reform",runDp0List[i]);
-//					TString testfilename=Form("/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/vdcConstant_round1/average_thetaphi_largeDataset/Sieve._%d_p4.f51_reform",runDp0List[i]);
-//					TString testfilename=Form("/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_LHRS/averageVersion/average_thetaphi_largeDataset/Sieve._%d_p4.f51_reform",runDp0List[i]);
 					if (!gSystem->AccessPathName(testfilename.Data()))
 					{
 							thetaPhiTestSource=testfilename.Data();

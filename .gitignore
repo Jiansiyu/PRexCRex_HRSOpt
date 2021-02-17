@@ -8,3 +8,9 @@ Opt/Result/*
 ./Debug/
 ./OptScan/result1/*
 ./OptScan/result/*
+tree2asc*
+OptData*
+OptScan*
+asciReform*
+PRex_DB*
+CRex_DB
