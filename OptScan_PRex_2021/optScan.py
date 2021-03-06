@@ -52,7 +52,7 @@ class optScanner(object):
     def OptimizeSubFolder(self,folderName=""):
         if not os.path.isfile("{}/CheckDp_test_result.txt".format(folderName)):
             if os.path.exists(folderName):
-                optBashCommand="{} {} {}".format(self.optScannerBashScript,self.OptSourceFolder,folderName)
+                optBashCommand="{} {} {} > /dev/null".format(self.optScannerBashScript,self.OptSourceFolder,folderName)
                 print(optBashCommand)
                 os.system(optBashCommand)
                 

@@ -22,6 +22,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <map>
+#include <vector>
 
 #include "TROOT.h"
 #include "TTree.h"
@@ -1365,18 +1366,96 @@ if(!saveLatex.empty()){
 return latexStr;
 }
 
+float_t correlationCoefficient(std::vector<double_t> x, std::vector<double_t> y){
+	//https://www.geeksforgeeks.org/program-find-correlation-coefficient/
+	double sum_X = 0, sum_Y = 0, sum_XY = 0;
+	double squareSum_X = 0, squareSum_Y = 0;
+	assert(x.size() == y.size());
+	Int_t n= x.size();
+	for (int i = 0; i < x.size(); i++){
+		double xval = x.at(i);
+		double yval = y.at(i);
 
+		sum_X  = sum_X + xval;
+		sum_Y  = sum_Y + yval;
+		sum_XY = sum_XY + xval * yval;
+
+		squareSum_X = squareSum_X + xval * xval;
+		squareSum_Y = squareSum_Y + yval * yval;
+	}
+
+	float_t corr = (float_t)(n*sum_XY - sum_X*sum_Y)/TMath::Sqrt((n*squareSum_X - sum_X*sum_X)*(n*squareSum_Y - sum_Y*sum_Y));
+	return corr;
+}
 
 TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath="./")
 {
-	//TODO
-	//adape shujie's solution, used the current optimized matrix to get the Sieve Pattern on the Target
-	//project the focal plane to the local coordination system
-	//use the coordination system to Get the real position and plot an cross to the canvas
-	//need to add more automatic   boundary set in the code
-
 	// Visualize Sieve Plane
 	DEBUG_INFO("CheckSieve", "Entry Point");
+
+	TFile *tfileReportIO = new TFile(Form("%s/%s_Report.root",resultSavePath.c_str(),__FUNCTION__),"RECREATE");
+	TTree  *tfileTree = new TTree("OptRes","PRex CRex Sieve Theta Phi Optimization Result");
+
+	int tfileevtID;
+	int tfilesieveRowID;
+	int tfilesieveColID;
+	int tfileKineID;
+
+	double tfilebpmX;
+	double tfilebpmY;
+	double tfilebpmZ;
+
+	double tfilefocalTh;
+	double tfilefocalPh;
+	double tfilefocalX;
+	double tfilefocalY;
+
+	double tfiletargProjTh;
+	double tfiletargProjPh;
+	double tfiletargProjX;
+	double tfiletargProjY;
+
+	double tfiletargCalcTh;
+	double tfiletargCalcPh;
+	double tfiletargCalcX;
+	double tfiletargCalcY;
+
+	double tfiletargResidTh;
+	double tfiletargResidPh;
+	double tfiletargResidX;
+	double tfiletargResidY;
+
+	// write the data
+	tfileTree ->Branch("evtID",&tfileevtID,"evtID/I");
+	tfileTree ->Branch("SieveRowID",&tfilesieveRowID,"SieveRowID/I");
+	tfileTree ->Branch("SieveColID",&tfilesieveColID,"SieveColID/I");
+	tfileTree ->Branch("KineID",&tfileKineID,"KineID/I");
+
+	tfileTree ->Branch("focalTh",&tfilefocalTh,"focalTh/D");
+	tfileTree ->Branch("focalPh",&tfilefocalPh,"focalPh/D");
+	tfileTree ->Branch("focalX",&tfilefocalX,"focalX/D");
+	tfileTree ->Branch("focalY",&tfilefocalY,"focalY/D");
+
+	tfileTree -> Branch("bpmX",&tfilebpmX,"bpmX/D");
+	tfileTree -> Branch("bpmY",&tfilebpmY,"bpmY/D");
+	tfileTree -> Branch("bpmZ",&tfilebpmZ,"bpmZ/D");
+
+	tfileTree ->Branch("targProjTh",&tfiletargProjTh,"targProjTh/D");
+	tfileTree ->Branch("targProjPh",&tfiletargProjPh,"targProjPh/D");
+	tfileTree ->Branch("targProjX",&tfiletargProjX,"targProjX/D");
+	tfileTree ->Branch("targProjY",&tfiletargProjY,"targProjY/D");
+
+	tfileTree ->Branch("targCalcTh",&tfiletargCalcTh,"targCalcTh/D");
+	tfileTree ->Branch("targCalcPh",&tfiletargCalcPh,"targCalcPh/D");
+	tfileTree ->Branch("targCalcX",&tfiletargCalcX,"targCalcX/D");
+	tfileTree ->Branch("targCalcY",&tfiletargCalcY,"targCalcY/D");
+
+
+	tfileTree ->Branch("targResidTh",&tfiletargResidTh,"targResidTh/D");
+	tfileTree ->Branch("targResidPh",&tfiletargResidPh,"targResidPh/D");
+	tfileTree ->Branch("targResidX",&tfiletargResidX,"targResidX/D");
+	tfileTree ->Branch("targResidY",&tfiletargResidY,"targResidY/D");
+
 
 	const UInt_t nplot = (PlotFoilID == -1) ? NFoils : 9;
 
@@ -1389,13 +1468,16 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 	Double_t x_lim[NFoils] = { 0 };
 	Double_t y_lim[NFoils] = { 0 };
 
+	// Initialized Plot
 	for (uint i = 0 ; i < NKine; i ++){
 		auto id=i;
 		if(i>3){
 			id=i-4;
-			HSieveMomRealThetaPhi[i]=new TH2F(Form("dpID_%d\%_Target_th.vs.ph",-1+id),Form("dpID_%d\%_1st_state_Target_th.vs.ph",-1+id),500, -0.03, 0.03, 500, -0.045, 0.04);
+			HSieveMomRealThetaPhi[i]=new TH2F(Form("dpID_%d\%_Target_th.vs.ph",-1+id),
+					Form("dpID_%d\%_1st_state_Target_th.vs.ph",-1+id),500, -0.03, 0.03, 500, -0.045, 0.04);
 		}else{
-			HSieveMomRealThetaPhi[i]=new TH2F(Form("dpID_%d\%_Target_th.vs.ph",-1+id),Form("dpID_%d\%_Ground_state_Target_th.vs.ph",-1+id),500, -0.03, 0.03, 500, -0.045, 0.04);
+			HSieveMomRealThetaPhi[i]=new TH2F(Form("dpID_%d\%_Target_th.vs.ph",-1+id),
+					Form("dpID_%d\%_Ground_state_Target_th.vs.ph",-1+id),500, -0.03, 0.03, 500, -0.045, 0.04);
 		}
 		HSieveMomRealThetaPhi[i]->GetXaxis()->SetTitle("Phi");
 		HSieveMomRealThetaPhi[i]->GetYaxis()->SetTitle("theta");
@@ -1422,7 +1504,6 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 						idx),500, -0.03, 0.03, 500, -0.045, 0.04);
 		HSieveRealThetaPhi[idx]->SetXTitle("Sieve Theta");
 		HSieveRealThetaPhi[idx]->SetYTitle("Sieve Phi");
-//        HSieveRealThetaPhi[idx]->SetMarkerSize(20);
 
 		HSieveCalcThetaPhi[idx] =
 				new TH2F(Form("Sieve_Foil_Measured_ThetaPhi%d", idx),
@@ -1449,8 +1530,6 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 		kEventID, kRealSieveX, kRealSieveY, kCalcSieveX, kCalcSieveY
 	};
 
-	Double_t SieveEventID[NFoils][NSieveCol][NSieveRow][5] = { { { { 0 } } } };
-
 	TH1F *CorrectedThetaResid[NSieveCol][NSieveRow];
 	TH1F *CorrectedPhiResid[NSieveCol][NSieveRow];
 	//initilize the theta and phi
@@ -1463,14 +1542,16 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 		}
 	}
 
-
+	// used for calculate the corrolation coefficient
+	//       kineID       col         row             event Array
+	std::vector<double_t> targThetaCorr[NSieveCol][NSieveRow];
+	std::vector<double_t> targPhiCorr[NSieveCol][NSieveRow];
 
 	FILE *checkSieveResidTxtio;
 	checkSieveResidTxtio=fopen(Form("%s/%s_SieveResidual.txt",resultSavePath.c_str(),__FUNCTION__),"w");
-	fprintf(checkSieveResidTxtio,Form("Col	Row	Measured_th	Read_th	Diff_th	Measured_ph	Read_ph	Diff_ph	focal_x	focal_th	focal_y	focal_ph\n"));
+	fprintf(checkSieveResidTxtio,Form("Col	Row	Measured_th	Read_th	Diff_th	Measured_ph	Read_ph	Diff_ph	focal_x	focal_th focal_y	focal_ph\n"));
 	for (UInt_t idx = 0; idx < fNRawData; idx++) {
 		const EventData &eventdata = fRawData[idx];
-
 
 		//TODO need to change to more efficent way to do that
 		const UInt_t FoilID = 0;
@@ -1479,9 +1560,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 		const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
 		UInt_t KineID = HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
 		if(!CutcutCut(Col,Row,KineID))continue;
-
 		assert(FoilID < NFoils); //array index check
-
 		const TVector3 SieveHoleCorrectionTCS = GetSieveHoleCorrectionTCS(
 				FoilID, Col, Row);
 
@@ -1489,13 +1568,11 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 		// also need to plot the residual of thecalculated and real theta and phi
 		// fill the real theta and phi
 
-		const Double_t RealTheta = eventdata.Data[kRealThMatrix];
+		const Double_t RealTheta = eventdata.Data[kRealThMatrix]; // real means the theoretical Calculations
 		const Double_t RealPhi = eventdata.Data[kRealPhi];
-//        HSieveRealThetaPhi[FoilID]->Fill(eventdata.Data[kRealTh],eventdata.Data[kRealPhi]);
 		HSieveRealThetaPhi[FoilID]->Fill(RealPhi, RealTheta);
 
-
-		const double_t CalcTheta = eventdata.Data[kCalcTh];
+		const double_t CalcTheta = eventdata.Data[kCalcTh];      // the matrix projected values with the focal plane measurements
 		const double_t CalcPhi = eventdata.Data[kCalcPh];
 		HSieveCalcThetaPhi[FoilID]->Fill(CalcPhi, CalcTheta);
 
@@ -1529,16 +1606,37 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 		CorrectedPhiResid[Col][Row]->Fill(phi - eventdata.Data[kRealPhi]);
 		}
 
-//        dX += ProjectionX - SieveHoleCorrectionTCS.X();
-//        dY += ProjectionY - SieveHoleCorrectionTCS.Y();
-//
-//        SieveEventID[FoilID][Col][Row][kEventID] = idx;
-//        SieveEventID[FoilID][Col][Row][kRealSieveX] = SieveHoleCorrectionTCS.X();
-//        SieveEventID[FoilID][Col][Row][kRealSieveY] = SieveHoleCorrectionTCS.Y();
-//        SieveEventID[FoilID][Col][Row][kCalcSieveX] = ProjectionX;
-//        SieveEventID[FoilID][Col][Row][kCalcSieveY] = ProjectionY;
 		fprintf(checkSieveResidTxtio,Form("%d	%d	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f	%1.5f\n",Col,Row,CalcTheta,RealTheta,CalcTheta-RealTheta,CalcPhi,RealPhi,CalcPhi-RealPhi,eventdata.Data[kX],eventdata.Data[kTh],eventdata.Data[kY],eventdata.Data[kPhi]));
+
+		//write the data to the data buffer and ready to save to the tree
+		tfileevtID = idx;
+		tfilesieveRowID = Row;
+		tfilesieveColID = Col;
+		tfileKineID = KineID;
+
+		tfilebpmX = eventdata.Data[kBeamX];
+		tfilebpmY = eventdata.Data[kBeamY];
+		tfilebpmZ = eventdata.Data[kBeamZ];
+
+		tfilefocalTh = eventdata.Data[kTh];
+		tfilefocalPh = eventdata.Data[kPhi];
+		tfilefocalX  = eventdata.Data[kX];
+		tfilefocalY  = eventdata.Data[kY];
+
+		tfiletargProjTh  =  CalcTheta; //projected value from the VDC measurement
+		tfiletargProjPh  = CalcPhi;
+
+		tfiletargCalcTh  = RealTheta; // theoretical value calculation from the hall coordination system
+		tfiletargCalcPh  = RealPhi;
+
+		tfiletargResidTh = CalcTheta - RealTheta;
+		tfiletargResidPh = CalcPhi - RealPhi;
+
+		tfileTree ->Fill();
+		targThetaCorr[Col][Row].push_back(CalcTheta);
+		targPhiCorr[Col][Row].push_back(CalcPhi);
 	}
+	tfileTree->Write();
 
 	DEBUG_INFO("CheckSieve", "Average : D_X = %f,\t D_Y = %f", dX / fNRawData,
 			dY / fNRawData);
@@ -1572,6 +1670,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 		line1->SetLineColor(3);
 		line1->Draw("same");
 	}
+	c1->Write();
 
 	TCanvas *c2 = new TCanvas("SieveCheck2", "SieveCheck2", 1800, 1100);
 	c2->Divide(3, 3);
@@ -1599,6 +1698,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 			line4->Draw("same");
 		}
 	}
+	c2->Write();
 	c2->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.c_str(),__FUNCTION__,c2->GetName()));
 
 	// used for get the optimize error
@@ -1613,6 +1713,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 	}
 
 	c3->Update();
+	c3->Write();
 
 	// generate the fit error
 	TCanvas *c4=new TCanvas("CThetaCorrectionError","CThetaCorrectionError",1800,1100);
@@ -1643,9 +1744,9 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 					sieveThetaResidualDistri->SetBinError(col*NSieveRow+row+1,error_temp);
 
 	//				sieveThetaResidualDistri->SetBinError(col*NSieveRow+row+1,CorrectedThetaResid[col][row]->GetRMS());
-	//				   int bin1 = CorrectedThetaResid[col][row]->FindFirstBinAbove(CorrectedThetaResid[col][row]->GetMaximum()/2);
-	//				   int bin2 = CorrectedThetaResid[col][row]->FindLastBinAbove(CorrectedThetaResid[col][row]->GetMaximum()/2);
-	//				   double fwhm = CorrectedThetaResid[col][row]->GetBinCenter(bin2) - CorrectedThetaResid[col][row]->GetBinCenter(bin1);
+	//				int bin1 = CorrectedThetaResid[col][row]->FindFirstBinAbove(CorrectedThetaResid[col][row]->GetMaximum()/2);
+	//				int bin2 = CorrectedThetaResid[col][row]->FindLastBinAbove(CorrectedThetaResid[col][row]->GetMaximum()/2);
+	//				double fwhm = CorrectedThetaResid[col][row]->GetBinCenter(bin2) - CorrectedThetaResid[col][row]->GetBinCenter(bin1);
 					double errortheta_temp=TMath::ATan(CorrectedThetaResid[col][row]->GetMean());
 					thetaErrorTable[col][row]=errortheta_temp;//;TMath::ATan(CorrectedThetaResid[col][row]->GetRMS())*1000.0/180.0;
 
@@ -1656,6 +1757,8 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 					thetaErrorSigmaTable[col][row]=errorthetaRMS_temp;//;TMath::ATan(CorrectedThetaResid[col][row]->GetRMS())*1000.0/180.0;
 
 				}
+				// clean the buffer
+				CorrectedThetaResid[col][row]->Delete();
 			}
 		}
 	c4->cd(1);
@@ -1666,7 +1769,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 
 	sieveThetaResidualDistri->SetLineWidth(2);
 	sieveThetaResidualDistri->SetMarkerStyle(20);
-//	sieveThetaResidualDistri->SetMarkerSize(2);
+
 	sieveThetaResidualDistri->Draw("E1");
 
 	TLine *line1=new TLine(0,0,100,0);
@@ -1689,9 +1792,6 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 	Thetatext->Draw("same");
 	c4->Update();
 
-//	TCanvas *c5=new TCanvas("CPhiCorrectionError","CPhiCorrectionError",1800,1100);
-//	c5->Draw();
-
 	TH1F *sievePhiResidualDistri=new TH1F("SievePhiResiduals","Sieve #Phi' Residuals",NSieveCol*NSieveRow+10,0,NSieveCol*NSieveRow+10);
 	sievePhiResidualDistri->GetYaxis()->SetRangeUser(-0.003,0.003);
 	sievePhiResidualDistri->GetXaxis()->SetTitle("SieveHoleID");
@@ -1711,7 +1811,6 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 					double error_temp = CorrectedPhiResid[col][row]->GetRMS()*0.5;
 					if (error_temp < 0.0001) error_temp = 0.0003;
 					sievePhiResidualDistri->SetBinError(col*NSieveRow+row+1,error_temp);
-//					sievePhiResidualDistri->SetBinError(col*NSieveRow+row+1,CorrectedPhiResid[col][row]->GetRMS());
 
 					double errorphi_temp=TMath::ATan(CorrectedPhiResid[col][row]->GetMean());
 					PhiErrorTable[col][row]=errorphi_temp;
@@ -1723,6 +1822,8 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 					PhiErrorSigmaTable[col][row]=errorphiSigma_temp;
 
 				}
+				CorrectedPhiResid[col][row]->Delete();
+
 			}
 		}
 	c4->cd(2);
@@ -1744,31 +1845,51 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 	}
 
 	c4->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.data(),__FUNCTION__,c4->GetName()));
+	c4->Write();
 
 	std::cout<<"\nTheta\n"<<std::endl;
 	std::cout<<LatexTableGenerator(thetaErrorTable).c_str();
 
-//	std::cout<<"\n\n Residual Mean with Sigma"<<std::endl;
-//	std::cout<<LatexTableGenerator(thetaErrorTable,thetaErrorSigmaTable).c_str();
-
 	std::cout<<"\nPhi\n"<<std::endl;
 	std::cout<<LatexTableGenerator(PhiErrorTable).c_str();
+
+	//calculate the corrolation coefficiency
+	TCanvas *corrolationCanv=new TCanvas("corrcoeff","corrcoeff",1800,1100);
+	corrolationCanv->Draw();
+	corrolationCanv->cd();
+	TH1F *corrolationCoeffh=new TH1F("correlation coefficient","correlation coefficient",NSieveCol*NSieveRow+10,0,NSieveCol*NSieveRow+10);
+	corrolationCoeffh->GetYaxis()->SetRangeUser(-1,1);
+	for(int col=0; col< NSieveCol ; col++){
+			for(int row=0; row<NSieveRow; row++){
+				if(targThetaCorr[col][row].size()>0){
+					Int_t binIndexID = col*NSieveRow+row;
+					corrolationCoeffh->Fill(binIndexID,correlationCoefficient(targThetaCorr[col][row],targPhiCorr[col][row]));
+					corrolationCoeffh->SetBinError(col*NSieveRow+row+1,0.0003);
+				}
+			}
+	}
+	corrolationCoeffh->GetXaxis()->SetTitle("SieveHoleID");
+	corrolationCoeffh->GetYaxis()->SetTitle("Correlation Coefficient");
+
+	corrolationCoeffh->SetLineWidth(2);
+	corrolationCoeffh->SetMarkerStyle(20);
+	corrolationCoeffh->Draw("E1");
+	corrolationCanv->Update();
+	corrolationCanv->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.data(),__FUNCTION__,corrolationCanv->GetName()));
+	corrolationCanv->Write();
+// latex table generator
+//	std::cout<<"\n\n Residual Mean with Sigma"<<std::endl;
+//	std::cout<<LatexTableGenerator(thetaErrorTable,thetaErrorSigmaTable).c_str();
 //	std::cout<<"\n\n Residual Mean with Sigma"<<std::endl;
 //	std::cout<<LatexTableGenerator(PhiErrorTable,PhiErrorSigmaTable).c_str();
-
 //	std::cout<<"\n\n theta sigma table"<<std::endl;
-//
 //	std::cout<<LatexTableGenerator(thetaErrorSigmaTable).c_str();
-//
 //	std::cout<<"\n\n theta sigma table"<<std::endl;
-//
 //	std::cout<<LatexTableGenerator(PhiErrorSigmaTable).c_str();
 
-
+	tfileReportIO->Write();
+	tfileReportIO->Close();
 	return c2;
-
-
-	// latex table generator
 
 }
 

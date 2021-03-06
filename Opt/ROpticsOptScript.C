@@ -612,9 +612,20 @@ void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TStri
 					if (!gSystem->AccessPathName(testfilename.Data()))
 					{
 							thetaPhiTestSource=testfilename.Data();
-							AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
+							AutoDoMinTP(SourceDataBase, DestDataBase, 1000,doFit);
 						    std::cout<<thetaPhiTestSource.Data()<<std::endl;
 					}
+				}
+
+				// run for the lead target check 
+				{
+					TString testfilename=Form("/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_LHRS/OptData/largeDataset/Sieve._2322_p4.f51_reform");
+                                	if (!gSystem->AccessPathName(testfilename.Data()))
+                                        {
+                                                        thetaPhiTestSource=testfilename.Data();
+                                                        AutoDoMinTP(SourceDataBase, DestDataBase, 100000,doFit);
+                                                    std::cout<<thetaPhiTestSource.Data()<<std::endl;
+                                        }
 				}
 	        }
         }

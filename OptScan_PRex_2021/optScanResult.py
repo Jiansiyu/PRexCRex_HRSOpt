@@ -228,7 +228,7 @@ class OptScannerResult(object):
                 os.path.join(item, "Sieve._2244_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
                 os.path.join(item, "Sieve._2245_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg")
             ]
-            self.addimages(pdf=pdf,fileList=fileList,item=item)
+            # self.addimages(pdf=pdf,fileList=fileList,item=item)
 
             # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve.Full_LargeDataSet.f51/CheckSieve_SieveCheck2.jpg"),item=item)
             # self.addimage(pdf=pdf, file1=os.path.join(item, "Sieve._2239_p4.f51_reform/CheckSieve_SieveCheck2.jpg"))
@@ -243,8 +243,7 @@ class OptScannerResult(object):
                 os.path.join(item, "Sieve._2245_p4.f51_reform/CheckSieve_SieveCheck2.jpg"),
                 os.path.join(item, "Sieve._2244_p4.f51_reform/CheckSieve_SieveCheck2.jpg")
             ]
-            # self.addimages_3(pdf=pdf,fileList=fileList1,item=item)
-
+            self.addimages_3(pdf=pdf,fileList=fileList1,item=item)
 
             # fileList = [
             #     os.path.join(item, "Sieve._2241_p4.f51_reform/CheckSieve_CThetaCorrectionError.jpg"),
