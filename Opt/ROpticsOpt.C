@@ -1397,9 +1397,11 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 	TTree  *tfileTree = new TTree("OptRes","PRex CRex Sieve Theta Phi Optimization Result");
 
 	int tfileevtID;
+	int tfileCutID;
 	int tfilesieveRowID;
 	int tfilesieveColID;
 	int tfileKineID;
+
 
 	double tfilebpmX;
 	double tfilebpmY;
@@ -1427,6 +1429,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 
 	// write the data
 	tfileTree ->Branch("evtID",&tfileevtID,"evtID/I");
+	tfileTree ->Branch("CutID",&tfileCutID,"CutID/I");
 	tfileTree ->Branch("SieveRowID",&tfilesieveRowID,"SieveRowID/I");
 	tfileTree ->Branch("SieveColID",&tfilesieveColID,"SieveColID/I");
 	tfileTree ->Branch("KineID",&tfileKineID,"KineID/I");
@@ -1610,6 +1613,7 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID=-1,std::string resultSavePath=
 
 		//write the data to the data buffer and ready to save to the tree
 		tfileevtID = idx;
+		tfileCutID = eventdata.Data[kCutID];
 		tfilesieveRowID = Row;
 		tfilesieveColID = Col;
 		tfileKineID = KineID;
