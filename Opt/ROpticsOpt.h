@@ -227,7 +227,7 @@ public:
     std::vector<THaMatrixElement> fPMatrixElems;
     std::vector<THaMatrixElement> fPTAMatrixElems; // involves abs(theta_fp)
     std::vector<THaMatrixElement> fYMatrixElems;
-    std::vector<THaMatrixElement> fYTAMatrixElems; // involves abs(theta_fp)
+    std::vector<THaMatrixElement> fYTAMatrixElems; // involves abs(theta_fp)  //TODO it does not seems like the term is used in the calculation
     std::vector<THaMatrixElement> fFPMatrixElems; // matrix elements used in
 
     std::vector<THaMatrixElement> fRMatrixElems; // Path-length corrections (meters)

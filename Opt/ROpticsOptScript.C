@@ -608,11 +608,11 @@ void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TStri
 				std::map<UInt_t,TString> thetaPhiTestList;
 				UInt_t runDp0List[]={2239,2240,2241,2244,2245,2257,2256};//
 				for(int i =0; i < (sizeof(runDp0List)/sizeof(UInt_t)); i ++){
-					TString testfilename=Form("/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_LHRS/OptData/largeDataset_DetCoord/Sieve._%d_p4.f51_reform",runDp0List[i]);
+					TString testfilename=Form("/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_LHRS/OptData/largeDataset/Sieve._%d_p4.f51_reform",runDp0List[i]);
 					if (!gSystem->AccessPathName(testfilename.Data()))
 					{
 							thetaPhiTestSource=testfilename.Data();
-							AutoDoMinTP(SourceDataBase, DestDataBase, 100000,doFit);
+							AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
 						    std::cout<<thetaPhiTestSource.Data()<<std::endl;
 					}
 				}
@@ -623,7 +623,7 @@ void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TStri
                                 	if (!gSystem->AccessPathName(testfilename.Data()))
                                         {
                                                         thetaPhiTestSource=testfilename.Data();
-                                                        AutoDoMinTP(SourceDataBase, DestDataBase, 100000,doFit);
+                                                        AutoDoMinTP(SourceDataBase, DestDataBase, 10000,doFit);
                                                     std::cout<<thetaPhiTestSource.Data()<<std::endl;
                                         }
 				}

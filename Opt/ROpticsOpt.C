@@ -1158,6 +1158,8 @@ const TVector3 ROpticsOpt::GetSieveHoleTCS_PRex(TString hrs, UInt_t Col, UInt_t 
     return TVector3(PRex_x,PRex_y,ZPos);
 }
 
+//__________________________________________________________________________________________
+//TODO check how it is works
 const TVector3 ROpticsOpt::GetSieveHoleCorrectionTCS(UInt_t nfoil, UInt_t Col, UInt_t Row)
 {
     assert(nfoil <NFoils);
@@ -2563,20 +2565,15 @@ Double_t ROpticsOpt::SumSquareDPhi()
 
     return rmsphi;
 }
-
+//__________________________________________________________________________
+// calculate the therotical Y values
 void ROpticsOpt::PrepareVertex(void)
 {
     // calculate kRealTgY, kRealReactZ
 
     for (UInt_t idx = 0; idx < fNRawData; idx++) {
         EventData &eventdata = fRawData[idx];
-
-//        UInt_t res = (UInt_t) eventdata.Data[kCutID];
-//        res = res % (NSieveRow * NSieveCol * NFoils);
         const UInt_t FoilID =0;// res / (NSieveRow * NSieveCol); //starting 0!
-//        res = res % (NSieveRow * NSieveCol);
-//        const UInt_t Col = res / (NSieveRow); //starting 0!
-//        const UInt_t Row = res % (NSieveRow); //starting 0!
 
     	const UInt_t KineID = HRSOpt::GetMomID((UInt_t) eventdata.Data[kCutID]);
     	const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
@@ -2585,13 +2582,17 @@ void ROpticsOpt::PrepareVertex(void)
 
 
         assert(FoilID < NFoils); //check array index size
+        //TODO need to check how it is works, maybe need to change to the corrected TCS
+        // need to check how the beam position goes into the calculation
+//        const TVector3 SieveHoleCorrectionTCS = GetSieveHoleCorrectionTCS(FoilID, Col, Row);
+        const TVector3 SieveHoleCorrectionTCS = GetSieveHoleTCS_PRex("R",Col,Row);
 
-        const TVector3 SieveHoleCorrectionTCS = GetSieveHoleCorrectionTCS(FoilID, Col, Row);
         eventdata.Data[kSieveX] = SieveHoleCorrectionTCS.X();
         eventdata.Data[kSieveY] = SieveHoleCorrectionTCS.Y();
         eventdata.Data[kSieveZ] = SieveHoleCorrectionTCS.Z();
 
-	TVector3 BeamSpotHCS(eventdata.Data[kBeamX], eventdata.Data[kBeamY], targetfoils[FoilID]);
+        //TODO, maybe needto change the targefoild position to match the survey
+	    TVector3 BeamSpotHCS(eventdata.Data[kBeamX], eventdata.Data[kBeamY], targetfoils[FoilID]);
 	//	TVector3 BeamSpotHCS(BeamX_average, BeamY_average , targetfoils[FoilID]);
         eventdata.Data[kBeamZ] = targetfoils[FoilID];
         TVector3 BeamSpotTCS = fTCSInHCS.Inverse()*(BeamSpotHCS - fPointingOffset);
@@ -2601,9 +2602,10 @@ void ROpticsOpt::PrepareVertex(void)
         Double_t Real_Tg_Phi = MomDirectionTCS.Y() / MomDirectionTCS.Z();
 
         Double_t Real_Tg_Y = BeamSpotTCS.Y() + Real_Tg_Phi * (0 - BeamSpotTCS.Z());
-	//Real_Tg_Y is in TCS, corresponding Tg_X == 0
+	    //Real_Tg_Y is in TCS, corresponding Tg_X == 0
 
-	eventdata.Data[kRealTgY] = Real_Tg_Y;
+	    //TODO need to check the Y again
+  	    eventdata.Data[kRealTgY] = Real_Tg_Y;
         eventdata.Data[kRealReactZ] = targetfoils[FoilID];
 
         DEBUG_MASSINFO("PrepareVertex", "Real_Tg_Y = %f,\t Real_ReactZ = %f", Real_Tg_Y, eventdata.Data[kRealReactZ]);
@@ -2964,18 +2966,18 @@ Double_t ROpticsOpt::SumSquareDTgY(void)
         // CalcMatrix(x_fp, fDMatrixElems);
         // CalcMatrix(x_fp, fTMatrixElems);
         CalcMatrix(x_fp, fYMatrixElems);
-	CalcMatrix(x_fp, fYTAMatrixElems);
+	    CalcMatrix(x_fp, fYTAMatrixElems);
         // CalcMatrix(x_fp, fPMatrixElems);
         // CalcMatrix(x_fp, fPTAMatrixElems);
 
         // calculate the coordinates at the target
         tg_y = CalcTargetVar(fYMatrixElems, powers) + CalcTargetVar(fYTAMatrixElems, powers);
 
-	UInt_t res = (UInt_t) eventdata.Data[kCutID];
+	    UInt_t res = (UInt_t) eventdata.Data[kCutID];
         res = res % (NSieveRow * NSieveCol * NFoils);
         const UInt_t FoilID = res / (NSieveRow * NSieveCol); //starting 0!
 
-        const Double_t ArbitaryVertexShift = fArbitaryVertexShift[FoilID] * (-TMath::Sin(HRSAngle));
+        const Double_t ArbitaryVertexShift = 0.0;//fArbitaryVertexShift[FoilID] * (-TMath::Sin(HRSAngle));  //TODO need to check the arbitary shift
 
         dtg_y += tg_y - eventdata.Data[kRealTgY] + ArbitaryVertexShift;
         dtg_y_rms += (tg_y - eventdata.Data[kRealTgY] + ArbitaryVertexShift)*(tg_y - eventdata.Data[kRealTgY] + ArbitaryVertexShift);
