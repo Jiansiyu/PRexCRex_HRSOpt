@@ -32,8 +32,8 @@ const Double_t LH2_Thickness_Side = 0.*1.e-3*0.0;  //Al 7075, aluminum thickness
 const Double_t LH2_Thickness_Tip = 0.*1.e-3*0.0;  //Al 7075, aluminum thickness for tip
 
 // MissPoint* are in HCS
-const Double_t MissPointZ =0.0;//
-const Double_t MissPointY = 0.0;//
+const Double_t MissPointZ =0.0;    // TODO need to check the survey again
+const Double_t MissPointY = 0.0;   //TODO need to check the survey again
 
 
 const Double_t SieveRadius = 0.157*25.4/2.0*1e-3*0.0;

@@ -50,7 +50,7 @@ UInt_t MaxDataPerGroup = 100;
 
 
 
-TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_LHRS_mean/thetaphi/Sieve.Full_thetaphi.f51";
+TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_LHRS/OptData/thetaphi/Sieve.average.f51";
 
 
 // theta phi Y data set Sieve.test.average.thetaphi.f51
@@ -359,7 +359,7 @@ void DoMinY(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGroup
 
     opt->SumSquareDTgY();
 
-    TCanvas * c1 = opt->CheckVertex();
+    TCanvas * c1 = opt->CheckVertex("../junk");
     c1->Print(DestDataBase + ".Vertex.Opt.png", "png");
 
 #if y_optimize

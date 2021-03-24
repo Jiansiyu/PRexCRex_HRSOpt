@@ -177,7 +177,7 @@ public:
 
     Double_t fArbitaryVertexShift[100]; // compensate bias due to event selections, array of [FoilID]
     void PrepareVertex(void);
-    TCanvas* CheckVertex(void);
+    TCanvas* CheckVertex(std::string resultSavePath);
     Double_t SumSquareDTgY();
 
     Double_t fArbitaryDpKinShift[100]; // compensate bias due to dp event selections, array of [KineID]
