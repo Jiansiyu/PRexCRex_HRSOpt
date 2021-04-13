@@ -357,7 +357,7 @@ void DoMinY(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGroup
     opt->SaveDataBase(DestDataBase);
     opt->SaveNewDataBase(Form("%s",DestDataBase.Data()));
 
-    opt->SumSquareDTgY();
+    opt->SumSquareDTgY();   // update the value with the current database
 
     TCanvas * c1 = opt->CheckVertex("../junk");
     c1->Print(DestDataBase + ".Vertex.Opt.png", "png");
@@ -366,6 +366,74 @@ void DoMinY(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGroup
     delete fitter;
 #endif
 }
+
+
+void AutoDoMinY(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGroup = 100, Bool_t doFit=true)
+{
+    // minimize with root
+    assert(opt);
+    assert(opt->fCurrentMatrixElems);
+
+    opt->LoadDataBase(SourceDataBase);
+    NPara = opt->Matrix2Array(OldMatrixArray, freepara);
+    cout<<"NPara:"<<NPara<<endl;
+    opt->LoadRawData(DataSource, (UInt_t) - 1, MaxDataPerGroup);
+    opt->PrepareVertex();
+    opt->Print();
+    if (doFit){
+        TVirtualFitter::SetDefaultFitter("Minuit"); //default is Minuit
+        TVirtualFitter *fitter = TVirtualFitter::Fitter(NULL, NPara);
+        fitter->SetFCN(myfcn);
+
+        for (UInt_t i = 0; i < NPara; i++) {
+            Double_t absold = TMath::Abs(OldMatrixArray[i]);
+            Double_t abslimit = absold > 0 ? absold * 10000 : 10000;
+
+            fitter->SetParameter(i, Form("TMatrix%03d", i), OldMatrixArray[i], absold > 0 ? absold / 10 : 0.1, -abslimit, abslimit);
+            // fitter->SetParameter(1,"asdf",0,0,0,0);
+
+            if (!freepara[i]) fitter->FixParameter(i);
+        }
+
+        fitter->Print();
+        cout << fitter->GetNumberFreeParameters() << " Free  / " << fitter->GetNumberTotalParameters() << " Parameters\n";
+        //    cout<<"NPara:"<<NPara<<endl;
+
+        assert(opt->fNRawData > 0);
+        assert(NPara > 0);
+        assert(fitter->GetNumberFreeParameters() > 0);
+        assert(fitter->GetNumberTotalParameters() == NPara);
+
+        Double_t arglist[1] = {0};
+        fitter->ExecuteCommand("MIGRAD", arglist, 0);
+        opt->Print();
+        opt->SaveDataBase(DestDataBase);
+        opt->SaveNewDataBase(Form("%s",DestDataBase.Data()));
+
+        opt->SumSquareDTgY();   // update the value with the current database
+        TString SourceDataBasePath=getFilePath(DestDataBase.Data());
+
+        TCanvas * c1 = opt->CheckVertex(SourceDataBasePath.Data());
+        //c1->Print(DestDataBase + ".Vertex.Opt.png", "png");
+        delete fitter;
+    }else {
+
+        TString SourceDataBasePath=getFilePath(DestDataBase.Data());
+        TString savefolder=Form("%s/%s",SourceDataBasePath.Data(),basename(DataSource.Data()));
+        mkdir(savefolder.Data(),0777);
+
+        opt->Print();
+        opt->SaveDataBase(DestDataBase);
+        opt->SaveNewDataBase(Form("%s", DestDataBase.Data()));
+
+        opt->SumSquareDTgY();   // update the value with the current database
+
+        TCanvas *c1 = opt->CheckVertex(savefolder.Data());
+        //c1->Print(DestDataBase + ".Vertex.Opt.png", "png");
+    }
+}
+
+
 
 void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGroup = 200)
 {
@@ -631,11 +699,31 @@ void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TStri
         }
         break;
     case 3:
-        cout << "Optimizing for Y\n";
-        myfcn = myfcn3;
-        opt->fCurrentMatrixElems = &(opt->fYMatrixElems);
-        DoMinY(SourceDataBase, DestDataBase, 200000);
-        break;
+        {
+            cout << "Optimizing for Y\n";
+            myfcn = myfcn3;
+            opt->fCurrentMatrixElems = &(opt->fYMatrixElems);
+            if (doFit){
+                AutoDoMinY(SourceDataBase, DestDataBase, 200000, true);
+            }else{
+              // load the testset
+                std::map<UInt_t,TString> thetaPhiTestList;
+                UInt_t runDp0List[]={2239,2240,2241,2244,2245,2257,2256};//
+                for(int i =0; i < (sizeof(runDp0List)/sizeof(UInt_t)); i ++){
+                    TString testfilename=Form("/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_LHRS/OptData/thetaphi_100evt/Sieve._%d_p4.f51_reform",runDp0List[i]);
+                    if (!gSystem->AccessPathName(testfilename.Data()))
+                    {
+                        DataSource=testfilename.Data();
+                        AutoDoMinY(SourceDataBase, DestDataBase, 200000, false);
+                        std::cout<<DataSource.Data()<<std::endl;
+                    }
+                }
+
+
+            }
+            //DoMinY(SourceDataBase, DestDataBase, 200000);
+            break;
+        }
     case 4:
 
         cout << "Optimizing for Delta\n";

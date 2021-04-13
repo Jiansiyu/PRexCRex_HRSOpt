@@ -93,7 +93,12 @@ Bool_t CutcutCut(UInt_t Col, UInt_t Row, UInt_t KineID = -1) {
 		return true;
 	}else{
 		return false;
-	}*/
+	}
+    if(NSieveCol == 7){
+        return true;
+    } else{
+        return false;
+    }*/
 
 	//remove the cut on the edge
 
@@ -2561,7 +2566,7 @@ Double_t ROpticsOpt::SumSquareDPhi()
     }
 
     // DEBUG_INFO("SumSquareDPhi", "#%d : dphi = %f,\t rmsphi = %f", NCall, dphi / fNRawData, TMath::Sqrt(rmsphi / fNRawData));
-    printf("SumSquareDPhi: #%d : dphi = %f,\t rmsphi = %f\n", NCall, dphi / fNRawData, TMath::Sqrt(rmsphi / fNRawData));
+    printf("SumSquareDPhi: #%d : dphi = %f,\t rmsphi = %f\n", NCall, dphi , (rmsphi ));
 
     return rmsphi;
 }
@@ -2619,6 +2624,195 @@ void ROpticsOpt::PrepareVertex(void)
 
 TCanvas * ROpticsOpt::CheckVertex(std::string resultSavePath="./")
 {
+    // Visualize Vertex spectrum
+    gStyle->SetOptTitle(0);
+
+    DEBUG_INFO("CheckVertex", "Entry Point");
+
+    const UInt_t nplot = NFoils;
+    TH1D * HTgY[NFoils] = {0};
+    TH1D * HTgYReal[NFoils] = {0};
+    TH1D *HTgYHole[NFoils][NSieveCol][NSieveRow] = {{{0}}};
+    TH1D *HTgYHoleReal[NFoils][NSieveCol][NSieveRow] = {{{0}}};
+    UInt_t EventHole[NFoils][NSieveCol][NSieveRow] = {{{0}}};
+    const Double_t YRange = 10*10e-3;
+
+    for (UInt_t idx = 0; idx < NFoils; idx++) {
+        HTgY[idx] = new TH1D(Form("Target_Y%d", idx), Form("Target Y for Foil Target #%d", idx), 500, -YRange, YRange);
+        HTgYReal[idx] = new TH1D(Form("Target_Y%d", idx), Form("Target Y for Foil Target #%d", idx), 500, -YRange, YRange);
+
+        HTgY[idx]->SetXTitle("Target Y [m]");
+        assert(HTgY[idx]); // assure memory allocation
+
+        for(UInt_t ncol =0; ncol<NSieveCol; ncol++){
+            for(UInt_t nrow=0; nrow<NSieveRow; nrow++){
+                HTgYHole[idx][ncol][nrow] = new TH1D(Form("TgY%d_%d_%d", idx, ncol, nrow), Form("TgY%d_%d_%d", idx, ncol, nrow), 400, -YRange, YRange);
+                HTgYHoleReal[idx][ncol][nrow] = new TH1D(Form("TgY%d_%d_%d", idx, ncol, nrow),Form("TgY%d_%d_%d", idx, ncol, nrow) , 400, -YRange, YRange);
+                assert(HTgYHole[idx][ncol][nrow]);
+                assert(HTgYHoleReal[idx][ncol][nrow]);
+            }
+        }
+    }
+
+    Double_t dtg_y = 0;
+    Double_t dtg_y_rms = 0;
+
+    for (UInt_t idx = 0; idx < fNRawData; idx++) {
+        EventData &eventdata = fRawData[idx];
+
+//        UInt_t res = (UInt_t) eventdata.Data[kCutID];
+//        // const UInt_t KineID = res / (NSieveRow * NSieveCol * NFoils); //starting 0!
+//        res = res % (NSieveRow * NSieveCol * NFoils);
+//        const UInt_t FoilID = res / (NSieveRow * NSieveCol); //starting 0!
+//        res = res % (NSieveRow * NSieveCol);
+//        const UInt_t Col = res / (NSieveRow); //starting 0!
+//        const UInt_t Row = res % (NSieveRow); //starting 0!
+        const UInt_t FoilID =0;
+        const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
+        const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
+
+
+        HTgY[FoilID]->Fill(eventdata.Data[kCalcTgY]);
+        HTgYReal[FoilID]->Fill(eventdata.Data[kRealTgY]);
+
+        HTgYHole[FoilID][Col][Row]->Fill(eventdata.Data[kCalcTgY]);
+        HTgYHoleReal[FoilID][Col][Row]->Fill(eventdata.Data[kRealTgY]);
+        EventHole[FoilID][Col][Row]++;
+
+        dtg_y += eventdata.Data[kCalcTgY] - eventdata.Data[kRealTgY];
+        dtg_y_rms += (eventdata.Data[kCalcTgY] - eventdata.Data[kRealTgY])*(eventdata.Data[kCalcTgY] - eventdata.Data[kRealTgY]);
+    }
+
+    DEBUG_INFO("CheckTgY", "dtg_v = %f,\t dtg_v_rms = %f", dtg_y / fNRawData, TMath::Sqrt(dtg_y_rms / fNRawData));
+
+    TCanvas * c1 = new TCanvas("CheckTgY", "Target Y Check", 1000, 900);;
+
+    Double_t YMean[NFoils]={0};
+    Double_t MaxPlot = 2000.0;
+    Double_t DefResolution = 0.5e-3;
+    Double_t FitRangeMultiply = 6;
+    Double_t ymean =0;
+    for (UInt_t idx = 0; idx < nplot; idx++) {
+        // UInt_t FoilID = idx;
+        c1->cd(idx + 1);
+        assert(HTgY[idx]);
+
+        HTgY[idx]->Draw();
+        HTgY[idx]->GetXaxis()->SetLabelSize(0.05);
+        HTgY[idx]->GetXaxis()->SetTitleSize(0.05);
+        HTgY[idx]->GetYaxis()->SetLabelSize(0.05);
+        HTgY[idx]->GetXaxis()->SetRangeUser(YMean[idx]-0.015,YMean[idx]+0.015 );
+
+        YMean[idx] = HTgY[idx]->GetMean();
+        HTgYReal[idx]->Draw("same");
+        HTgYReal[idx]->GetXaxis()->SetLabelSize(0.05);
+        HTgYReal[idx]->GetXaxis()->SetTitleSize(0.05);
+        HTgYReal[idx]->GetYaxis()->SetLabelSize(0.05);
+
+        HTgYReal[idx]->GetXaxis()->SetRangeUser(YMean[idx]-0.015,YMean[idx]+0.015 );
+        HTgYReal[idx]->SetLineColor(kGreen);
+
+        ymean = HTgY[idx]->GetMean();
+
+
+        TString FitFunc = Form("YtPeak%d", idx);
+        TF1 *f = new TF1(FitFunc, "gaus", ymean - DefResolution*FitRangeMultiply, ymean + DefResolution * FitRangeMultiply);
+        f->SetParameter(1, ymean);
+        HTgY[idx] -> Fit(FitFunc, "R");
+        f->SetLineColor(2);
+        f->Draw("SAME");
+
+        ymean = HTgYReal[idx]->GetMean();
+        cout<<"ymean:"<<ymean<<endl;
+        c1->cd(idx+1)->Update();
+        MaxPlot = c1->cd(idx + 1) ->GetUymax();
+        TLine *l = new TLine(ymean, 0, ymean, MaxPlot);
+        l->SetLineColor(kBlue);
+        l->SetLineWidth(2);
+        l->Draw();
+
+        TPaveText *t1 = new TPaveText(0.55,0.6,0.9,0.82,"NDC");
+        t1->AddText(Form("\\Delta = %2.1f mm", 1000 * (f->GetParameter(1) - ymean)));
+        t1->AddText(Form("\\sigma = %2.1f mm", 1000 * (f->GetParameter(2))));
+        t1->SetShadowColor(0);
+        t1->SetFillColor(0);
+        t1->Draw("same");
+    }
+    c1->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.c_str(),__FUNCTION__ ,c1->GetName()));
+
+
+//    ///////////////////////////check z direction
+//    TH1D * HTgZ[NFoils] = {0};         // z position from calculated y, calculated y is from matrix
+//    TH1D * HTgZReal[NFoils] = {0};     //real z postion
+//    const Double_t ZRange = 15*10e-3;
+//    TH1F* Check_Tong=new TH1F("Check_Tong","React",600,-0.12,0.12);
+//    TH1F* Check_Tong2=new TH1F("Check_Tong","React",600,-0.12,0.12);
+//    Check_Tong2->SetLineColor(2);
+//    Check_Tong2->SetFillColor(2);
+//    Check_Tong->SetLineWidth(2);
+//
+//    TCanvas * c_Tong=new TCanvas("c_Tong", "c_Tong", 1800, 1350);
+//
+//
+//    Check_Tong->SetXTitle("Target Z [m]");
+//    for (UInt_t idx = 0; idx < NFoils; idx++) {
+//        HTgZ[idx] = new TH1D(Form("Target_Z%d", idx), Form("Target Z for Foil Target #%d", idx), 500, -ZRange, ZRange);
+//        HTgZReal[idx] = new TH1D(Form("Target_Z%d", idx), Form("Target Z for Foil Target #%d", idx), 500, -ZRange, ZRange);
+//
+//        HTgZ[idx]->SetXTitle("Target Z [m]");
+//        assert(HTgZ[idx]); // assure memory allocation
+//        assert(HTgZReal[idx]);
+//    }
+//
+//    Double_t dtg_z = 0;
+//    Double_t dtg_z_rms = 0;
+//
+//    for (UInt_t idx = 0; idx < fNRawData; idx++) {
+//        EventData &eventdata = fRawData[idx];
+//
+//        const UInt_t FoilID =0;
+//
+//        const UInt_t Col = HRSOpt::GetColID((UInt_t) eventdata.Data[kCutID]);
+//        const UInt_t Row = HRSOpt::GetRowID((UInt_t) eventdata.Data[kCutID]);
+//
+//
+//        //calculate ReactZ with CalcTgY
+//        eventdata.Data[kRealReactZ] = targetfoils[FoilID];
+//        Double_t CalcReacZ =0;
+//        const TVector3 SieveHoleCorrectionTCS = GetSieveHoleCorrectionTCS(FoilID, Col, Row);
+//        eventdata.Data[kSieveX] = SieveHoleCorrectionTCS.X();
+//        eventdata.Data[kSieveY] = SieveHoleCorrectionTCS.Y();
+//        eventdata.Data[kSieveZ] = SieveHoleCorrectionTCS.Z();
+//
+//        TVector3 BeamSpotHCS(eventdata.Data[kBeamX], eventdata.Data[kBeamY], targetfoils[FoilID]);
+//        // 	TVector3 BeamSpotHCS(BeamX_average, BeamY_average, targetfoils[FoilID]);
+//        eventdata.Data[kBeamZ] = targetfoils[FoilID];
+//        TVector3 BeamSpotTCS = fTCSInHCS.Inverse()*(BeamSpotHCS - fPointingOffset);
+//
+//        const TVector3 MomDirectionTCS = SieveHoleCorrectionTCS - BeamSpotTCS;
+//
+//        Double_t Real_Tg_Phi = MomDirectionTCS.Y() / MomDirectionTCS.Z();
+//
+//        //        Double_t Real_Tg_Y = BeamSpotTCS.Y() + Real_Tg_Phi * (0 - BeamSpotTCS.Z());
+//        const Int_t a = (HRSAngle > 0) ? 1 : -1;
+//        CalcReacZ = - ( eventdata.Data[kCalcTgY] -a*MissPointZ)*TMath::Cos(TMath::ATan(Real_Tg_Phi))/TMath::Sin(HRSAngle + TMath::ATan(Real_Tg_Phi)) + BeamSpotHCS.X()*TMath::Cos(HRSAngle+TMath::ATan(Real_Tg_Phi))/TMath::Sin(HRSAngle+TMath::ATan(Real_Tg_Phi));
+//        //for right arm,eventdata.Data[kCalcTgY] + MissPointZ, for left arm,eventdata.Data[kCalcTgY] - MissPointZ
+//
+//
+//        HTgZ[FoilID]->Fill(CalcReacZ);
+//        HTgZReal[FoilID]->Fill(eventdata.Data[kRealReactZ]);
+//        Check_Tong->Fill(CalcReacZ);
+//        Check_Tong2->Fill(eventdata.Data[kRealReactZ]);
+//        dtg_z += CalcReacZ - eventdata.Data[kRealReactZ];
+//        dtg_z_rms += (CalcReacZ - eventdata.Data[kRealReactZ])*(CalcReacZ - eventdata.Data[kRealReactZ]);
+//    }
+//    DEBUG_INFO("CheckTgZ", "dtg_z = %f,\t dtg_z_rms = %f", dtg_z / fNRawData, TMath::Sqrt(dtg_z_rms / fNRawData));
+
+    return c1;
+}
+/*
+TCanvas * ROpticsOpt::CheckVertex(std::string resultSavePath="./")
+{
     TFile *tfileReportIO = new TFile(Form("%s/%s_Report.root",resultSavePath.c_str(),__FUNCTION__),"RECREATE");
     TTree  *tfileTree = new TTree("OptRes","PRex CRex Sieve Theta Phi Optimization Result");
     int tfileevtID;
@@ -2661,7 +2855,7 @@ TCanvas * ROpticsOpt::CheckVertex(std::string resultSavePath="./")
 
     //need to add branch to write all the information to the tree
     // Visualize Vertex spectrum
-    gStyle->SetOptTitle(0);
+    //    gStyle->SetOptTitle(0);
 
     DEBUG_INFO("CheckVertex", "Entry Point");
 
@@ -2674,8 +2868,8 @@ TCanvas * ROpticsOpt::CheckVertex(std::string resultSavePath="./")
     const Double_t YRange = 10*10e-3;
 
     for (UInt_t idx = 0; idx < NFoils; idx++) {
-        HTgY[idx] = new TH1D(Form("Target_Y%d", idx), Form("Target Y for Foil Target #%d", idx), 500, -YRange, YRange);
-        HTgYReal[idx] = new TH1D(Form("Target_Y%d", idx), Form("Target Y for Foil Target #%d", idx), 500, -YRange, YRange);
+        HTgY[idx] = new TH1D(Form("Target_Y%d", idx), Form("Target Y for Foil Target #%d", idx), 1000, -YRange, YRange);
+        HTgYReal[idx] = new TH1D(Form("Target_Y%d", idx), Form("Target Y for Foil Target #%d", idx), 1000, -YRange, YRange);
 
         HTgY[idx]->SetXTitle("Target Y [m]");
         assert(HTgY[idx]); // assure memory allocation
@@ -2687,7 +2881,7 @@ TCanvas * ROpticsOpt::CheckVertex(std::string resultSavePath="./")
 	    assert(HTgYHole[idx][ncol][nrow]);
 	    assert(HTgYHoleReal[idx][ncol][nrow]);
 	  }
-	}
+	 }
     }
 
     Double_t dtg_y = 0;
@@ -2712,7 +2906,45 @@ TCanvas * ROpticsOpt::CheckVertex(std::string resultSavePath="./")
 
         dtg_y += eventdata.Data[kCalcTgY] - eventdata.Data[kRealTgY];
         dtg_y_rms += (eventdata.Data[kCalcTgY] - eventdata.Data[kRealTgY])*(eventdata.Data[kCalcTgY] - eventdata.Data[kRealTgY]);
+
+
+        // write the data to the root tree
+        // better to add the runID into the branch??
+        tfileevtID = idx;
+        tfileCutID = eventdata.Data[kCutID];
+        tfilesieveRowID = Row;
+        tfilesieveColID = Col;
+
+        tfilebpmX = eventdata.Data[kBeamX];
+        tfilebpmY = eventdata.Data[kBeamY];
+        tfilebpmZ = eventdata.Data[kBeamZ];
+
+        tfilefocalTh = eventdata.Data[kTh];
+        tfilefocalPh = eventdata.Data[kPhi];
+        tfilefocalX  = eventdata.Data[kX];
+        tfilefocalY  = eventdata.Data[kY];
+
+        tfiletargCalcY = eventdata.Data[kRealTgY];    // theoretical Value
+        tfiletargProjY = eventdata.Data[kCalcTgY];    // the VDC projected value
+        tfileTree ->Fill();
+
     }
+
+
+
+
+    TCanvas *targYCanv = new TCanvas("TargY","Targ Y", 1960,1080);
+    targYCanv->Draw();
+
+    for (Int_t col = 0 ; col < NSieveCol; col++){
+        for(Int_t row = 0 ; row < NSieveRow; row ++){
+            if(HTgYHole[0][col][row]->GetEntries() > 10){
+                HTgYHole[0][col][row]->Draw("same");
+            }
+        }
+    }
+
+    targYCanv->Update();
 
     DEBUG_INFO("CheckTgY", "dtg_v = %f,\t dtg_v_rms = %f", dtg_y / fNRawData, TMath::Sqrt(dtg_y_rms / fNRawData));
 
@@ -2738,47 +2970,47 @@ TCanvas * ROpticsOpt::CheckVertex(std::string resultSavePath="./")
         c1->cd(idx + 1);
         assert(HTgY[idx]);
 
-	YMean[idx] = HTgY[idx]->GetMean();
-	HTgYReal[idx]->Draw();
-	HTgYReal[idx]->GetXaxis()->SetLabelSize(0.05);
-	HTgYReal[idx]->GetXaxis()->SetTitleSize(0.05);
-	HTgYReal[idx]->GetYaxis()->SetLabelSize(0.05);
-	HTgY[idx]->Draw("same");
-	HTgY[idx]->GetXaxis()->SetLabelSize(0.05);
-	HTgY[idx]->GetXaxis()->SetTitleSize(0.05);
-	HTgY[idx]->GetYaxis()->SetLabelSize(0.05);
-	HTgY[idx]->GetXaxis()->SetRangeUser(YMean[idx]-0.015,YMean[idx]+0.015 );
-	HTgYReal[idx]->GetXaxis()->SetRangeUser(YMean[idx]-0.015,YMean[idx]+0.015 );
-	HTgYReal[idx]->SetLineColor(kGreen);
+        YMean[idx] = HTgY[idx]->GetMean();
+        HTgYReal[idx]->Draw();
+        HTgYReal[idx]->GetXaxis()->SetLabelSize(0.05);
+        HTgYReal[idx]->GetXaxis()->SetTitleSize(0.05);
+        HTgYReal[idx]->GetYaxis()->SetLabelSize(0.05);
+        HTgY[idx]->Draw("same");
+        HTgY[idx]->GetXaxis()->SetLabelSize(0.05);
+        HTgY[idx]->GetXaxis()->SetTitleSize(0.05);
+        HTgY[idx]->GetYaxis()->SetLabelSize(0.05);
+        HTgY[idx]->GetXaxis()->SetRangeUser(YMean[idx]-0.015,YMean[idx]+0.015 );
+        HTgYReal[idx]->GetXaxis()->SetRangeUser(YMean[idx]-0.015,YMean[idx]+0.015 );
+        HTgYReal[idx]->SetLineColor(kGreen);
 
-	ymean = HTgY[idx]->GetMean();
-
-
-    TString FitFunc = Form("YtPeak%d", idx);
-    TF1 *f = new TF1(FitFunc, "gaus", ymean - DefResolution*FitRangeMultiply, ymean + DefResolution * FitRangeMultiply);
-    f->SetParameter(1, ymean);
-	HTgY[idx] -> Fit(FitFunc, "R");
-	f->SetLineColor(2);
-    f->Draw("SAME");
-
-	ymean = HTgYReal[idx]->GetMean();
-	cout<<"ymean:"<<ymean<<endl;
-	c1->cd(idx+1)->Update();
-	MaxPlot = c1->cd(idx + 1) ->GetUymax();
-    TLine *l = new TLine(ymean, 0, ymean, MaxPlot);
-    l->SetLineColor(kBlue);
-    l->SetLineWidth(2);
-	l->Draw();
-
-	TPaveText *t1 = new TPaveText(0.55,0.6,0.9,0.82,"NDC");
-	t1->AddText(Form("\\Delta = %2.1f mm", 1000 * (f->GetParameter(1) - ymean)));
-	t1->AddText(Form("\\sigma = %2.1f mm", 1000 * (f->GetParameter(2))));
-	t1->SetShadowColor(0);
-	t1->SetFillColor(0);
-	t1->Draw("same");
+//        ymean = HTgY[idx]->GetMean();
+//
+//
+//        TString FitFunc = Form("YtPeak%d", idx);
+//        TF1 *f = new TF1(FitFunc, "gaus", ymean - DefResolution*FitRangeMultiply, ymean + DefResolution * FitRangeMultiply);
+//        f->SetParameter(1, ymean);
+//        HTgY[idx] -> Fit(FitFunc, "R");
+//        f->SetLineColor(2);
+//        f->Draw("SAME");
+//
+//        ymean = HTgYReal[idx]->GetMean();
+//        cout<<"ymean:"<<ymean<<endl;
+//        c1->cd(idx+1)->Update();
+//        MaxPlot = c1->cd(idx + 1) ->GetUymax();
+//        TLine *l = new TLine(ymean, 0, ymean, MaxPlot);
+//        l->SetLineColor(kBlue);
+//        l->SetLineWidth(2);
+//        l->Draw();
+//
+//        TPaveText *t1 = new TPaveText(0.55,0.6,0.9,0.82,"NDC");
+//        t1->AddText(Form("\\Delta = %2.1f mm", 1000 * (f->GetParameter(1) - ymean)));
+//        t1->AddText(Form("\\sigma = %2.1f mm", 1000 * (f->GetParameter(2))));
+//        t1->SetShadowColor(0);
+//        t1->SetFillColor(0);
+//        t1->Draw("same");
     }
 
-    ///////////////////////////check z direction
+   ///////////////////////////check z direction
     TH1D * HTgZ[NFoils] = {0};         // z position from calculated y, calculated y is from matrix
     TH1D * HTgZReal[NFoils] = {0};     //real z postion
     const Double_t ZRange = 15*10e-3;
@@ -2956,10 +3188,14 @@ TCanvas * ROpticsOpt::CheckVertex(std::string resultSavePath="./")
 	}
       }
     }
-#endif  
+#endif
+
+    tfileTree->Write();
+    tfileReportIO->Write();
+    tfileReportIO->Close();
     return c1;
 }
-
+*/
 Double_t ROpticsOpt::SumSquareDTgY(void)
 {
     // return square sum of diff between calculated tg_y and expected tg_y
