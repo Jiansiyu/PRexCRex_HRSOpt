@@ -35,12 +35,12 @@ UInt_t MaxDataPerGroup = 100;
 //TString DataSource =   "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.thetaphi.f51_reform";
 //TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_RHRS_mean/thetaphi/Sieve.Full_thetaphi.f51";
 
-TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/PRex_RHRS_mean/thetaphi_mean/Sieve.full.average.thetaphi.f51";
+TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_RHRS/OptData/largeDataSet/Sieve.Full_LargeDataSet.f51";
 
 
 // theta phi Y data set Sieve.test.average.thetaphi.f51
-TString thetaPhiOptSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_RHRS/averageVersion/average/Sieve.average.f51";
-TString thetaPhiTestSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/PRex_RHRS/averageVersion/largeDatasetThetaCheck/sieve.thetaphi.largetdataset";
+TString thetaPhiOptSource= "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_RHRS/OptData/thetaphi/Sieve.average.f51";
+TString thetaPhiTestSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_RHRS/OptData/largeDataSet/Sieve.Full_LargeDataSet.f51";
 
 // Dp optimization dataset
 TString DpOptSource="";
@@ -257,7 +257,15 @@ void AutoDoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPer
         opt->SumSquareDTh();
         opt->SumSquareDPhi();
 
-        TCanvas * c1 = opt->CheckSieve(-1,SourceDataBasePath.Data());
+        TCanvas * c1;
+        //= opt->CheckSieve(-1,SourceDataBasePath.Data());
+        if(doFit){
+            c1 = opt->CheckSieve(-1,SourceDataBasePath.Data());
+        }else{
+            TString savefolder=Form("%s/%s",SourceDataBasePath.Data(),basename(DataSource.Data()));
+            mkdir(savefolder.Data(),0777);
+            c1 = opt->CheckSieve(-1,savefolder.Data());
+        }
         c1->Print(DestDataBase+".Sieve.Opt.png", "png");
         c1->Print(DestDataBase+".Sieve.Opt.eps", "eps");
         std::cout<<"\t dataset::"<<DataSource.Data()<<std::endl;
@@ -586,7 +594,9 @@ void ROpticsOptScript(TString select, TString SourceDataBase, TString DestDataBa
     return;
 }
 
-
+//_____________________________________________________________________________________________
+// new function
+//_____________________________________________________________________________________________
 void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TString DestDataBase)
 {
     opt = new ROpticsOpt();
@@ -615,12 +625,28 @@ void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TStri
         AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
         break;
     case 2:
-        cout << "Optimizing for Phi\n";
-        myfcn = myfcn2;
-        opt->fCurrentMatrixElems = &(opt->fPMatrixElems);
-//        DoMinTP(SourceDataBase, DestDataBase, 500);
-        AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
-        break;
+        {
+            cout << "Optimizing for Phi\n";
+            myfcn = myfcn2;
+            opt->fCurrentMatrixElems = &(opt->fPMatrixElems);
+            if (doFit){
+                AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
+            } else{
+                std::map<UInt_t,TString> thetaPhiTestList;
+                UInt_t runDp0List[]={21363,21364,21365,21366,21368,21369,21370,21380,21381};//
+                for(int i =0; i < (sizeof(runDp0List)/sizeof(UInt_t)); i ++){
+                    TString testfilename=Form("/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_RHRS/OptData/largeDataSet/Sieve._%d_p4.f51_reform",runDp0List[i]);
+                    if (!gSystem->AccessPathName(testfilename.Data()))
+                    {
+                        thetaPhiTestSource=testfilename.Data();
+                        AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
+                        std::cout<<thetaPhiTestSource.Data()<<std::endl;
+                    }
+                }
+            }
+
+            break;
+        }
     case 3:
         cout << "Optimizing for Y\n";
         myfcn = myfcn3;
