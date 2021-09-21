@@ -1340,7 +1340,27 @@ if(!saveLatex.empty()){
 return latexStr;
 }
 
+float_t correlationCoefficient(std::vector<double_t> x, std::vector<double_t> y){
+    //https://www.geeksforgeeks.org/program-find-correlation-coefficient/
+    double sum_X = 0, sum_Y = 0, sum_XY = 0;
+    double squareSum_X = 0, squareSum_Y = 0;
+    assert(x.size() == y.size());
+    Int_t n= x.size();
+    for (int i = 0; i < x.size(); i++){
+        double xval = x.at(i);
+        double yval = y.at(i);
 
+        sum_X  = sum_X + xval;
+        sum_Y  = sum_Y + yval;
+        sum_XY = sum_XY + xval * yval;
+
+        squareSum_X = squareSum_X + xval * xval;
+        squareSum_Y = squareSum_Y + yval * yval;
+    }
+
+    float_t corr = (float_t)(n*sum_XY - sum_X*sum_Y)/TMath::Sqrt((n*squareSum_X - sum_X*sum_X)*(n*squareSum_Y - sum_Y*sum_Y));
+    return corr;
+}
 
 TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID,std::string resultSavePath)
 {
