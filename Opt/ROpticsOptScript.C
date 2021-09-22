@@ -30,17 +30,18 @@ Bool_t freepara[10000] = {kFALSE}; //NPara
 
 UInt_t MaxDataPerGroup = 100;
 
-//TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.test";
-//TString DataSource = "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/DpReform/temp.dat";
-//TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full_p0_p1.test_reform";
-//TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/Sieve.Full.test_noPcut_reform";
-//TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveThetaPhi.test_reform";
-//TString DataSource =   "/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/SieveWithMomCut.test_reform";
-
 
 //TString DataSource =   "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_data/Sieve.Full.thetaphi.f51";
 TString DataSource =   "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/CRex_RHRS/averageVersion/average/sieve.average.f51";
 
+
+// theta phi Y data set Sieve.test.average.thetaphi.f51
+TString thetaPhiOptSource= "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_RHRS/OptData/thetaphi/Sieve.average.f51";
+TString thetaPhiTestSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_RHRS/OptData/largeDataSet/Sieve.Full_LargeDataSet.f51";
+
+// Dp optimization dataset
+TString DpOptSource="";
+TString DpTestSource="";
 
 typedef void (*PTRFCN)(Int_t &, Double_t *, Double_t &, Double_t*, Int_t);
 PTRFCN myfcn = NULL;
@@ -95,6 +96,18 @@ void myfcn4(Int_t &, Double_t *, Double_t &f, Double_t *par, Int_t)
     f = opt->SumSquareDp();
 
     return;
+}
+
+inline std::string getFilePath(const std::string & s){
+    char sep = '/';
+#ifdef _WIN32
+    sep = '\\';
+#endif
+    size_t i = s.rfind(sep, s.length());
+    if(i != std::string::npos){
+        return(s.substr(0, i+1));
+    }
+    return("");
 }
 
 void DoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGroup = 200)
@@ -161,6 +174,100 @@ void DoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
     delete fitter;
 #endif    
 }
+
+// new function used for pass the
+void AutoDoMinTP(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGroup = 200, Bool_t doFit=true)
+{
+    // load the test data set and load the test data set seperately
+    if (doFit){
+        // load the Optimization database
+        if(!thetaPhiOptSource.IsNull()){
+            DataSource = thetaPhiOptSource;
+        }
+    }else{
+        // load the test database
+        if(!thetaPhiTestSource.IsNull()){
+            DataSource = thetaPhiTestSource;
+        }
+    }
+
+    //minimize with root
+    assert(opt);
+    assert(opt->fCurrentMatrixElems);
+
+    opt->LoadDataBase(SourceDataBase);
+    NPara = opt->Matrix2Array(OldMatrixArray, freepara);
+    opt->LoadRawData(DataSource, (UInt_t) - 1, MaxDataPerGroup);
+    opt->PrepareSieve();
+    opt->Print();
+
+
+    if (doFit){
+        TVirtualFitter::SetDefaultFitter("Minuit"); //default is Minuit
+        TVirtualFitter *fitter = TVirtualFitter::Fitter(NULL, NPara);
+        fitter->SetFCN(myfcn);
+
+        for (UInt_t i = 0; i < NPara; i++) {
+            //      cout<<"i:"<<i<<endl;
+            Double_t absold = TMath::Abs(OldMatrixArray[i]);
+            Double_t abslimit = absold > 0 ? absold * 10000 : 10000;
+
+            fitter->SetParameter(i, Form("TMatrix%03d", i), OldMatrixArray[i], absold > 0 ? absold / 10 : 0.1, -abslimit, abslimit);
+            // fitter->SetParameter(1,"asdf",0,0,0,0);
+
+            if (!freepara[i]) fitter->FixParameter(i);
+        }
+
+        fitter->Print();
+        cout << fitter->GetNumberFreeParameters() << " Free  / " << fitter->GetNumberTotalParameters() << " Parameters\n";
+
+        assert(opt->fNRawData > 0);
+        assert(NPara > 0);
+        assert(fitter->GetNumberFreeParameters() > 0);
+        assert(fitter->GetNumberTotalParameters() == NPara);
+
+        Double_t arglist[1] = {0};
+        fitter->ExecuteCommand("MIGRAD", arglist, 0);
+
+
+        TString SourceDataBasePath=getFilePath(DestDataBase.Data());
+
+        opt->Print();
+        opt->SaveDataBase(DestDataBase);
+        opt->SaveNewDataBase(Form("%s",DestDataBase.Data()));
+
+        opt->SumSquareDTh();
+        opt->SumSquareDPhi();
+
+        TCanvas * c1 = opt->CheckSieve(-1,SourceDataBasePath.Data());
+        c1->Print(DestDataBase+".Sieve.Opt.png", "png");
+        c1->Print(DestDataBase+".Sieve.Opt.eps", "eps");
+        std::cout<<"\t dataset::"<<DataSource.Data()<<std::endl;
+        delete fitter;
+    }else{
+        TString SourceDataBasePath=getFilePath(DestDataBase.Data());
+        opt->Print();
+        opt->SaveDataBase(DestDataBase);
+        opt->SaveNewDataBase(Form("%s",DestDataBase.Data()));
+        opt->SumSquareDTh();
+        opt->SumSquareDPhi();
+
+        TCanvas * c1;
+        //= opt->CheckSieve(-1,SourceDataBasePath.Data());
+        if(doFit){
+            c1 = opt->CheckSieve(-1,SourceDataBasePath.Data());
+        }else{
+            TString savefolder=Form("%s/%s",SourceDataBasePath.Data(),basename(DataSource.Data()));
+            mkdir(savefolder.Data(),0777);
+            c1 = opt->CheckSieve(-1,savefolder.Data());
+        }
+        c1->Print(DestDataBase+".Sieve.Opt.png", "png");
+        c1->Print(DestDataBase+".Sieve.Opt.eps", "eps");
+        std::cout<<"\t dataset::"<<DataSource.Data()<<std::endl;
+    }
+}
+
+
 
 void DoMinY(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGroup = 100)
 {
@@ -549,4 +656,77 @@ void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TStri
 }
 
 
+//_____________________________________________________________________________________________
+// new function
+//_____________________________________________________________________________________________
+void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TString DestDataBase)
+{
+    opt = new ROpticsOpt();
 
+    Int_t s = 0;
+    if (select == "theta") s = 1;
+    if (select == "phi") s = 2;
+    if (select == "y") s = 3;
+    if (select == "delta") s = 4;
+
+    TString autoDestDatabase;
+    if(DestDataBase==""){
+        DestDataBase= SourceDataBase + "." + select;
+    }
+
+    // debug infor, debug infor
+
+    gStyle->SetOptStat(0);
+
+    switch (s) {
+        case 1:
+            cout << "Optimizing for Theta\n";
+            myfcn = myfcn1;
+            opt->fCurrentMatrixElems = &(opt->fTMatrixElems);
+//        DoMinTP(SourceDataBase, DestDataBase, 500);
+            AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
+            break;
+        case 2:
+        {
+            cout << "Optimizing for Phi\n";
+            myfcn = myfcn2;
+            opt->fCurrentMatrixElems = &(opt->fPMatrixElems);
+            if (doFit){
+                AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
+            } else{
+                std::map<UInt_t,TString> thetaPhiTestList;
+                UInt_t runDp0List[]={21363,21364,21365,21366,21368,21369,21370,21380,21381};//
+                for(int i =0; i < (sizeof(runDp0List)/sizeof(UInt_t)); i ++){
+                    TString testfilename=Form("/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_RHRS/OptData/largeDataSet/Sieve._%d_p4.f51_reform",runDp0List[i]);
+                    if (!gSystem->AccessPathName(testfilename.Data()))
+                    {
+                        thetaPhiTestSource=testfilename.Data();
+                        AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
+                        std::cout<<thetaPhiTestSource.Data()<<std::endl;
+                    }
+                }
+            }
+
+            break;
+        }
+        case 3:
+            cout << "Optimizing for Y\n";
+            myfcn = myfcn3;
+            opt->fCurrentMatrixElems = &(opt->fYMatrixElems);
+            DoMinY(SourceDataBase, DestDataBase, 200000);
+            break;
+        case 4:
+            cout << "Optimizing for Delta\n";
+            myfcn = myfcn4;
+            opt->fCurrentMatrixElems = &(opt->fDMatrixElems);
+            AutoDoMinDp(SourceDataBase, DestDataBase, 200000,doFit);
+            break;
+        default:
+            break;
+    }
+    //gSystem->Exec(Form("cp -vf %s %s.source", SourceDataBase.Data(), DestDataBase.Data()));
+    //    gSystem->Exec(Form("cp -vf log %s.log", DestDataBase.Data()));
+    delete opt;
+    return;
+
+}
