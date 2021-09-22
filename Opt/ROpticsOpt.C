@@ -1736,6 +1736,10 @@ TCanvas * ROpticsOpt::CheckSieve(Int_t PlotFoilID,std::string resultSavePath)
             line4->SetLineColor(3);
             line4->Draw("same");
         }
+        if (HSieveMomRealThetaPhi[i]->GetEntries() > 10){
+            c2->cd(i + 1)->SaveAs(Form("%s/%s_%s_single.jpg",resultSavePath.c_str(),__FUNCTION__,c2->GetName()));
+        }
+
     }
     c2->Write();
     c2->SaveAs(Form("%s/%s_%s.jpg",resultSavePath.c_str(),__FUNCTION__,c2->GetName()));
