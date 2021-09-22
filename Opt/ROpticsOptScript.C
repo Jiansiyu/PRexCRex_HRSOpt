@@ -403,31 +403,6 @@ void DoMinDp(TString SourceDataBase, TString DestDataBase, UInt_t MaxDataPerGrou
 
 }
 
-//automatically generate the minimization
-// the source file, the destination database , , do the optimzation or not
-inline std::string getFileName(const std::string & s){
-	char sep = '/';
-#ifdef _WIN32
-        sep = '\\';
-#endif
-	size_t i = s.rfind(sep, s.length());
-	if(i != std::string::npos){
-	    return(s.substr(i+1, s.length()-i));
-	}
-        return("");
-}
-
-inline std::string getFilePath(const std::string & s){
-	char sep = '/';
-#ifdef _WIN32
-        sep = '\\';
-#endif
-	size_t i = s.rfind(sep, s.length());
-	if(i != std::string::npos){
-	    return(s.substr(0, i+1));
-	}
-        return("");
-}
 void AutoDoMinDp(TString SourceDataBase, TString DestDataBase="", UInt_t MaxDataPerGroup = 200, Bool_t doOptmization=true)
 {
 	// extract the base name of the string
@@ -601,59 +576,59 @@ void ROpticsOptScript(TString select, TString SourceDataBase, TString DestDataBa
 }
 
 
-void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TString DestDataBase)
-{
-    opt = new ROpticsOpt();
-
-    Int_t s = 0;
-    if (select == "theta") s = 1;
-    if (select == "phi") s = 2;
-    if (select == "y") s = 3;
-    if (select == "delta") s = 4;
-
-    TString autoDestDatabase;
-    if(DestDataBase==""){
-    	DestDataBase= SourceDataBase + "." + select;
-    }
-
-    // debug infor, debug infor
-
-    gStyle->SetOptStat(0);
-
-    switch (s) {
-    case 1:
-        cout << "Optimizing for Theta\n";
-        myfcn = myfcn1;
-        opt->fCurrentMatrixElems = &(opt->fTMatrixElems);
-        DoMinTP(SourceDataBase, DestDataBase, 500);
-        break;
-    case 2:
-        cout << "Optimizing for Phi\n";
-        myfcn = myfcn2;
-        opt->fCurrentMatrixElems = &(opt->fPMatrixElems);
-        DoMinTP(SourceDataBase, DestDataBase, 500);
-        break;
-    case 3:
-        cout << "Optimizing for Y\n";
-        myfcn = myfcn3;
-        opt->fCurrentMatrixElems = &(opt->fYMatrixElems);
-        DoMinY(SourceDataBase, DestDataBase, 200000);
-        break;
-    case 4:
-        cout << "Optimizing for Delta\n";
-        myfcn = myfcn4;
-        opt->fCurrentMatrixElems = &(opt->fDMatrixElems);
-        AutoDoMinDp(SourceDataBase, DestDataBase, 200000,doFit);
-        break;
-    default:
-        break;
-    }
-    //gSystem->Exec(Form("cp -vf %s %s.source", SourceDataBase.Data(), DestDataBase.Data()));
-    //    gSystem->Exec(Form("cp -vf log %s.log", DestDataBase.Data()));
-    delete opt;
-    return;
-
-}
+//void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TString DestDataBase)
+//{
+//    opt = new ROpticsOpt();
+//
+//    Int_t s = 0;
+//    if (select == "theta") s = 1;
+//    if (select == "phi") s = 2;
+//    if (select == "y") s = 3;
+//    if (select == "delta") s = 4;
+//
+//    TString autoDestDatabase;
+//    if(DestDataBase==""){
+//    	DestDataBase= SourceDataBase + "." + select;
+//    }
+//
+//    // debug infor, debug infor
+//
+//    gStyle->SetOptStat(0);
+//
+//    switch (s) {
+//    case 1:
+//        cout << "Optimizing for Theta\n";
+//        myfcn = myfcn1;
+//        opt->fCurrentMatrixElems = &(opt->fTMatrixElems);
+//        DoMinTP(SourceDataBase, DestDataBase, 500);
+//        break;
+//    case 2:
+//        cout << "Optimizing for Phi\n";
+//        myfcn = myfcn2;
+//        opt->fCurrentMatrixElems = &(opt->fPMatrixElems);
+//        DoMinTP(SourceDataBase, DestDataBase, 500);
+//        break;
+//    case 3:
+//        cout << "Optimizing for Y\n";
+//        myfcn = myfcn3;
+//        opt->fCurrentMatrixElems = &(opt->fYMatrixElems);
+//        DoMinY(SourceDataBase, DestDataBase, 200000);
+//        break;
+//    case 4:
+//        cout << "Optimizing for Delta\n";
+//        myfcn = myfcn4;
+//        opt->fCurrentMatrixElems = &(opt->fDMatrixElems);
+//        AutoDoMinDp(SourceDataBase, DestDataBase, 200000,doFit);
+//        break;
+//    default:
+//        break;
+//    }
+//    //gSystem->Exec(Form("cp -vf %s %s.source", SourceDataBase.Data(), DestDataBase.Data()));
+//    //    gSystem->Exec(Form("cp -vf log %s.log", DestDataBase.Data()));
+//    delete opt;
+//    return;
+//
+//}
 
 
 //_____________________________________________________________________________________________
