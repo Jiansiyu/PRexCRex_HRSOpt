@@ -32,12 +32,14 @@ UInt_t MaxDataPerGroup = 100;
 
 
 //TString DataSource =   "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/asciReform/SieveReform/RHRS_data/Sieve.Full.thetaphi.f51";
-TString DataSource =   "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/CRex_RHRS/averageVersion/average/sieve.average.f51";
-
+//TString DataSource =   "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/CRex_RHRS/averageVersion/average/sieve.average.f51";
+TString DataSource = "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/CRex_RHRS_20210909/Data/train/Sieve.average.f51";
 
 // theta phi Y data set Sieve.test.average.thetaphi.f51
-TString thetaPhiOptSource= "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_RHRS/OptData/thetaphi/Sieve.average.f51";
-TString thetaPhiTestSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_RHRS/OptData/largeDataSet/Sieve.Full_LargeDataSet.f51";
+//TString thetaPhiOptSource= "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_RHRS/OptData/thetaphi/Sieve.average.f51";
+//TString thetaPhiTestSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_RHRS/OptData/largeDataSet/Sieve.Full_LargeDataSet.f51";
+TString thetaPhiOptSource= "/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/CRex_RHRS_20210909/Data/train/Sieve.average.f51";
+TString thetaPhiTestSource="/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/CRex_RHRS_20210909/Data/LargeDataset/Sieve.Full_LargeDataSet.f51";
 
 // Dp optimization dataset
 TString DpOptSource="";
@@ -575,62 +577,6 @@ void ROpticsOptScript(TString select, TString SourceDataBase, TString DestDataBa
     return;
 }
 
-
-//void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TString DestDataBase)
-//{
-//    opt = new ROpticsOpt();
-//
-//    Int_t s = 0;
-//    if (select == "theta") s = 1;
-//    if (select == "phi") s = 2;
-//    if (select == "y") s = 3;
-//    if (select == "delta") s = 4;
-//
-//    TString autoDestDatabase;
-//    if(DestDataBase==""){
-//    	DestDataBase= SourceDataBase + "." + select;
-//    }
-//
-//    // debug infor, debug infor
-//
-//    gStyle->SetOptStat(0);
-//
-//    switch (s) {
-//    case 1:
-//        cout << "Optimizing for Theta\n";
-//        myfcn = myfcn1;
-//        opt->fCurrentMatrixElems = &(opt->fTMatrixElems);
-//        DoMinTP(SourceDataBase, DestDataBase, 500);
-//        break;
-//    case 2:
-//        cout << "Optimizing for Phi\n";
-//        myfcn = myfcn2;
-//        opt->fCurrentMatrixElems = &(opt->fPMatrixElems);
-//        DoMinTP(SourceDataBase, DestDataBase, 500);
-//        break;
-//    case 3:
-//        cout << "Optimizing for Y\n";
-//        myfcn = myfcn3;
-//        opt->fCurrentMatrixElems = &(opt->fYMatrixElems);
-//        DoMinY(SourceDataBase, DestDataBase, 200000);
-//        break;
-//    case 4:
-//        cout << "Optimizing for Delta\n";
-//        myfcn = myfcn4;
-//        opt->fCurrentMatrixElems = &(opt->fDMatrixElems);
-//        AutoDoMinDp(SourceDataBase, DestDataBase, 200000,doFit);
-//        break;
-//    default:
-//        break;
-//    }
-//    //gSystem->Exec(Form("cp -vf %s %s.source", SourceDataBase.Data(), DestDataBase.Data()));
-//    //    gSystem->Exec(Form("cp -vf log %s.log", DestDataBase.Data()));
-//    delete opt;
-//    return;
-//
-//}
-
-
 //_____________________________________________________________________________________________
 // new function
 //_____________________________________________________________________________________________
@@ -670,9 +616,9 @@ void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TStri
                 AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
             } else{
                 std::map<UInt_t,TString> thetaPhiTestList;
-                UInt_t runDp0List[]={21363,21364,21365,21366,21368,21369,21370,21380,21381};//
+                UInt_t runDp0List[]={21743,21744,21748,21749,21752,21753,21754,21755,21756,21757,21767,21768,21769,21770,21771,21772,21781,21783,21784,21785};//
                 for(int i =0; i < (sizeof(runDp0List)/sizeof(UInt_t)); i ++){
-                    TString testfilename=Form("/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData_2021/PRex_RHRS/OptData/largeDataSet/Sieve._%d_p4.f51_reform",runDp0List[i]);
+                    TString testfilename=Form("/home/newdriver/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/CRex_RHRS_20210909/Data/LargeDataset/Sieve._%d_p4.f51_reform",runDp0List[i]);
                     if (!gSystem->AccessPathName(testfilename.Data()))
                     {
                         thetaPhiTestSource=testfilename.Data();
