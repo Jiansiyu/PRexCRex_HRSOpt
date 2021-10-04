@@ -578,7 +578,7 @@ void ROpticsOptScript(Bool_t doFit,TString select, TString SourceDataBase, TStri
                 AutoDoMinTP(SourceDataBase, DestDataBase, 500,doFit);
             }else{
                 std::map<UInt_t,TString> thetaPhiTestList;
-                UInt_t runDp0List[]={2679, 2683, 2684, 2687, 2689, 2690, 2691, 2692, 2702, 2718, 2720, 2721, 2722};//
+                UInt_t runDp0List[]={2678,2679, 2683, 2684, 2687, 2689, 2690, 2691, 2692, 2702, 2718, 2720, 2721, 2722};//
                 for(int i =0; i < (sizeof(runDp0List)/sizeof(UInt_t)); i ++){
                     TString testfilename=Form("/home/newdriver/Storage/Research/Eclipse_Workspace/photonSep2019/PRexOpt/OptData/CRex_LHRS_20210909/ThreeRunVersion/largeDataset/Sieve._%d_p4.f51_reform",runDp0List[i]);
                     if (!gSystem->AccessPathName(testfilename.Data()))
